@@ -1,0 +1,117 @@
+-- Seed: the fifteen domains, their relationships and three open seats each.
+-- Danish names follow the landing page; English names follow the house
+-- bundle. Domains 04 and 10 carry two candidate names in the prototype;
+-- the landing's Danish name is used here until Kim decides.
+
+insert into public.domains (id, sort_order, slug, name, tagline, blurb, house_description, skills, target_seats) values
+('mentor', 1, 'mentor-coach',
+  '{"da":"Mentor & Coach","en":"Mentor & Coach"}',
+  '{"da":"Sparring, der holder, når presset stiger.","en":"Sparring that holds when the pressure rises."}',
+  '{"da":"Sparring for ejerledere og nye chefer — fast kadence, ingen kursusmappe.","en":"Sparring for owner-managers and first-time leaders — a fixed cadence, no course binder."}',
+  '{"da":"Mentor- og coachforløb for ejerledere og nye chefer.","en":"Mentoring and coaching for owner-managers and first-time leaders."}',
+  '{"da":["Mentorforløb","Coaching","Ejerledere"],"en":["Leadership","Coaching","Founder support"]}', 3),
+('salg', 2, 'salg-marketing',
+  '{"da":"Salg & Marketing","en":"Sales & Marketing"}',
+  '{"da":"Salg, der ikke afhænger af én person.","en":"Sales that do not hinge on one person."}',
+  '{"da":"Pipeline, key accounts og kampagner — fra strategi til lukket aftale.","en":"Pipeline, key accounts and campaigns — strategy through signature."}',
+  '{"da":"Pipeline, key accounts og kampagner.","en":"Pipeline, key accounts and campaigns."}',
+  '{"da":["Pipeline","Key accounts","Kampagner"],"en":["Sales strategy","Pipeline","Key accounts"]}', 3),
+('bestyrelse', 3, 'bestyrelse',
+  '{"da":"Bestyrelse","en":"Board & Governance"}',
+  '{"da":"En bestyrelse, der gør en forskel.","en":"A board that earns its seat."}',
+  '{"da":"Professionelle bestyrelsesmedlemmer til ejerledede virksomheder.","en":"Professional board members for owner-led companies."}',
+  '{"da":"Professionelle bestyrelsesmedlemmer til ejerledede virksomheder.","en":"Professional board members for owner-led companies."}',
+  '{"da":["Bestyrelsesarbejde","Governance","Strategi"],"en":["Board work","Governance","Strategy"]}', 3),
+('invest', 4, 'investering-projekt',
+  '{"da":"Investering & Projekt","en":"Investment & Finance"}',
+  '{"da":"Kapital og business case, før beslutningen.","en":"Capital and the business case, before the decision."}',
+  '{"da":"Kapitalrejsning, business cases og projektøkonomi.","en":"Fundraising, business cases and project finance."}',
+  '{"da":"Kapitalrejsning og projektøkonomi.","en":"Fundraising and project finance."}',
+  '{"da":["Kapitalrejsning","Projektøkonomi","Business case"],"en":["Funding","Business cases","Financial models"]}', 3),
+('consulting', 5, 'consulting',
+  '{"da":"Consulting","en":"Consulting"}',
+  '{"da":"Analyse, der ender i en beslutning.","en":"Analysis that ends in a decision."}',
+  '{"da":"Analyse og beslutningsstøtte i korte forløb.","en":"Analysis and decision support in short engagements."}',
+  '{"da":"Korte forløb med beslutningsstøtte.","en":"Short engagements with decision support."}',
+  '{"da":["Analyse","Beslutningsstøtte","Korte forløb"],"en":["Analysis","Decision support","Business planning"]}', 3),
+('ai', 6, 'ai-it',
+  '{"da":"AI & IT","en":"AI & IT"}',
+  '{"da":"AI, der kommer i drift.","en":"AI that reaches production."}',
+  '{"da":"Løsningsarkitektur, maskinlæring i drift og dataplatforme.","en":"Solution architecture, machine learning in production and data platforms."}',
+  '{"da":"Løsningsarkitektur, ML i drift og dataplatforme.","en":"Solution architecture, ML in production and data platforms."}',
+  '{"da":["Løsningsarkitektur","ML i drift","Dataplatforme"],"en":["AI implementation","Data platforms","Software architecture"]}', 3),
+('hr', 7, 'hr-rekruttering',
+  '{"da":"HR & Rekruttering","en":"HR & Recruitment"}',
+  '{"da":"En HR-afdeling på deltid, når I ikke skal have en hel.","en":"An HR department part-time, when a whole one is too much."}',
+  '{"da":"Ansættelser, employer branding og HR-jura på deltid.","en":"Hiring, employer branding and part-time HR counsel."}',
+  '{"da":"Ansættelser, employer branding og HR-jura.","en":"Hiring, employer branding and HR counsel."}',
+  '{"da":["Ansættelser","Employer branding","HR-jura"],"en":["Recruitment","People operations","Employer branding"]}', 3),
+('advisory', 8, 'advisory',
+  '{"da":"Advisory","en":"Advisory"}',
+  '{"da":"Rådgivning i direktionens højde.","en":"Advice at executive altitude."}',
+  '{"da":"Rådgivning på direktionsniveau — ESG, risiko og rapportering.","en":"Board-level advisory — ESG, risk and reporting."}',
+  '{"da":"ESG, risiko og rapportering.","en":"ESG, risk and reporting."}',
+  '{"da":["ESG","Risiko","Rapportering"],"en":["ESG","Risk","Reporting"]}', 3),
+('supply', 9, 'supply-chain-logistik',
+  '{"da":"Supply Chain & Logistik","en":"Supply Chain & Logistics"}',
+  '{"da":"Forsyningskæden, når den brænder.","en":"The supply chain, when it burns."}',
+  '{"da":"Indkøb, lager og transport for producerende virksomheder.","en":"Sourcing, warehousing and transport for manufacturers."}',
+  '{"da":"Indkøb, lager og transport for producerende virksomheder.","en":"Sourcing, warehousing and transport for manufacturers."}',
+  '{"da":["Indkøb","Lager","Transport"],"en":["Procurement","Logistics","Inventory"]}', 3),
+('disruption', 10, 'disruption-innovation',
+  '{"da":"Disruption & Innovation","en":"Innovation & New Ventures"}',
+  '{"da":"Vækst, når den gamle model stopper.","en":"Growth when the old model stalls."}',
+  '{"da":"Nye forretningsmodeller, når den nuværende holder op med at vokse.","en":"New business models when the current one stops growing."}',
+  '{"da":"Nye forretningsmodeller og innovationsforløb.","en":"New business models and innovation work."}',
+  '{"da":["Forretningsmodeller","Innovation","Nye ventures"],"en":["Innovation","New ventures","Business models"]}', 3),
+('digital', 11, 'digital-web-markedsfoering',
+  '{"da":"Digital Web & Markedsføring","en":"Digital & Marketing"}',
+  '{"da":"Web og kampagner, der kan måles.","en":"Web and campaigns you can measure."}',
+  '{"da":"Web, performance, automation og identitet.","en":"Web, performance, automation and identity."}',
+  '{"da":"Web, performance, automation og identitet.","en":"Web, performance, automation and identity."}',
+  '{"da":["Web","Performance","Automation"],"en":["Web design","Performance marketing","Automation"]}', 3),
+('projekt', 12, 'projektledelse',
+  '{"da":"Projektledelse","en":"Project Management"}',
+  '{"da":"Projekter, der faktisk lander.","en":"Projects that actually land."}',
+  '{"da":"Projektledere til implementeringer, der skal i drift.","en":"Project managers for implementations that have to go live."}',
+  '{"da":"Projektledelse af implementeringer, der skal i drift.","en":"Project management for implementations that have to go live."}',
+  '{"da":["Projektledelse","Implementering","Drift"],"en":["Delivery","Implementation","Change"]}', 3),
+('management', 13, 'management-consulting',
+  '{"da":"Management Consulting","en":"Management Consulting"}',
+  '{"da":"Drift og styring, uden et helt konsulenthus.","en":"Operations and governance without a whole consultancy."}',
+  '{"da":"Organisation, drift og styring for virksomheder mellem 50 og 500 ansatte.","en":"Organisation, operations and governance for companies of 50 to 500."}',
+  '{"da":"Organisation og styring for virksomheder mellem 50 og 500 ansatte.","en":"Organisation and governance for companies of 50 to 500."}',
+  '{"da":["Organisation","Styring","Drift"],"en":["Organisation","Operating models","Strategy"]}', 3),
+('juridisk', 14, 'juridisk-raadgiver',
+  '{"da":"Juridisk Rådgiver","en":"Legal Advisory"}',
+  '{"da":"Kontrakter og GDPR uden et advokatkontor.","en":"Contracts and GDPR without a law firm."}',
+  '{"da":"Kontrakter, GDPR og NIS2 for små og mellemstore virksomheder.","en":"Contracts, GDPR and NIS2 for small and mid-sized companies."}',
+  '{"da":"Kontrakter, GDPR og NIS2.","en":"Contracts, GDPR and NIS2."}',
+  '{"da":["Kontrakter","GDPR","NIS2"],"en":["Contracts","GDPR","Compliance"]}', 3),
+('automation', 15, 'automation-produktion',
+  '{"da":"Automation & Produktion","en":"Automation & Production"}',
+  '{"da":"Produktion, der kører selv, hvor den kan.","en":"Production that runs itself where it can."}',
+  '{"da":"Robotter, OEE og produktionsdata på fabriksgulvet.","en":"Robots, OEE and production data on the factory floor."}',
+  '{"da":"Robotter, OEE og produktionsdata på fabriksgulvet.","en":"Robots, OEE and production data on the factory floor."}',
+  '{"da":["Robotter","OEE","Produktionsdata"],"en":["Robotics","Production data","Process improvement"]}', 3)
+on conflict (id) do update set
+  name = excluded.name, tagline = excluded.tagline, blurb = excluded.blurb,
+  house_description = excluded.house_description, skills = excluded.skills;
+
+-- Neighbour pairs, normalised so domain_a < domain_b.
+insert into public.domain_relationships (domain_a, domain_b)
+select least(a, b), greatest(a, b) from (values
+  ('ai','salg'),('ai','digital'),('ai','hr'),('ai','consulting'),('ai','invest'),('ai','management'),
+  ('salg','digital'),('salg','projekt'),('salg','advisory'),('digital','mentor'),('digital','bestyrelse'),
+  ('hr','mentor'),('hr','juridisk'),('hr','management'),('consulting','advisory'),('consulting','supply'),
+  ('consulting','disruption'),('invest','bestyrelse'),('invest','juridisk'),('invest','automation'),
+  ('management','projekt'),('management','disruption'),('supply','automation'),('supply','disruption'),
+  ('advisory','bestyrelse'),('projekt','mentor')
+) as pairs(a, b)
+on conflict do nothing;
+
+-- Three open seats per domain.
+insert into public.seats (domain_id, position, status)
+select d.id, p, 'open'
+from public.domains d, generate_series(1, 3) as p
+on conflict (domain_id, position) do nothing;

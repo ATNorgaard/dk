@@ -1,0 +1,67 @@
+/* Styles live inside the component's Shadow DOM. They do not reset your page. */
+:host {
+  display: block;
+  width: 100%;
+  max-width: 760px;
+  container-type: inline-size;
+  --tuc-card: #243f2e;
+  --tuc-text: #fbf2d9;
+  --tuc-accent: #8f5238;
+  --tuc-light: #edbd60;
+  --tuc-heading-font: Georgia, 'Times New Roman', serif;
+  --tuc-body-font: Arial, Helvetica, sans-serif;
+  font-family: var(--tuc-body-font);
+  line-height: 1.5;
+  color: #29362e;
+  text-align: left;
+}
+*, *::before, *::after { box-sizing: border-box; }
+.layout { display: grid; grid-template-columns: minmax(220px,.66fr) minmax(0,1fr); column-gap: 25px; align-items: start; width: 100%; }
+.art { grid-column: 2; grid-row: 1; width: 100%; min-width: 0; }
+.art .tuc-house { display: block; width: 100%; height: auto; touch-action: manipulation; }
+.art .tuc-house .tuc-light { fill: var(--tuc-light); }
+.rail { grid-column: 1; grid-row: 1; min-width: 0; padding-top: clamp(75px,14cqw,125px); }
+.invitation { position: relative; height: 112px; opacity: 1; visibility: visible; transition: opacity 480ms ease, visibility 0s; pointer-events: none; }
+.invitation.is-discovered { opacity: 0; visibility: hidden; transition: opacity 480ms ease, visibility 0s 480ms; }
+.hook { padding-left: 17px; transform: rotate(-6deg); color: var(--tuc-accent); }
+.hook > span { display: block; margin-bottom: 3px; font: italic 16px var(--tuc-heading-font); }
+.hook strong { display: block; font: italic 29px/1.08 var(--tuc-heading-font); font-weight: 400; letter-spacing: -.6px; white-space: nowrap; }
+.hook small { display: block; margin-top: 11px; font: 10px var(--tuc-body-font); letter-spacing: .3px; color: #7a7960; }
+.hook-arrow { position: absolute; right: -21px; bottom: 10px; width: 105px; height: 52px; color: #9b6245; opacity: .65; overflow: visible; }
+.card-slot { min-height: 260px; width: 100%; position: relative; }
+.card { position: relative; width: 100%; padding: 20px 21px 0; border: 1px solid #9f9e7255; border-radius: 2px; background: var(--tuc-card); color: var(--tuc-text); box-shadow: 5px 6px 0 #b9ab8055, 0 15px 35px #182b222e; opacity: 1; visibility: visible; transform: translateY(0); transition: opacity 160ms ease, transform 160ms ease, visibility 0s; }
+.card[data-visible=false] { opacity: 0; visibility: hidden; transform: translateY(5px); pointer-events: none; transition: opacity 160ms ease, transform 160ms ease, visibility 0s 160ms; }
+.kicker { display: flex; align-items: center; gap: 7px; color: #dbc88e; font: 8px/1.2 var(--tuc-body-font); letter-spacing: 1.35px; }
+.lamp { flex-shrink: 0; width: 5px; height: 8px; background: var(--tuc-light); box-shadow: 0 0 0 2px #edbd6033; }
+.counter { margin-left: auto; font-size: 8px; letter-spacing: .6px; opacity: .65; white-space: nowrap; }
+.card h2 { margin: 15px 0 11px; color: #fff8e5; font: 25px/1.08 var(--tuc-heading-font); letter-spacing: -.6px; font-weight: 400; overflow-wrap: anywhere; }
+.description { margin: 0; color: #d8ddc9; font: 12px/1.65 var(--tuc-body-font); }
+.skills { display: flex; flex-wrap: wrap; gap: 4px 10px; margin: 14px 0 17px; }
+.skills span { padding-bottom: 3px; border-bottom: 1px solid #a39f7455; color: #ead9a9; font: 9px/1.4 var(--tuc-body-font); }
+.card-footer { display: flex; justify-content: space-between; align-items: center; gap: 9px; margin: 0 -21px; padding: 12px 16px; border-top: 1px solid #d8cfaa2e; color: #f4e8c9; font: 9px/1.4 var(--tuc-body-font); background: #142d1e26; }
+.card-footer > span:last-child { font-size: 16px; }
+/* Breakpoints depend on the embed's width, not the whole website's viewport. */
+@container (max-width: 650px) {
+  .layout { grid-template-columns: minmax(195px,.68fr) minmax(0,1fr); column-gap: 19px; }
+  .rail { padding-top: 66px; }
+  .invitation { height: 104px; }
+  .hook strong { font-size: 26px; }
+  .card { padding: 17px 16px 0; }
+  .card-footer { margin: 0 -16px; padding: 11px 13px; }
+  .kicker { font-size: 7px; letter-spacing: 1px; }
+  .counter { font-size: 7px; }
+  .card h2 { font-size: 23px; }
+}
+@container (max-width: 560px) {
+  .layout { grid-template-columns: minmax(0,1fr); gap: 0; }
+  .art { grid-column: 1; grid-row: 1; max-width: 370px; justify-self: center; }
+  .rail { grid-column: 1; grid-row: 2; width: 100%; max-width: 330px; padding-top: 20px; justify-self: center; }
+  .invitation { height: 92px; }
+  .hook { padding-left: 9px; }
+  .hook-arrow { right: 4px; bottom: 20px; transform: rotate(-100deg); }
+  .card-slot { min-height: 0; }
+  .card h2 { font-size: 25px; }
+  .kicker { font-size: 8px; }
+  .description { font-size: 13px; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }

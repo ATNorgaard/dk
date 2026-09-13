@@ -1,0 +1,38 @@
+{
+  "domains": [
+    { "id": "mentor", "name": "Mentor & Coach", "short": "Mentoring", "description": "A thinking partner for owner-managers and people stepping into leadership.", "skills": ["Leadership", "Coaching", "Founder support"], "href": "" },
+    { "id": "salg", "name": "Sales & Marketing", "short": "Sales", "description": "Build a repeatable sales practice, from positioning and pipeline to your next key account.", "skills": ["Sales strategy", "Pipeline", "Key accounts"], "href": "" },
+    { "id": "bestyrelse", "name": "Board & Governance", "short": "Boards", "description": "Independent perspective and practical governance for owner-led businesses.", "skills": ["Board work", "Governance", "Strategy"], "href": "" },
+    { "id": "invest", "name": "Investment & Finance", "short": "Investment", "description": "Make your next investment decision with a clear business case and a plan for funding it.", "skills": ["Funding", "Business cases", "Financial models"], "href": "" },
+    { "id": "consulting", "name": "Consulting", "short": "Consulting", "description": "Turn an ambiguous business challenge into an actionable direction with focused analysis.", "skills": ["Analysis", "Decision support", "Business planning"], "href": "" },
+    { "id": "ai", "name": "AI & IT", "short": "AI & IT", "description": "Bring AI, data and software into everyday work, with clear ownership and a route from experiment to operation.", "skills": ["AI implementation", "Data platforms", "Software architecture"], "href": "" },
+    { "id": "hr", "name": "HR & Recruitment", "short": "People & HR", "description": "Find the people you need and create the conditions for them to do their best work.", "skills": ["Recruitment", "People operations", "Employer branding"], "href": "" },
+    { "id": "advisory", "name": "Advisory", "short": "Advisory", "description": "Practical executive advice on risk, sustainability and the responsibilities of a growing business.", "skills": ["ESG", "Risk", "Reporting"], "href": "" },
+    { "id": "supply", "name": "Supply Chain & Logistics", "short": "Supply chain", "description": "Connect purchasing, inventory and delivery so your supply chain works as one.", "skills": ["Procurement", "Logistics", "Inventory"], "href": "" },
+    { "id": "disruption", "name": "Innovation & New Ventures", "short": "Innovation", "description": "Explore new business models, test assumptions and turn promising ideas into practical ventures.", "skills": ["Innovation", "New ventures", "Business models"], "href": "" },
+    { "id": "digital", "name": "Digital & Marketing", "short": "Digital", "description": "Connect your website, campaigns and customer journey with work you can measure.", "skills": ["Web design", "Performance marketing", "Automation"], "href": "" },
+    { "id": "projekt", "name": "Project Management", "short": "Projects", "description": "Keep the people, decisions and dependencies aligned through complex implementations.", "skills": ["Delivery", "Implementation", "Change"], "href": "" },
+    { "id": "management", "name": "Management Consulting", "short": "Management", "description": "Shape your organisation, operating model and priorities around the results you want to achieve.", "skills": ["Organisation", "Operating models", "Strategy"], "href": "" },
+    { "id": "juridisk", "name": "Legal Advisory", "short": "Legal", "description": "Make contracts, data protection and compliance part of a clear, workable business framework.", "skills": ["Contracts", "GDPR", "Compliance"], "href": "" },
+    { "id": "automation", "name": "Automation & Production", "short": "Production", "description": "Improve production with practical automation, connected equipment and better use of operational data.", "skills": ["Robotics", "Production data", "Process improvement"], "href": "" }
+  ],
+  "relationships": [
+    ["ai", "salg"], ["ai", "digital"], ["ai", "hr"], ["ai", "consulting"], ["ai", "invest"], ["ai", "management"],
+    ["salg", "digital"], ["salg", "projekt"], ["salg", "advisory"], ["digital", "mentor"], ["digital", "bestyrelse"],
+    ["hr", "mentor"], ["hr", "juridisk"], ["hr", "management"], ["consulting", "advisory"], ["consulting", "supply"],
+    ["consulting", "disruption"], ["invest", "bestyrelse"], ["invest", "juridisk"], ["invest", "automation"],
+    ["management", "projekt"], ["management", "disruption"], ["supply", "automation"], ["supply", "disruption"],
+    ["advisory", "bestyrelse"], ["projekt", "mentor"]
+  ],
+  "copy": {
+    "psst": "Psst…",
+    "invitation": "Take a peek.",
+    "hoverHint": "Hover a window.",
+    "touchHint": "Tap a window.",
+    "kicker": "BEHIND THIS WINDOW",
+    "footer": "Click the window to meet the specialist",
+    "touchFooter": "Select a window to find your specialist",
+    "houseLabel": "TrustUsConsult — a window into fifteen independent disciplines",
+    "actionLabel": "Select to meet the specialist."
+  }
+}
