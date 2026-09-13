@@ -114,9 +114,10 @@ export default async function DomainPage({ params }: PageProps<"/[lang]/domaener
               }}
             />
             <CardGrid>
-              {neighbours.map((n) => (
+              {neighbours.map((n, idx) => (
                 <Card
                   key={n.id}
+                  index={idx}
                   href={href(lang, `/domaener/${n.slug}`)}
                   tag={`${da ? "Domæne" : "Domain"} ${pad2(n.sortOrder)}`}
                   title={t(n.name, lang, n.id)}

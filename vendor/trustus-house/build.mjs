@@ -3,8 +3,12 @@
 import {readFile, writeFile, mkdir} from 'node:fs/promises';
 import {gzipSync} from 'node:zlib';
 const read = name => readFile(new URL(name, import.meta.url), 'utf8');
-const [source, css, svg, configText] = await Promise.all([
+const [source, css, svg, configText, houseCss] = await Promise.all([
   read('src/widget.js'), read('src/widget.css'), read('src/house.svg'), read('src/domains.json'),
+  // The artwork's own rules (lights hidden until active, neighbour glow,
+  // focus ring). The exported house.svg lost its <style> block, so they live
+  // in this file and are prepended to the shadow stylesheet.
+  read('src/house.css'),
 ]);
 const marker = '/*__ASSETS__*/null';
 if (!source.includes(marker)) throw new Error('Widget asset marker is missing.');
@@ -12,13 +16,14 @@ const config = JSON.parse(configText);
 if (config.domains.length !== 15) throw new Error('Expected all fifteen domain definitions.');
 // Keep all runtime CSS in the component's one shadow stylesheet. The editable
 // source SVG retains its own stylesheet for standalone use.
-let svgCss = '';
+let svgCss = houseCss.trim() + '\n';
 const runtimeSvg = svg
   // The exported SVG carries a signed C2PA provenance manifest in <metadata>.
   // It is ~50 KB of base64 the browser never uses; keep it in src, drop it here.
   .replace(/<metadata\b[\s\S]*?<\/metadata>/g, '')
   .replace(/<style\b[^>]*>([\s\S]*?)<\/style>/g, (_, rules) => { svgCss += rules + '\n'; return ''; });
 const payload = JSON.stringify({version:'1.0.0', css:svgCss + css, svg:runtimeSvg, config}).replace(/</g, '\\u003c');
+if (!svgCss.includes('.tuc-light')) throw new Error('Light rules missing: src/house.css must define .tuc-light.');
 const bundle = source.replace(marker, () => payload);
 const out = new URL('../../public/house/', import.meta.url);
 await mkdir(out, {recursive:true});

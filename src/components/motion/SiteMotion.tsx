@@ -1,0 +1,84 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+import s from "./SiteMotion.module.css";
+
+/**
+ * The page's ambient motion, all of it in one place:
+ *  - a 3px scroll progress line under the header
+ *  - `data-scrolled` on the root once the page has moved, so the header can darken
+ *  - reveal-on-scroll for every element carrying `data-reveal`; children with
+ *    `--i` stagger. Elements are visible by default; only when this component
+ *    has mounted (root gets `data-motion="on"`) are they held back until seen.
+ * Respects prefers-reduced-motion: no progress animation, no reveal.
+ */
+export function SiteMotion() {
+  const bar = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const onScroll = () => {
+      const max = root.scrollHeight - window.innerHeight;
+      const p = max > 0 ? Math.min(1, window.scrollY / max) : 0;
+      if (bar.current) bar.current.style.transform = `scaleX(${p})`;
+      root.dataset.scrolled = window.scrollY > 8 ? "true" : "false";
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+
+    let io: IntersectionObserver | null = null;
+    const pending = new Set<HTMLElement>();
+    const show = (el: HTMLElement) => {
+      el.classList.add("is-in");
+      pending.delete(el);
+      io?.unobserve(el);
+    };
+    /* Manual pass on scroll: IntersectionObserver is the primary trigger, but it
+       does not fire in hidden or throttled documents, and an element must never
+       stay invisible because a callback was skipped. */
+    const sweep = () => {
+      if (!pending.size) return;
+      const vh = window.innerHeight;
+      for (const el of Array.from(pending)) {
+        const r = el.getBoundingClientRect();
+        if (r.top < vh * 0.94 && r.bottom > 0) show(el);
+      }
+    };
+    if (!reduced) {
+      root.dataset.motion = "on";
+      if ("IntersectionObserver" in window) {
+        io = new IntersectionObserver(
+          (entries) => {
+            for (const e of entries) if (e.isIntersecting) show(e.target as HTMLElement);
+          },
+          { rootMargin: "0px 0px -6% 0px", threshold: 0.08 },
+        );
+      }
+      document.querySelectorAll<HTMLElement>("[data-reveal]").forEach((el) => {
+        /* Anything already in view on load is shown at rest, never animated in. */
+        const r = el.getBoundingClientRect();
+        if (r.top < window.innerHeight && r.bottom > 0) el.classList.add("is-in");
+        else {
+          pending.add(el);
+          io?.observe(el);
+        }
+      });
+      window.addEventListener("scroll", sweep, { passive: true });
+      document.addEventListener("visibilitychange", sweep);
+    }
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("scroll", sweep);
+      document.removeEventListener("visibilitychange", sweep);
+      io?.disconnect();
+      delete root.dataset.motion;
+    };
+  }, []);
+
+  return <div ref={bar} className={s.progress} aria-hidden="true" />;
+}

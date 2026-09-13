@@ -206,6 +206,24 @@ button { font: inherit; color: inherit; }
 .hds-serif { font-family: var(--hds-font-serif); font-style: italic; font-weight: 400; letter-spacing: -0.02em; }
 .hds-tabular { font-variant-numeric: tabular-nums; }
 
+/* ---- Reveal on scroll ----
+   Elements with [data-reveal] are visible at rest. Only once SiteMotion has
+   mounted (root[data-motion="on"]) are those still below the fold held back
+   and eased in when they enter the viewport. Siblings stagger via --i. */
+:root[data-motion="on"] [data-reveal]:not(.is-in) {
+  opacity: 0;
+  transform: translateY(14px);
+}
+:root[data-motion="on"] [data-reveal] {
+  transition: opacity 700ms var(--hds-ease), transform 700ms var(--hds-ease);
+  transition-delay: calc(var(--i, 0) * 70ms);
+}
+:root[data-motion="on"] [data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; scroll-behavior: auto !important; }
+  [data-reveal] { opacity: 1 !important; transform: none !important; }
 }

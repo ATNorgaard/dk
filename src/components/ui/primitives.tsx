@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 import type { I18nText, Lang } from "@/lib/i18n";
 import { t } from "@/lib/i18n";
@@ -52,7 +52,7 @@ export function SectionHeading({
   vars?: Record<string, string | number>;
 }) {
   return (
-    <div className={s.heading}>
+    <div className={s.heading} data-reveal="">
       <h2 id={id} className={s.headingTitle}>
         <RichTitle text={t(title, lang, "")} vars={vars} />
       </h2>
@@ -64,8 +64,8 @@ export function SectionHeading({
 export function CapabilityList({ items, lang }: { items: Titled[]; lang: Lang }) {
   return (
     <ol className={s.caps}>
-      {items.map((it) => (
-        <li key={it.number ?? t(it.title, lang, "")}>
+      {items.map((it, idx) => (
+        <li key={it.number ?? t(it.title, lang, "")} data-reveal="" style={{ "--i": idx } as CSSProperties}>
           <span className={s.num}>{it.number}</span>
           <h3>{t(it.title, lang, "")}</h3>
           <p>{t(it.text, lang, "")}</p>
@@ -84,8 +84,8 @@ export function FactStrip({
 }) {
   return (
     <div className={s.facts}>
-      {items.map((f) => (
-        <div key={t(f.label, lang, "")}>
+      {items.map((f, idx) => (
+        <div key={t(f.label, lang, "")} data-reveal="" style={{ "--i": idx } as CSSProperties}>
           <span className={s.factLabel}>{t(f.label, lang, "")}</span>
           <span className={`${s.factValue} hds-tabular`}>{f.value}</span>
           <span className={s.factDetail}>{t(f.detail, lang, "")}</span>
@@ -96,12 +96,12 @@ export function FactStrip({
 }
 
 export function TwoColumns({ children }: { children: ReactNode }) {
-  return <div className={s.twoCol}>{children}</div>;
+  return <div className={s.twoCol} data-reveal="">{children}</div>;
 }
 
 export function Callout({ label, text, lang }: { label: I18nText; text: I18nText; lang: Lang }) {
   return (
-    <div className={s.callout}>
+    <div className={s.callout} data-reveal="">
       <span className={s.calloutLabel}>{t(label, lang, "")}</span>
       <p>{t(text, lang, "")}</p>
     </div>
@@ -117,8 +117,8 @@ export function Timeline({
 }) {
   return (
     <ol className={s.timeline}>
-      {items.map((it) => (
-        <li key={t(it.period, lang, "")}>
+      {items.map((it, idx) => (
+        <li key={t(it.period, lang, "")} data-reveal="" style={{ "--i": idx } as CSSProperties}>
           <span className={s.period}>{t(it.period, lang, "")}</span>
           <h3>{t(it.title, lang, "")}</h3>
           <span className={s.role}>{t(it.role, lang, "")}</span>
@@ -132,8 +132,8 @@ export function Timeline({
 export function Faq({ items, lang }: { items: { q: I18nText; a: I18nText }[]; lang: Lang }) {
   return (
     <div className={s.faq}>
-      {items.map((it) => (
-        <div key={t(it.q, lang, "")}>
+      {items.map((it, idx) => (
+        <div key={t(it.q, lang, "")} data-reveal="" style={{ "--i": idx } as CSSProperties}>
           <h3>{t(it.q, lang, "")}</h3>
           <p>{t(it.a, lang, "")}</p>
         </div>
@@ -152,15 +152,17 @@ export function Card({
   title,
   text,
   meta,
+  index,
 }: {
   href: string;
   tag?: string;
   title: string;
   text?: string;
   meta?: string;
+  index?: number;
 }) {
   return (
-    <li>
+    <li data-reveal="" style={{ "--i": index ?? 0 } as CSSProperties}>
       <Link href={href} className={s.card}>
         {tag ? <span className={s.tag}>{tag}</span> : null}
         <h3>{title}</h3>

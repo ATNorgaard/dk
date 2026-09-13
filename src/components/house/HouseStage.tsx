@@ -33,6 +33,10 @@ export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
   const [level, setLevel] = useState<Level>(0);
   const [i, setI] = useState(0);
   const [scriptReady, setScriptReady] = useState(false);
+  /* True once the element exists and its ready promise resolved. Event
+     subscriptions depend on this, not on the script load, because the
+     element is created a tick later than the script. */
+  const [bound, setBound] = useState(false);
   const hostRef = useRef<HTMLDivElement>(null);
   const houseRef = useRef<HouseElement | null>(null);
   const rects = useRef<Record<string, { x: number; y: number; w: number; h: number }>>({});
@@ -153,6 +157,7 @@ export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
       });
       pushConfig();
       updateCamera();
+      setBound(true);
     })();
     return () => {
       cancelled = true;
@@ -197,7 +202,7 @@ export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
       el.removeEventListener("trustus:preview", onPreview);
       el.removeEventListener("trustus:select", onSelect);
     };
-  }, [D, i, level, scriptReady]);
+  }, [D, i, level, bound]);
 
   /* ---- keep the lit window and camera in sync with state ---- */
   useEffect(() => {
@@ -211,8 +216,9 @@ export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
     }
     if (level === 1) track("house_window", lang, D[i].id);
     if (level === 2) track("house_inside", lang, D[i].id);
-    const raf = requestAnimationFrame(updateCamera);
-    return () => cancelAnimationFrame(raf);
+    /* Effects run after commit, so layout is current: update synchronously.
+       An animation frame would never fire in a hidden tab. */
+    updateCamera();
   }, [D, i, lang, level, updateCamera]);
 
   useEffect(() => {

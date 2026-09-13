@@ -1,0 +1,8 @@
+.tuc-house{display:block;width:100%;height:auto;overflow:visible;--tuc-light-time:380ms}
+.tuc-house .tuc-light{opacity:0;transition:opacity var(--tuc-light-time) ease}
+.tuc-house .is-neighbour .tuc-light{opacity:.25}
+.tuc-house .is-active .tuc-light{opacity:1}
+.tuc-house .tuc-focus{opacity:0;pointer-events:none}.tuc-house .tuc-window:focus-visible .tuc-focus{opacity:1}
+.tuc-house [role=button]{cursor:pointer;outline:none}
+.tuc-house[data-reduced=true] *{transition:none!important}
+@media(prefers-reduced-motion:reduce){.tuc-house *{transition:none!important}}
