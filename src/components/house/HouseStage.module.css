@@ -29,6 +29,58 @@
   justify-content: center;
   min-width: 0;
 }
+/* The camera subject: sized and transformed by the wrapper; house and light
+   overlay share its coordinate space. */
+.subject {
+  position: relative;
+  flex: none;
+  width: 100%;
+}
+.houseHost { display: block; }
+/* Static window art (glass, panes, frame, focus ring): drawn once, never
+   changes on hover. */
+.windows {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+.windows :global(.tuc-focus) { opacity: 0; }
+.windows :global(.tuc-window[data-focus="true"] .tuc-focus) { opacity: 1; }
+
+/* The lamps: one small SVG element per window, holding only that window's
+   clipped light. Opacity animates on the element itself, so the compositor
+   blends it without repainting anything. */
+.lamps {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.lamps > svg {
+  position: absolute;
+  display: block;
+  overflow: visible;
+  opacity: 0;
+  transition: opacity 380ms ease;
+  will-change: opacity;
+}
+.lamps > svg[data-state="near"] { opacity: 0.25; }
+.lamps > svg[data-state="active"] { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .lamps > svg { transition: none; }
+}
+/* Soft bottom edge, formerly a mask on the drawing. */
+.stageFade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: clamp(3rem, 8vh, 5rem);
+  pointer-events: none;
+  background: linear-gradient(to top, var(--hds-bg) 30%, transparent);
+}
 
 /* Pane: what the camera is looking at. Paper outside, ink once inside. */
 .pane {

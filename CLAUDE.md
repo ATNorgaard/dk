@@ -1,6 +1,6 @@
 # TrustUsConsult · Huset
 
-Web app for TrustUsConsult: public site, specialist directory and portal. Next.js (App Router, TypeScript) on Vercel, Postgres/Auth/Storage on Supabase. Owned by TrustUsConsult (Kim Herløv); built by Andreas Nørgaard and team.
+Web app for TrustUsConsult: public site, specialist directory and portal. **New here? Read `plan-doc.md` first**: current state, traps, verification recipes and the phase 2 plan. Next.js (App Router, TypeScript) on Vercel, Postgres/Auth/Storage on Supabase. Owned by TrustUsConsult (Kim Herløv); built by Andreas Nørgaard and team.
 
 ## Stack and accounts
 - **Supabase project:** `fghgbjfvdtuhxfmqgzgo` ("TUC", eu-central-1 Frankfurt), organisation owned by TrustUsConsult. The CLI is linked to it (`supabase/.temp`). If a Supabase MCP server is attached to this session, check `get_project_url` first: it may point at a different, personal project. Never apply migrations through MCP unless the URL matches.
@@ -12,7 +12,7 @@ Web app for TrustUsConsult: public site, specialist directory and portal. Next.j
 - `pnpm db:push` applies `supabase/migrations/*` to the linked project. `pnpm db:push:seed` also runs `supabase/seed.sql` (idempotent upserts).
 - `pnpm db:diff` shows drift between migrations and the linked database.
 - `pnpm db:types` regenerates `src/lib/supabase/database.types.ts`.
-- `pnpm house:build` rebuilds the house web component from `vendor/trustus-house/src` into `public/house/trustus-house.js`. Never edit the built bundle by hand; edit `src/` and rebuild. The build strips the C2PA `<metadata>` block from `house.svg`.
+- `pnpm house:build` rebuilds the house web component from `vendor/trustus-house/src` into `public/house/trustus-house.js`. Never edit the built bundle by hand; edit `src/` and rebuild. The build strips the C2PA `<metadata>` block from `house.svg` and prepends `src/house.css` (the artwork's light rules: lights hidden until `is-active`, dimmed on `is-neighbour`). The exported SVG lost its own `<style>` block, so that file is the only place those rules live; the build fails if it is missing.
 - Reference designs (the three Claude Design screens and the original Huset theme) are in `design/reference/`. They are documentation, not served.
 
 ## Conventions
@@ -30,7 +30,7 @@ Web app for TrustUsConsult: public site, specialist directory and portal. Next.j
 - Every route lives under `src/app/[lang]/` (`da` default, `en`). `src/proxy.ts` (Next 16's middleware) redirects prefix-less paths to the visitor's language. Route params are promises: `const { lang } = await params`.
 - Interface copy: `src/content/*.ts` as `{da, en}` pairs, picked with `t(value, lang, fallback)`. Titles mark the italic highlight as `{em}…{/em}` and render through `RichTitle`.
 - Data loaders: `src/lib/house.ts` (domains, staffing, relationships) via the public client. Pages set `export const revalidate = 60`.
-- Shared page primitives: `src/components/ui/primitives.tsx` (Section, SectionHeading, CapabilityList, FactStrip, Timeline, Callout, Faq, CardGrid, ContactBlock, MotionBand, Button). Site chrome in `src/components/site/`. The house wrapper is `src/components/house/HouseStage.tsx` (client; creates the web component imperatively and drives the three camera levels).
+- Shared page primitives: `src/components/ui/primitives.tsx` (Section, SectionHeading, CapabilityList, FactStrip, Timeline, Callout, Faq, CardGrid, ContactBlock, MotionBand, Button). Site chrome in `src/components/site/`. The house wrapper is `src/components/house/HouseStage.tsx` (client; creates the web component imperatively and drives the three camera levels). It hides the artwork's own light rects and redraws them in a small overlay SVG with its own compositing layer, so fading a light never repaints the 5,600-node facade (that repaint showed as blurry tiles on hover). The camera transform sits on the `.subject` wrapper that holds both.
 - Do not run `pnpm build` while `pnpm dev` is running against the same `.next` folder; it corrupts the dev server. Stop dev first.
 
 ## Where the design lives

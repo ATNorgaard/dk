@@ -94,9 +94,10 @@ export default async function FreelancerePage({ params }: PageProps<"/[lang]/fre
         <Section id="aabne" tone="ink-panel" number={F.sections.open.number} label={F.sections.open.label} lang={lang} headingId="aabne-title">
           <SectionHeading id="aabne-title" title={F.open.title} intro={F.open.intro} lang={lang} vars={{ n: open.length }} />
           <CardGrid>
-            {open.map((d) => (
+            {open.map((d, idx) => (
               <Card
                 key={d.id}
+                index={idx}
                 href={href(lang, `/domaener/${d.slug}`)}
                 tag={`${lang === "da" ? "Domæne" : "Domain"} ${String(d.sortOrder).padStart(2, "0")}`}
                 title={t(d.name, lang, d.id)}

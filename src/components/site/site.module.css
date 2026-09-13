@@ -22,6 +22,11 @@
   color: var(--hds-kalk);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(242, 237, 229, 0.12);
+  transition: background 300ms ease, box-shadow 300ms ease;
+}
+:global(:root[data-scrolled="true"]) .header {
+  background: rgba(20, 20, 22, 0.96);
+  box-shadow: 0 14px 40px rgba(27, 27, 29, 0.16);
 }
 .wordmark {
   display: inline-flex;

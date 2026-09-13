@@ -27,13 +27,90 @@ type Level = 0 | 1 | 2;
 const VIEW_W = 1086;
 const VIEW_H = 1448;
 
+/**
+ * Builds the light overlay: a copy of every window group (glass, clipped
+ * panes with the light, frame, focus ring) plus the clip paths they reference,
+ * in a separate SVG that lives in its own compositing layer. The facade
+ * underneath never repaints when a light fades. Hit areas and titles are left
+ * out; pointer events stay with the real windows in the shadow root.
+ */
+function buildOverlay(el: HouseElement, overlay: SVGSVGElement, lamps: HTMLDivElement) {
+  const root = el.shadowRoot;
+  if (!root) return;
+  const ns = "http://www.w3.org/2000/svg";
+  const defs = document.createElementNS(ns, "defs");
+  const seen = new Set<string>();
+  const wins = document.createElementNS(ns, "g");
+  const lampEls: SVGSVGElement[] = [];
+
+  root.querySelectorAll<SVGGElement>(".tuc-window[data-domain]").forEach((g) => {
+    const domain = g.dataset.domain!;
+    const clone = g.cloneNode(true) as SVGGElement;
+    clone.querySelectorAll(".tuc-hit, title").forEach((n) => n.remove());
+    for (const a of ["tabindex", "role", "aria-label", "aria-pressed", "aria-describedby"]) clone.removeAttribute(a);
+    clone.classList.remove("is-active", "is-neighbour");
+
+    /* The light leaves the static clone and becomes its own element, so
+       fading it is a compositor-only change: nothing is repainted. */
+    const light = clone.querySelector<SVGRectElement>("rect.tuc-light");
+    if (light) {
+      const clipped = light.closest<SVGElement>("[clip-path]");
+      const clipId = clipped?.getAttribute("clip-path")?.match(/#([^)]+)/)?.[1];
+      const def = clipId ? root.getElementById(clipId) : null;
+      const x = +light.getAttribute("x")!, y = +light.getAttribute("y")!;
+      const w = +light.getAttribute("width")!, h = +light.getAttribute("height")!;
+      const lamp = document.createElementNS(ns, "svg");
+      lamp.setAttribute("viewBox", `${x} ${y} ${w} ${h}`);
+      lamp.setAttribute("aria-hidden", "true");
+      lamp.dataset.domain = domain;
+      lamp.dataset.state = "off";
+      lamp.style.cssText = `left:${(x / VIEW_W) * 100}%;top:${(y / VIEW_H) * 100}%;width:${(w / VIEW_W) * 100}%;height:${(h / VIEW_H) * 100}%`;
+      const rect = light.cloneNode(true) as SVGRectElement;
+      if (def && clipId) {
+        const d = document.createElementNS(ns, "defs");
+        const c = def.cloneNode(true) as SVGElement;
+        c.id = `${clipId}-lamp`;
+        d.appendChild(c);
+        lamp.appendChild(d);
+        rect.setAttribute("clip-path", `url(#${clipId}-lamp)`);
+      }
+      lamp.appendChild(rect);
+      lampEls.push(lamp);
+      light.remove();
+    }
+
+    for (const m of clone.outerHTML.matchAll(/url\(#([^)]+)\)/g)) {
+      const id = m[1];
+      if (seen.has(id)) continue;
+      const def = root.getElementById(id);
+      if (def) {
+        defs.appendChild(def.cloneNode(true));
+        seen.add(id);
+      }
+    }
+    wins.appendChild(clone);
+  });
+  overlay.replaceChildren(defs, wins);
+  lamps.replaceChildren(...lampEls);
+}
+
 export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
   const D = house.domains;
   const copy = landing.hero;
   const [level, setLevel] = useState<Level>(0);
   const [i, setI] = useState(0);
   const [scriptReady, setScriptReady] = useState(false);
+  /* True once the element exists and its ready promise resolved. Event
+     subscriptions depend on this, not on the script load, because the
+     element is created a tick later than the script. */
+  const [bound, setBound] = useState(false);
   const hostRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<SVGSVGElement>(null);
+  const lampsRef = useRef<HTMLDivElement>(null);
+  /* The subject carries size and camera transform; the house and the light
+     overlay sit inside it and move together. */
+  const subjectRef = useRef<HTMLDivElement>(null);
+  const houseHostRef = useRef<HTMLDivElement>(null);
   const houseRef = useRef<HouseElement | null>(null);
   const rects = useRef<Record<string, { x: number; y: number; w: number; h: number }>>({});
   const tourHold = useRef<number | null>(null);
@@ -85,20 +162,19 @@ export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
   /* ---- camera: level 0 whole facade, 1 whole facade with a lit window,
           2 zoomed so the window fills ~44% of the stage height ---- */
   const updateCamera = useCallback(() => {
-    const el = houseRef.current;
+    const subject = subjectRef.current;
     const box = hostRef.current;
-    if (!el || !box) return;
+    if (!houseRef.current || !subject || !box) return;
     const W = box.clientWidth;
     const H = box.clientHeight;
     if (!W || !H) return;
     const elW = Math.max(160, Math.min(W - 48, (H - 24) * (VIEW_W / VIEW_H)) * 0.86);
-    el.style.width = `${elW}px`;
-    el.style.maxWidth = "none";
+    subject.style.width = `${elW}px`;
     const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    el.style.transition = still ? "none" : "transform 1100ms cubic-bezier(.65,0,.15,1)";
-    el.style.transformOrigin = "0 0";
+    subject.style.transition = still ? "none" : "transform 1100ms cubic-bezier(.65,0,.15,1)";
+    subject.style.transformOrigin = "0 0";
     if (level < 2) {
-      el.style.transform = "none";
+      subject.style.transform = "none";
       return;
     }
     const r = rects.current[D[i].id];
@@ -108,22 +184,23 @@ export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
     const wy = (r.y + r.h / 2) * k0;
     const wh = r.h * k0;
     const k = Math.min(7, Math.max(2, (H * 0.44) / wh));
-    const dx = W * 0.5 - el.offsetLeft - k * wx;
-    const dy = H * 0.5 - el.offsetTop - k * wy;
-    el.style.transform = `translate(${dx}px,${dy}px) scale(${k})`;
+    const dx = W * 0.5 - subject.offsetLeft - k * wx;
+    const dy = H * 0.5 - subject.offsetTop - k * wy;
+    subject.style.transform = `translate(${dx}px,${dy}px) scale(${k})`;
   }, [D, i, level]);
 
   /* ---- create and bind the element once the script has loaded ---- */
   useEffect(() => {
-    if (!scriptReady || houseRef.current || !hostRef.current) return;
-    const host = hostRef.current;
+    if (!scriptReady || houseRef.current || !houseHostRef.current) return;
+    const host = houseHostRef.current;
     let cancelled = false;
     (async () => {
       await customElements.whenDefined("trustus-house");
       if (cancelled) return;
       const el = document.createElement("trustus-house") as HouseElement;
-      el.style.cssText =
-        "display:block;width:100%;flex:none;-webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 90%,rgba(0,0,0,.6) 95%,transparent 99.5%);mask-image:linear-gradient(to bottom,#000 0%,#000 90%,rgba(0,0,0,.6) 95%,transparent 99.5%)";
+      /* No mask here: a mask forces an expensive composited layer on a
+         5,600-node drawing. The soft bottom edge is a gradient on the stage. */
+      el.style.cssText = "display:block;width:100%;max-width:none";
       const skin: Record<string, string> = {
         "--tuc-card": "var(--hds-fundament)",
         "--tuc-text": "var(--hds-kalk)",
@@ -138,8 +215,11 @@ export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
       if (cancelled) return;
       /* The pane beside the stage carries the copy; hide the component's own card. */
       const style = document.createElement("style");
+      /* The pane beside the stage carries the copy, so the component's own
+         card is hidden. The windows' visuals are hidden too (kept for hit
+         testing and focus) and drawn by the overlay instead. */
       style.textContent =
-        ".layout{grid-template-columns:minmax(0,1fr)!important;gap:0!important}.rail,.card-slot,.card,.invitation{display:none!important}.art{grid-column:1!important;max-width:none!important}";
+        ".layout{grid-template-columns:minmax(0,1fr)!important;gap:0!important}.rail,.card-slot,.card,.invitation{display:none!important}.art{grid-column:1!important;max-width:none!important}.tuc-window>:not(.tuc-hit){opacity:0!important}";
       el.shadowRoot?.appendChild(style);
       el.shadowRoot?.querySelectorAll<SVGGElement>(".tuc-window[data-domain]").forEach((g) => {
         const rc = g.querySelector("rect");
@@ -151,8 +231,22 @@ export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
             h: +rc.getAttribute("height")!,
           };
       });
+      if (overlayRef.current && lampsRef.current) buildOverlay(el, overlayRef.current, lampsRef.current);
+      /* Mirror keyboard focus onto the overlay's focus ring. */
+      const syncFocus = () => {
+        const focused = (el.shadowRoot?.activeElement as HTMLElement | null)?.closest?.(".tuc-window") as
+          | HTMLElement
+          | null
+          | undefined;
+        overlayRef.current?.querySelectorAll<SVGGElement>(".tuc-window").forEach((w) => {
+          w.dataset.focus = String(!!focused && focused.dataset.domain === w.dataset.domain);
+        });
+      };
+      el.addEventListener("focusin", syncFocus);
+      el.addEventListener("focusout", () => setTimeout(syncFocus, 0));
       pushConfig();
       updateCamera();
+      setBound(true);
     })();
     return () => {
       cancelled = true;
@@ -197,7 +291,7 @@ export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
       el.removeEventListener("trustus:preview", onPreview);
       el.removeEventListener("trustus:select", onSelect);
     };
-  }, [D, i, level, scriptReady]);
+  }, [D, i, level, bound]);
 
   /* ---- keep the lit window and camera in sync with state ---- */
   useEffect(() => {
@@ -211,8 +305,9 @@ export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
     }
     if (level === 1) track("house_window", lang, D[i].id);
     if (level === 2) track("house_inside", lang, D[i].id);
-    const raf = requestAnimationFrame(updateCamera);
-    return () => cancelAnimationFrame(raf);
+    /* Effects run after commit, so layout is current: update synchronously.
+       An animation frame would never fire in a hidden tab. */
+    updateCamera();
   }, [D, i, lang, level, updateCamera]);
 
   useEffect(() => {
@@ -254,6 +349,17 @@ export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
   const total = active.activeSeats + active.openSeats;
   const c = (v: Parameters<typeof t>[0]) => t(v as never, lang, "") as string;
 
+  /* Which lights are on: the active window at full, its neighbours at a quarter.
+     Applied as the artwork's own classes on the overlay clones. */
+  const relatedIds = useMemo(() => new Set(related.map((m) => m.id)), [related]);
+  useEffect(() => {
+    lampsRef.current?.querySelectorAll<SVGSVGElement>("svg[data-domain]").forEach((lamp) => {
+      const id = lamp.dataset.domain ?? "";
+      lamp.dataset.state =
+        level === 0 ? "off" : id === active.id ? "active" : relatedIds.has(id) ? "near" : "off";
+    });
+  }, [active.id, level, relatedIds, bound]);
+
   return (
     <section id="top" className={s.hero} data-level={level}>
       <Script src="/house/trustus-house.js" strategy="afterInteractive" onReady={() => setScriptReady(true)} />
@@ -265,7 +371,14 @@ export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
           if (level > 0) setLevel((l) => (l - 1) as Level);
         }}
       >
-        <div ref={hostRef} className={s.host} />
+        <div ref={hostRef} className={s.host}>
+          <div ref={subjectRef} className={s.subject}>
+            <div ref={houseHostRef} className={s.houseHost} />
+            <svg ref={overlayRef} className={s.windows} viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} aria-hidden="true" focusable="false" />
+            <div ref={lampsRef} className={s.lamps} aria-hidden="true" />
+          </div>
+        </div>
+        <div className={s.stageFade} aria-hidden="true" />
       </div>
 
       <aside className={s.pane}>

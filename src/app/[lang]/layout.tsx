@@ -4,6 +4,7 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { Instrument_Serif } from "next/font/google";
 import { LANGS, htmlLang, isLang } from "@/lib/i18n";
+import { SiteMotion } from "@/components/motion/SiteMotion";
 import "../globals.css";
 
 const serif = Instrument_Serif({
@@ -37,7 +38,10 @@ export default async function LangLayout({ children, params }: LayoutProps<"/[la
   if (!isLang(lang)) notFound();
   return (
     <html lang={htmlLang[lang]} className={`${GeistSans.variable} ${GeistMono.variable} ${serif.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <SiteMotion />
+      </body>
     </html>
   );
 }
