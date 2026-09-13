@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/andreas-n-rgaard-design-system-c1ad9fd9-016e-4735-8515-9bd83c311c3b/fonts/fonts.css">
+<link rel="stylesheet" href="_ds/andreas-n-rgaard-design-system-c1ad9fd9-016e-4735-8515-9bd83c311c3b/_ds_bundle.css">
+<link rel="stylesheet" href="_ds/andreas-n-rgaard-design-system-c1ad9fd9-016e-4735-8515-9bd83c311c3b/styles.css">
+<link rel="stylesheet" href="huset-theme.css">
+<script src="_ds/andreas-n-rgaard-design-system-c1ad9fd9-016e-4735-8515-9bd83c311c3b/_ds_bundle.js"></script>
+<script defer src="./trustus-house.js"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:var(--an-paper);-webkit-font-smoothing:antialiased}
+a{color:var(--an-accent-deep);text-decoration:none}
+a:hover{color:var(--an-text-strong)}
+[data-lang="da"] .en{display:none}
+[data-lang="en"] .da{display:none}
+/* Motion band: spacing lives on each item (not flex gap), so one repeat is
+   exactly half the track and the -50% loop point is seamless. */
+.an-motion-band-track{gap:0!important;animation-duration:70s!important}
+.an-motion-band span{padding:0 clamp(1.5rem,3vw,3.5rem) 0 0;white-space:nowrap}
+.an-motion-band i{padding-left:clamp(1.5rem,3vw,3.5rem)}
+</style>
+</helmet>
+
+<div data-lang="{{ lang }}">
+<x-import component-from-global-scope="ANUI.Page" hint-size="100%,100%">
+
+  <x-import component-from-global-scope="ANUI.SkipLink" hint-size="0,0"></x-import>
+  <x-import component-from-global-scope="ANUI.MotionProvider" hint-size="0,0"></x-import>
+  <x-import component-from-global-scope="ANUI.ScrollProgress" hint-size="100%,3px"></x-import>
+  <x-import component-from-global-scope="ANUI.SiteHeader" initials="TUC" items="{{ nav }}" action-label="{{ headerCta }}" action-href="#kontakt" hint-size="100%,78px"></x-import>
+
+  <section id="kort" data-screen-label="Hero — huset" style="min-height:100svh;display:grid;grid-template-columns:{{ heroCols }};border-bottom:1px solid var(--an-line-dark)">
+
+    <!-- Stage: the house is a camera subject. Level 0 shows the whole facade,
+         level 1 zooms to one window, level 2 comes close enough to step in. -->
+    <div onClick="{{ stageClick }}" style="position:relative;overflow:hidden;min-height:{{ stageMin }};border-right:1px solid var(--an-line-dark);background:var(--an-paper)">
+      <div ref="{{ houseHost }}" style="position:absolute;inset:0"></div>
+
+      <div style="position:absolute;left:0;right:0;top:0;padding:clamp(5.5rem,11vh,7rem) clamp(1.5rem,3vw,3rem) .75rem var(--an-gutter);display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:var(--an-space-xs);font-family:var(--an-font-mono);font-size:var(--an-text-micro-sm);letter-spacing:.16em;text-transform:uppercase;color:var(--an-text-faint);pointer-events:none;background:linear-gradient(to bottom,var(--an-paper) 70%,transparent)">
+        <span style="display:flex;align-items:center;gap:14px;pointer-events:auto">
+          <span onClick="{{ setDa }}" style="cursor:pointer;color:{{ daColor }};border-bottom:1px solid {{ daRule }};padding-bottom:2px">DA</span>
+          <span onClick="{{ setEn }}" style="cursor:pointer;color:{{ enColor }};border-bottom:1px solid {{ enRule }};padding-bottom:2px">EN</span>
+        </span>
+      </div>
+
+      <div style="position:absolute;left:0;right:0;bottom:0;height:clamp(2rem,5vh,3rem);pointer-events:none;background:linear-gradient(to top,var(--an-paper) 40%,transparent)"></div>
+    </div>
+
+    <!-- Pane: what the camera is looking at. Paper outside, ink once inside. -->
+    <aside style="display:grid;grid-template-rows:1fr auto;padding:clamp(5rem,11vh,7rem) var(--an-gutter) clamp(2rem,5vh,3rem) clamp(1.5rem,3vw,3rem);min-width:0;background:{{ paneBg }};transition:background 700ms ease">
+      <div style="display:grid;align-content:center;gap:var(--an-space-md)">
+
+      <sc-if value="{{ lv0 }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid;gap:var(--an-space-sm);opacity:{{ op }};transition:opacity 300ms ease">
+          <span style="font-family:var(--an-font-mono);font-size:var(--an-text-micro-sm);letter-spacing:.16em;text-transform:uppercase;color:var(--an-accent-deep)"><span class="da">Find dine folk</span><span class="en">Find your people</span></span>
+          <h1 style="margin:0;font-family:var(--an-font-sans);font-size:{{ heroType }};line-height:1.02;letter-spacing:var(--an-tracking-display);color:var(--an-text-strong)">
+            <span class="da">Gode naboer.<br><em style="font-family:var(--an-font-serif);font-style:italic;letter-spacing:-0.03em;color:var(--an-accent-deep)">Stort arbejde.</em></span>
+            <span class="en">Good neighbours.<br><em style="font-family:var(--an-font-serif);font-style:italic;letter-spacing:-0.03em;color:var(--an-accent-deep)">Great work.</em></span>
+          </h1>
+          <p style="margin:0;max-width:34ch;font-family:var(--an-font-sans);font-size:var(--an-text-lead);line-height:1.55;color:var(--an-text-body);text-wrap:pretty">
+            <span class="da">Femten fag bag femten vinduer. Kig ind i ét — og mød den, der sidder der.</span>
+            <span class="en">Fifteen crafts behind fifteen windows. Look into one — and meet whoever is sitting there.</span>
+          </p>
+          <button onClick="{{ explore }}" style="justify-self:start;margin-top:var(--an-space-2xs);display:inline-flex;align-items:center;gap:12px;padding:15px 20px;border:1px solid var(--an-ink);background:var(--an-ink);color:var(--an-on-ink);font-family:var(--an-font-sans);font-size:var(--an-text-small);cursor:pointer;transition:background 300ms ease" style-hover="background:var(--an-ink-soft);border-color:var(--an-ink-soft)">
+            <span class="da">Zoom ind på et vindue</span><span class="en">Zoom in on a window</span><span aria-hidden="true">→</span>
+          </button>
+          <div style="display:grid;margin-top:var(--an-space-xs);border-top:1px solid var(--an-line-dark)">
+            <div style="display:grid;grid-template-columns:2.5rem 1fr;gap:var(--an-space-xs);align-items:baseline;padding:var(--an-space-xs) 0;border-bottom:1px solid var(--an-line-dark)">
+              <span style="font-family:var(--an-font-mono);font-size:var(--an-text-micro-sm);letter-spacing:.16em;color:var(--an-text-faint)">01</span>
+              <span style="font-family:var(--an-font-sans);font-size:var(--an-text-small);color:var(--an-text-body)"><span class="da">Mød specialisten direkte.</span><span class="en">Meet the specialist directly.</span></span>
+            </div>
+            <div style="display:grid;grid-template-columns:2.5rem 1fr;gap:var(--an-space-xs);align-items:baseline;padding:var(--an-space-xs) 0;border-bottom:1px solid var(--an-line-dark)">
+              <span style="font-family:var(--an-font-mono);font-size:var(--an-text-micro-sm);letter-spacing:.16em;color:var(--an-text-faint)">02</span>
+              <span style="font-family:var(--an-font-sans);font-size:var(--an-text-small);color:var(--an-text-body)"><span class="da">Hent naboerne ind, når opgaven kræver det.</span><span class="en">Bring the neighbours in when the job calls for it.</span></span>
+            </div>
+            <div style="display:grid;grid-template-columns:2.5rem 1fr;gap:var(--an-space-xs);align-items:baseline;padding:var(--an-space-xs) 0;border-bottom:1px solid var(--an-line-dark)">
+              <span style="font-family:var(--an-font-mono);font-size:var(--an-text-micro-sm);letter-spacing:.16em;color:var(--an-text-faint)">03</span>
+              <span style="font-family:var(--an-font-sans);font-size:var(--an-text-small);color:var(--an-text-body)"><span class="da">Én aftale. Én fælles adresse.</span><span class="en">One agreement. One shared address.</span></span>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ lv1 }}">
+        <div style="display:grid;gap:var(--an-space-sm);opacity:{{ op }};transition:opacity 300ms ease">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--an-space-xs)">
+            <span style="font-family:var(--an-font-mono);font-size:var(--an-text-micro-sm);letter-spacing:.16em;text-transform:uppercase;color:var(--an-text-faint)">
+              <span onClick="{{ toHouse }}" style="cursor:pointer;color:var(--an-accent-deep)"><span class="da">Huset</span><span class="en">The house</span></span>
+              <span style="padding:0 8px">/</span><span style="color:var(--an-text-strong)">{{ crumb }}</span>
+            </span>
+            <span style="display:flex;gap:8px">
+              <span onClick="{{ prev }}" role="button" aria-label="{{ prevAria }}" style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border:1px solid var(--an-line-contrast);border-radius:50%;color:var(--an-text-body);font-family:var(--an-font-sans);font-size:14px;cursor:pointer;transition:border-color 250ms ease,color 250ms ease" style-hover="border-color:var(--an-accent-deep);color:var(--an-accent-deep)">←</span>
+              <span onClick="{{ next }}" role="button" aria-label="{{ nextAria }}" style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border:1px solid var(--an-line-contrast);border-radius:50%;color:var(--an-text-body);font-family:var(--an-font-sans);font-size:14px;cursor:pointer;transition:border-color 250ms ease,color 250ms ease" style-hover="border-color:var(--an-accent-deep);color:var(--an-accent-deep)">→</span>
+            </span>
+          </div>
+          <h1 style="margin:0;font-family:var(--an-font-sans);font-size:{{ detailType }};line-height:1.05;letter-spacing:var(--an-tracking-display);color:var(--an-text-strong)">{{ selName }}</h1>
+          <p style="margin:0;font-family:var(--an-font-serif);font-style:italic;font-size:var(--an-text-heading);line-height:1.25;color:var(--an-accent-deep)">{{ selTagline }}</p>
+          <p style="margin:0;max-width:40ch;font-family:var(--an-font-sans);font-size:var(--an-text-base);line-height:1.6;color:var(--an-text-body);text-wrap:pretty">{{ selDesc }}</p>
+          <div style="display:flex;flex-wrap:wrap;gap:6px 16px">
+            <sc-for list="{{ selSkills }}" as="k" hint-placeholder-count="3">
+              <span style="padding-bottom:4px;border-bottom:1px solid var(--an-line-contrast);font-family:var(--an-font-mono);font-size:var(--an-text-micro-sm);letter-spacing:.14em;text-transform:uppercase;color:var(--an-text-muted)">{{ k.label }}</span>
+            </sc-for>
+          </div>
+          <button onClick="{{ enter }}" style="justify-self:start;margin-top:var(--an-space-2xs);display:inline-flex;align-items:center;gap:12px;padding:15px 20px;border:1px solid var(--an-ink);background:var(--an-ink);color:var(--an-on-ink);font-family:var(--an-font-sans);font-size:var(--an-text-small);cursor:pointer;transition:background 300ms ease" style-hover="background:var(--an-ink-soft);border-color:var(--an-ink-soft)">
+            <span class="da">Kig indenfor</span><span class="en">Step inside</span><span aria-hidden="true">→</span>
+          </button>
+          <span style="font-family:var(--an-font-sans);font-size:var(--an-text-small);color:var(--an-text-faint)"><span class="da">Eller klik på vinduet. Hold musen over et andet for at skifte.</span><span class="en">Or click the window. Hover another to switch.</span></span>
+          <div style="display:grid;gap:var(--an-space-2xs);margin-top:var(--an-space-xs)">
+            <span style="font-family:var(--an-font-mono);font-size:var(--an-text-micro-sm);letter-spacing:.16em;text-transform:uppercase;color:var(--an-text-faint)"><span class="da">Vinduer, der lyser med</span><span class="en">Windows that light up with it</span></span>
+            <div style="display:flex;flex-wrap:wrap;gap:8px">
+              <sc-for list="{{ selNear }}" as="m" hint-placeholder-count="4">
+                <span onClick="{{ m.go }}" role="button" style="display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--an-line-contrast);font-family:var(--an-font-sans);font-size:var(--an-text-small);color:var(--an-text-body);cursor:pointer;transition:border-color 250ms ease,color 250ms ease" style-hover="border-color:var(--an-accent-deep);color:var(--an-accent-deep)">{{ m.name }}</span>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ lv2 }}">
+        <div style="display:grid;gap:var(--an-space-sm);opacity:{{ op }};transition:opacity 300ms ease">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--an-space-xs)">
+            <span style="font-family:var(--an-font-mono);font-size:var(--an-text-micro-sm);letter-spacing:.16em;text-transform:uppercase;color:var(--an-on-ink-faint)">
+              <span onClick="{{ toHouse }}" style="cursor:pointer;color:var(--an-accent)"><span class="da">Huset</span><span class="en">The house</span></span>
+              <span style="padding:0 8px">/</span><span onClick="{{ toWindow }}" style="cursor:pointer;color:var(--an-accent)">{{ crumb }}</span>
+              <span style="padding:0 8px">/</span><span style="color:var(--an-on-ink)"><span class="da">Indenfor</span><span class="en">Inside</span></span>
+            </span>
+            <span style="display:flex;gap:8px">
+              <span onClick="{{ prev }}" role="button" aria-label="{{ prevAria }}" style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border:1px solid var(--an-line-light-soft);border-radius:50%;color:var(--an-on-ink-body);font-family:var(--an-font-sans);font-size:14px;cursor:pointer;transition:border-color 250ms ease,color 250ms ease" style-hover="border-color:var(--an-accent);color:var(--an-accent)">←</span>
+              <span onClick="{{ next }}" role="button" aria-label="{{ nextAria }}" style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border:1px solid var(--an-line-light-soft);border-radius:50%;color:var(--an-on-ink-body);font-family:var(--an-font-sans);font-size:14px;cursor:pointer;transition:border-color 250ms ease,color 250ms ease" style-hover="border-color:var(--an-accent);color:var(--an-accent)">→</span>
+            </span>
+          </div>
+          <span style="font-family:var(--an-font-mono);font-size:var(--an-text-micro-sm);letter-spacing:.16em;text-transform:uppercase;color:var(--an-on-ink-faint)">{{ selName }} · <span class="da">Din specialist</span><span class="en">Your specialist</span></span>
+          <div style="display:grid;grid-template-columns:auto 1fr;gap:var(--an-space-sm);align-items:center">
+            <span style="display:inline-flex;align-items:center;justify-content:center;width:72px;height:72px;border:1px solid var(--an-line-light-soft);border-radius:50%;font-family:var(--an-font-mono);font-size:var(--an-text-small);letter-spacing:.1em;color:var(--an-on-ink-muted)">{{ specInitials }}</span>
+            <span style="display:grid;gap:6px;min-width:0">
+              <span style="font-family:var(--an-font-sans);font-size:{{ detailType }};line-height:1.05;letter-spacing:var(--an-tracking-display);color:var(--an-on-ink)">{{ specName }}</span>
+              <span style="font-family:var(--an-font-serif);font-style:italic;font-size:var(--an-text-heading);line-height:1.25;color:var(--an-accent)">{{ specRole }}</span>
+            </span>
+          </div>
+          <div style="display:grid;border-top:1px solid var(--an-line-light-soft)">
+            <div style="display:grid;grid-template-columns:8rem 1fr;gap:var(--an-space-xs);padding:var(--an-space-xs) 0;border-bottom:1px solid var(--an-line-light-soft)">
+              <span style="font-family:var(--an-font-mono);font-size:var(--an-text-micro-sm);letter-spacing:.16em;text-transform:uppercase;color:var(--an-on-ink-faint)"><span class="da">Base</span><span class="en">Base</span></span>
+              <span style="font-family:var(--an-font-sans);font-size:var(--an-text-base);color:var(--an-on-ink-body)">{{ specMeta }}</span>
+            </div>
+            <div style="display:grid;grid-template-columns:8rem 1fr;gap:var(--an-space-xs);padding:var(--an-space-xs) 0;border-bottom:1px solid var(--an-line-light-soft)">
+              <span style="font-family:var(--an-font-mono);font-size:var(--an-text-micro-sm);letter-spacing:.16em;text-transform:uppercase;color:var(--an-on-ink-faint)"><span class="da">Takst</span><span class="en">Rate</span></span>
+              <span style="font-family:var(--an-font-sans);font-size:var(--an-text-base);color:var(--an-on-ink-body)">{{ specRate }}</span>
+            </div>
+            <div style="display:grid;grid-template-columns:8rem 1fr;gap:var(--an-space-xs);padding:var(--an-space-xs) 0;border-bottom:1px solid var(--an-line-light-soft)">
+              <span style="font-family:var(--an-font-mono);font-size:var(--an-text-micro-sm);letter-spacing:.16em;text-transform:uppercase;color:var(--an-on-ink-faint)"><span class="da">I rummet</span><span class="en">In the room</span></span>
+              <span style="font-family:var(--an-font-sans);font-size:var(--an-text-base);color:var(--an-on-ink-body)">{{ specMore }}</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--an-space-sm)">
+            <span onClick="{{ openLogin }}" role="button" style="display:inline-flex;align-items:center;gap:12px;padding:15px 20px;border:1px solid var(--an-paper);background:var(--an-paper);color:var(--an-ink);font-family:var(--an-font-sans);font-size:var(--an-text-small);cursor:pointer;transition:background 300ms ease" style-hover="background:var(--an-paper-deep);border-color:var(--an-paper-deep);color:var(--an-ink)">{{ specMeet }}<span aria-hidden="true">↗</span></span>
+            <span onClick="{{ toWindow }}" role="button" style="font-family:var(--an-font-sans);font-size:var(--an-text-small);color:var(--an-on-ink-muted);cursor:pointer;transition:color 250ms ease" style-hover="color:var(--an-accent)"><span class="da">← Ud til vinduet</span><span class="en">← Back out to the window</span></span>
+          </div>
+          <p style="margin:var(--an-space-xs) 0 0;font-family:var(--an-font-sans);font-size:var(--an-text-small);line-height:1.6;color:var(--an-on-ink-faint);max-width:44ch">
+            <span class="da">Navn, erfaring og takst er eksempler. Det fulde CV ligger bag login.</span>
+            <span class="en">Name, years and rate are examples. The full CV sits behind a login.</span>
+          </p>
+        </div>
+      </sc-if>
+      </div>
+
+      <div style="display:grid;justify-items:start;gap:var(--an-space-xs);padding-top:var(--an-space-md)">
+        <div style="display:flex;align-items:flex-end;gap:7px;height:34px">
+          <sc-for list="{{ nodes }}" as="n" hint-placeholder-count="15">
+            <div onClick="{{ n.go }}" title="{{ n.name }}" style="width:3px;height:{{ n.tickH }}px;background:{{ n.tickBg }};cursor:pointer;transition:height 500ms var(--an-ease),background 400ms ease"></div>
+          </sc-for>
+        </div>
+        <span style="font-family:var(--an-font-mono);font-size:var(--an-text-micro-sm);letter-spacing:.16em;text-transform:uppercase;color:{{ metaColor }}">{{ tourMeta }}</span>
+      </div>
+    </aside>
+
+    <!-- Login gate: the full CV lives in the portal; the door opens here. -->
+    <sc-if value="{{ loginOpen }}">
+      <div onClick="{{ closeLogin }}" role="dialog" aria-modal="true" aria-label="Log ind" style="position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:var(--an-space-md);background:rgba(27,27,29,.72);backdrop-filter:blur(2px)">
+        <form onSubmit="{{ submitLogin }}" onClick="{{ stopClick }}" style="width:min(440px,100%);display:grid;gap:var(--an-space-sm);padding:var(--an-space-md);background:var(--an-paper);border:1px solid var(--an-line-dark);color:var(--an-text-strong)">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:var(--an-space-xs)">
+            <span style="font-family:var(--an-font-mono);font-size:var(--an-text-micro-sm);letter-spacing:.16em;text-transform:uppercase;color:var(--an-accent-deep)"><span class="da">CV-databasen</span><span class="en">CV database</span></span>
+            <span onClick="{{ closeLogin }}" role="button" aria-label="Luk" style="font-family:var(--an-font-sans);font-size:18px;line-height:1;color:var(--an-text-muted);cursor:pointer">×</span>
+          </div>
+          <h2 style="margin:0;font-family:var(--an-font-sans);font-size:var(--an-text-heading);line-height:1.1;letter-spacing:var(--an-tracking-display);color:var(--an-text-strong)">{{ loginTitle }}</h2>
+          <p style="margin:0;font-family:var(--an-font-sans);font-size:var(--an-text-small);line-height:1.55;color:var(--an-text-body)">
+            <span class="da">Fuldt CV, erfaring, certificeringer og kontakt er forbeholdt kunder med adgang. Log ind for at åbne profilen.</span>
+            <span class="en">Full CV, experience, certifications and contact are for clients with access. Sign in to open the profile.</span>
+          </p>
+          <label style="display:grid;gap:6px">
+            <span style="font-family:var(--an-font-mono);font-size:var(--an-text-micro-sm);letter-spacing:.16em;text-transform:uppercase;color:var(--an-text-faint)"><span class="da">E-mail</span><span class="en">Email</span></span>
+            <input type="email" required="{{ true }}" value="{{ loginEmail }}" onChange="{{ setLoginEmail }}" autoComplete="username" placeholder="navn@firma.dk" style="width:100%;padding:12px 14px;border:1px solid var(--an-line-contrast);background:transparent;font-family:var(--an-font-sans);font-size:var(--an-text-base);color:var(--an-text-strong);outline:none" style-focus="border-color:var(--an-accent-deep)">
+          </label>
+          <label style="display:grid;gap:6px">
+            <span style="font-family:var(--an-font-mono);font-size:var(--an-text-micro-sm);letter-spacing:.16em;text-transform:uppercase;color:var(--an-text-faint)"><span class="da">Adgangskode</span><span class="en">Password</span></span>
+            <input type="password" required="{{ true }}" value="{{ loginPass }}" onChange="{{ setLoginPass }}" autoComplete="current-password" style="width:100%;padding:12px 14px;border:1px solid var(--an-line-contrast);background:transparent;font-family:var(--an-font-sans);font-size:var(--an-text-base);color:var(--an-text-strong);outline:none" style-focus="border-color:var(--an-accent-deep)">
+          </label>
+          <sc-if value="{{ loginError }}">
+            <span style="font-family:var(--an-font-sans);font-size:var(--an-text-small);color:var(--an-accent-deep)"><span class="da">Vi kunne ikke logge dig ind. Tjek e-mail og adgangskode.</span><span class="en">We could not sign you in. Check email and password.</span></span>
+          </sc-if>
+          <button type="submit" style="display:inline-flex;align-items:center;justify-content:center;gap:12px;padding:15px 20px;border:1px solid var(--an-ink);background:var(--an-ink);color:var(--an-on-ink);font-family:var(--an-font-sans);font-size:var(--an-text-small);cursor:pointer;transition:background 300ms ease" style-hover="background:var(--an-ink-soft);border-color:var(--an-ink-soft)">{{ loginCta }}<span aria-hidden="true">→</span></button>
+          <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:var(--an-space-xs);font-family:var(--an-font-sans);font-size:var(--an-text-small);color:var(--an-text-muted)">
+            <a href="mailto:kontakt@trustusconsult.dk?subject=Adgang%20til%20CV-databasen" style="color:var(--an-text-muted)"><span class="da">Bed om adgang</span><span class="en">Request access</span></a>
+            <a href="mailto:kontakt@trustusconsult.dk?subject=Glemt%20adgangskode" style="color:var(--an-text-muted)"><span class="da">Glemt adgangskode?</span><span class="en">Forgot password?</span></a>
+          </div>
+        </form>
+      </div>
+    </sc-if>
+  </section>
+
+  <x-import component-from-global-scope="ANUI.MotionBand" items="{{ band }}" hint-size="100%,60px"></x-import>
+
+  <x-import component-from-global-scope="ANUI.Section" id="kollektivet" tone="paper" label-number="01" label-title="{{ l1 }}" heading-id="kollektivet-title" hint-size="100%,600px">
+    <x-import component-from-global-scope="ANUI.SectionHeading" id="kollektivet-title" tone="on-paper" title="{{ h1Title }}" intro="{{ h1Intro }}" hint-size="100%,240px"></x-import>
+
+    <div style="display:grid;grid-template-columns:{{ twoCol }};gap:var(--an-column-gap,3rem) clamp(2rem,5vw,5rem);margin-top:var(--an-space-xl);padding-top:var(--an-space-md);border-top:1px solid var(--an-line-dark)">
+      <p style="margin:0;font-family:var(--an-font-sans);font-size:var(--an-text-body-size);line-height:1.6;color:var(--an-text-body);text-wrap:pretty">
+        <span class="da">TrustUsConsult er ikke et konsulenthus. Det er femten domæner, hvor selvstændige specialister har købt sig ind — hver med sit eget fag, sin egen kalender og sin egen takst. Du møder specialisten direkte, ikke en salgsafdeling.</span>
+        <span class="en">TrustUsConsult is not a consultancy. It is fifteen domains where independent specialists have bought in — each with their own craft, calendar and rate. You meet the specialist directly, not a sales department.</span>
+      </p>
+      <p style="margin:0;font-family:var(--an-font-sans);font-size:var(--an-text-body-size);line-height:1.6;color:var(--an-text-body);text-wrap:pretty">
+        <span class="da">Det fælles er rammen: én kontrakt, én faktura, ét kontaktpunkt — og et krav om, at alle i kollektivet har leveret i deres fag i mindst otte år. Har en opgave brug for to domæner, sætter vi holdet uden at du skal forhandle to gange.</span>
+        <span class="en">What we share is the frame: one contract, one invoice, one point of contact — and a requirement that everyone in the collective has at least eight years in their craft. If a brief needs two domains, we assemble the team without you negotiating twice.</span>
+      </p>
+    </div>
+
+    <div style="margin-top:var(--an-space-xl)">
+      <x-import component-from-global-scope="ANUI.FactStrip" items="{{ facts }}" columns="3" hint-size="100%,200px"></x-import>
+    </div>
+  </x-import>
+
+  <x-import component-from-global-scope="ANUI.Section" id="saadan" tone="ink" label-number="02" label-title="{{ l2 }}" heading-id="saadan-title" hint-size="100%,600px">
+    <x-import component-from-global-scope="ANUI.SectionHeading" id="saadan-title" title="{{ h2Title }}" intro="{{ h2Intro }}" hint-size="100%,240px"></x-import>
+    <div style="margin-top:var(--an-space-xl)">
+      <x-import component-from-global-scope="ANUI.CapabilityList" items="{{ steps }}" stagger="{{ true }}" hint-size="100%,340px"></x-import>
+    </div>
+  </x-import>
+
+  <x-import component-from-global-scope="ANUI.Section" id="vaerktoejer" tone="paper" label-number="03" label-title="{{ l3 }}" heading-id="vaerktoejer-title" hint-size="100%,700px">
+    <x-import component-from-global-scope="ANUI.SectionHeading" id="vaerktoejer-title" tone="on-paper" title="{{ h3Title }}" intro="{{ h3Intro }}" hint-size="100%,240px"></x-import>
+    <div style="margin-top:var(--an-space-xl)">
+      <x-import component-from-global-scope="ANUI.CapabilityList" tone="on-paper" items="{{ tools }}" stagger="{{ true }}" hint-size="100%,420px"></x-import>
+    </div>
+    <div style="margin-top:var(--an-space-xl)">
+      <x-import component-from-global-scope="ANUI.Callout" label="{{ calloutLabel }}" tone="on-paper" hint-size="100%,140px">{{ calloutText }}</x-import>
+    </div>
+  </x-import>
+
+  <x-import component-from-global-scope="ANUI.Section" id="opgaver" tone="ink-panel" label-number="04" label-title="{{ l4 }}" heading-id="opgaver-title" hint-size="100%,700px">
+    <x-import component-from-global-scope="ANUI.SectionHeading" id="opgaver-title" title="{{ h4Title }}" intro="{{ h4Intro }}" hint-size="100%,240px"></x-import>
+    <div style="margin-top:var(--an-space-xl)">
+      <x-import component-from-global-scope="ANUI.CaseGrid" items="{{ cases }}" stagger="{{ true }}" hint-size="100%,460px"></x-import>
+    </div>
+  </x-import>
+
+  <x-import component-from-global-scope="ANUI.Section" id="spoergsmaal" tone="paper" label-number="05" label-title="{{ l5 }}" heading-id="faq-title" hint-size="100%,700px">
+    <x-import component-from-global-scope="ANUI.SectionHeading" id="faq-title" tone="on-paper" title="{{ h5Title }}" intro="{{ h5Intro }}" hint-size="100%,240px"></x-import>
+
+    <div style="display:flex;flex-direction:column;margin-top:var(--an-space-xl);border-top:1px solid var(--an-line-dark)">
+      <div style="display:grid;grid-template-columns:{{ faqCol }};gap:var(--an-space-xs) clamp(2rem,5vw,4rem);padding:var(--an-space-md) 0;border-bottom:1px solid var(--an-line-dark)">
+        <h3 style="margin:0;font-family:var(--an-font-sans);font-size:var(--an-text-heading);line-height:1.2;letter-spacing:-0.02em;color:var(--an-text-strong)">
+          <span class="da">Hvad koster det?</span><span class="en">What does it cost?</span>
+        </h3>
+        <p style="margin:0;font-family:var(--an-font-sans);font-size:var(--an-text-base);line-height:1.6;color:var(--an-text-body);text-wrap:pretty">
+          <span class="da">Specialistens egen timetakst — typisk 950 til 1.150 kr. Kollektivet lægger intet gebyr oveni for dig som kunde; rammen finansieres af specialisternes indskud.</span>
+          <span class="en">The specialist's own hourly rate — typically DKK 950 to 1,150. The collective adds no fee on top for you as a client; the frame is funded by the specialists' buy-in.</span>
+        </p>
+      </div>
+      <div style="display:grid;grid-template-columns:{{ faqCol }};gap:var(--an-space-xs) clamp(2rem,5vw,4rem);padding:var(--an-space-md) 0;border-bottom:1px solid var(--an-line-dark)">
+        <h3 style="margin:0;font-family:var(--an-font-sans);font-size:var(--an-text-heading);line-height:1.2;letter-spacing:-0.02em;color:var(--an-text-strong)">
+          <span class="da">Hvem har jeg kontrakt med?</span><span class="en">Who is my contract with?</span>
+        </h3>
+        <p style="margin:0;font-family:var(--an-font-sans);font-size:var(--an-text-base);line-height:1.6;color:var(--an-text-body);text-wrap:pretty">
+          <span class="da">Med kollektivet. Det gælder også, når opgaven løses af specialister fra flere domæner — én aftale, én faktura, ét sted at gå hen, hvis noget skal justeres.</span>
+          <span class="en">With the collective. That holds even when several domains work the brief — one agreement, one invoice, one place to go if something needs adjusting.</span>
+        </p>
+      </div>
+      <div style="display:grid;grid-template-columns:{{ faqCol }};gap:var(--an-space-xs) clamp(2rem,5vw,4rem);padding:var(--an-space-md) 0;border-bottom:1px solid var(--an-line-dark)">
+        <h3 style="margin:0;font-family:var(--an-font-sans);font-size:var(--an-text-heading);line-height:1.2;letter-spacing:-0.02em;color:var(--an-text-strong)">
+          <span class="da">Hvor hurtigt kan I starte?</span><span class="en">How fast can you start?</span>
+        </h3>
+        <p style="margin:0;font-family:var(--an-font-sans);font-size:var(--an-text-base);line-height:1.6;color:var(--an-text-body);text-wrap:pretty">
+          <span class="da">Første møde inden for en uge. Fjorten af femten domæner har kapacitet inden for fjorten dage; Investering &amp; Projekt er booket til november, og det kan du se på huset, før du spørger.</span>
+          <span class="en">A first meeting within a week. Fourteen of fifteen domains have capacity within a fortnight; Investering &amp; Projekt is booked to November, and the house shows it before you ask.</span>
+        </p>
+      </div>
+      <div style="display:grid;grid-template-columns:{{ faqCol }};gap:var(--an-space-xs) clamp(2rem,5vw,4rem);padding:var(--an-space-md) 0;border-bottom:1px solid var(--an-line-dark)">
+        <h3 style="margin:0;font-family:var(--an-font-sans);font-size:var(--an-text-heading);line-height:1.2;letter-spacing:-0.02em;color:var(--an-text-strong)">
+          <span class="da">Hvad hvis kemien ikke er der?</span><span class="en">What if the fit isn't right?</span>
+        </h3>
+        <p style="margin:0;font-family:var(--an-font-sans);font-size:var(--an-text-base);line-height:1.6;color:var(--an-text-body);text-wrap:pretty">
+          <span class="da">Sig det efter første leverance. Vi finder en anden specialist i domænet, og du betaler kun for det arbejde, der er udført.</span>
+          <span class="en">Say so after the first delivery. We find another specialist in the domain, and you pay only for the work done.</span>
+        </p>
+      </div>
+    </div>
+  </x-import>
+
+  <x-import component-from-global-scope="ANUI.ContactBlock" id="kontakt" heading-id="kontakt-title" eyebrow="{{ contactEyebrow }}" title="{{ contactTitle }}" intro="{{ contactIntro }}" links="{{ contactLinks }}" hint-size="100%,520px"></x-import>
+
+  <x-import component-from-global-scope="ANUI.SiteFooter" initials="TUC" action-label="{{ toTop }}" action-href="#kort" hint-size="100%,120px">{{ footerLine }}</x-import>
+
+</x-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;lang&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;da&quot;,&quot;en&quot;],&quot;default&quot;:&quot;da&quot;,&quot;tsType&quot;:&quot;\&quot;da\&quot; | \&quot;en\&quot;&quot;},&quot;tourEnabled&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;tourSeconds&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:5,&quot;min&quot;:2,&quot;max&quot;:12,&quot;step&quot;:1,&quot;unit&quot;:&quot;s&quot;,&quot;tsType&quot;:&quot;number&quot;}}">
+class Component extends DCLogic {
+  /* level 0 = the whole house, 1 = one window, 2 = inside it. */
+  state = { lang: null, i: 0, op: 1, paused: false, w: 1440, level: 0, loginOpen: false, loginEmail: '', loginPass: '', loginError: false, loginBusy: false };
+  winRects = {};
+  /* The house lives in a box this class owns, never in a node the renderer
+     owns: the callback ref re-parents that same box into whichever host node
+     the current render produced, so the 5,600-node artwork is moved, never
+     rebuilt. */
+  houseBox = (() => {
+    const d = document.createElement('div');
+    d.style.cssText = 'position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:100%;min-width:0';
+    return d;
+  })();
+
+  houseHost = (node) => {
+    this.houseNode = node || null;
+    if (node && this.houseBox.parentNode !== node) node.appendChild(this.houseBox);
+  };
+
+  componentDidMount() {
+    this.onResize = () => { this.setState({ w: window.innerWidth }); this.updateCamera(); };
+    window.addEventListener('resize', this.onResize);
+    this.onKey = (e) => {
+      if (e.key !== 'Escape') return;
+      if (this.state.loginOpen) { this.setState({ loginOpen: false }); return; }
+      if (this.state.level > 0) this.setLevel(this.state.level - 1);
+    };
+    document.addEventListener('keydown', this.onKey);
+    this.onResize();
+    this.start();
+    this.findHouse();
+    this.placeLogo();
+  }
+
+  /* The site header only renders text initials; replace them with the logo
+     image. Re-run on each tick since the header may re-render. */
+  placeLogo() {
+    clearTimeout(this.logoTimer);
+    this.logoTimer = setTimeout(() => this.placeLogo(), 1000);
+    const wms = Array.from(document.querySelectorAll('.an-wordmark')).filter(w => !w.querySelector('img'));
+    if (!wms.length) return;
+    wms.forEach(wm => {
+      wm.textContent = '';
+      wm.setAttribute('aria-label', wm.getAttribute('aria-label') || 'TrustUsConsult');
+    wm.style.cssText = 'display:inline-flex;align-items:center;text-decoration:none;margin-right:var(--an-space-sm,1.25rem);flex:none';
+    const img = document.createElement('img');
+    img.src = 'tuc-logo-dark.png';
+    img.alt = 'TrustUsConsult';
+    img.style.cssText = 'display:block;height:22px;width:auto';
+    wm.appendChild(img);
+    });
+    const cta = document.querySelector('.an-header-action');
+    if (cta) cta.style.whiteSpace = 'nowrap';
+  }
+
+  componentDidUpdate(pp, ps) {
+    if (ps && (ps.level !== this.state.level || ps.i !== this.state.i)) this.updateCamera();
+  }
+
+  /* The DC runtime does not deliver componentDidUpdate reliably, so every
+     writer of level/i also schedules a camera update itself. */
+  cam() { requestAnimationFrame(() => this.updateCamera()); }
+
+  /* The camera: a transform on the house element whose origin is the active
+     window's centre, so scaling keeps that window still and the translate
+     carries it to the stage centre. Window rects come from the SVG's own
+     coordinates (viewBox 1086×1448), so nothing needs measuring mid-zoom. */
+  updateCamera() {
+    const el = this.house, box = this.houseBox;
+    if (!el || !box.isConnected) return;
+    const W = box.clientWidth, H = box.clientHeight;
+    if (!W || !H) return;
+    /* Size the house to the band between the two overlay rows, then centre it
+       there, so the roof never sits under the top label's paper. */
+    const host = box.parentNode, rows = host ? Array.from(host.parentNode.children).filter(n => n !== host) : [];
+    const topH = rows[0] ? rows[0].offsetHeight : 0, botH = rows[1] ? rows[1].offsetHeight : 0;
+    const elW = Math.max(160, Math.min(W - 48, (H - topH - botH - 24) * 1086 / 1448) * 0.82);
+    el.style.width = elW + 'px';
+    el.style.maxWidth = 'none';
+    el.style.marginTop = (topH - botH) + 'px';
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    el.style.transition = still ? 'none' : 'transform 1100ms cubic-bezier(.65,0,.15,1)';
+    const lvl = this.state.level;
+    /* A fixed origin lets translate+scale interpolate as one smooth pan;
+       changing transform-origin per window would jump the element before the
+       transition begins. */
+    el.style.transformOrigin = '0 0';
+    if (lvl === 0) { el.style.transform = 'none'; return; }
+    const r = this.winRects[this.D[this.state.i].id];
+    if (!r) return;
+    if (lvl === 1) { el.style.transform = 'none'; return; }
+    const s = elW / 1086, wx = (r.x + r.w / 2) * s, wy = (r.y + r.h / 2) * s, wh = r.h * s;
+    const k = Math.min(7, Math.max(2, (H * 0.44) / wh));
+    /* With origin at the element's top-left: point p maps to offset + t + k*p.
+       Solve for t so the window centre lands at the stage centre. */
+    const dx = W * 0.5 - el.offsetLeft - k * wx, dy = H * 0.5 - el.offsetTop - k * wy;
+    el.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + k + ')';
+  }
+
+  setLevel(level, cb) {
+    if (level === this.state.level) return;
+    this.holdTour();
+    this.setState({ level }, () => {
+      if (level === 0) { this.lastPreview = null; try { this.house && this.house.reset(); } catch (e) {} }
+      else this.syncHouse();
+      this.cam();
+      cb && cb();
+    });
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timer);
+    clearTimeout(this.fade);
+    clearTimeout(this.hold);
+    clearTimeout(this.houseTimer);
+    clearTimeout(this.logoTimer);
+    window.removeEventListener('resize', this.onResize);
+    document.removeEventListener('keydown', this.onKey);
+    if (this.house && this.onHousePreview) this.house.removeEventListener('trustus:preview', this.onHousePreview);
+    if (this.house && this.onHouseSelect) this.house.removeEventListener('trustus:select', this.onHouseSelect);
+  }
+
+  /* The house is created imperatively into a plain host node, so React never
+     reconciles it: the artwork is several thousand SVG nodes and a remount on
+     every tour tick would rebuild all of them. */
+  findHouse() {
+    clearTimeout(this.houseTimer);
+    this.houseTimer = setTimeout(() => this.findHouse(), 1000);
+    if (!window.customElements || !customElements.get('trustus-house')) return;
+    if (this.houseNode && this.houseBox.parentNode !== this.houseNode) this.houseNode.appendChild(this.houseBox);
+    if (this.house && this.house.parentNode === this.houseBox) {
+      /* A re-parent disconnects the element; make sure its content survived. */
+      const want = this.lang === 'da' ? this.D[0].name.da : this.HOUSE.mentor.en;
+      const has = this.house.config && this.house.config.domains && this.house.config.domains[0];
+      if (has && has.name !== want) this.pushHouseConfig();
+      /* Re-measure every tick: the first layout often reports 0 heights, which
+         left the house at its intrinsic 100% width until the first hover. */
+      this.updateCamera();
+      return;
+    }
+    const existing = this.houseBox.querySelector('trustus-house');
+    if (existing) { if (existing !== this.house) { this.house = null; this.bindHouse(existing); } return; }
+    const el = document.createElement('trustus-house');
+    el.style.cssText = 'display:block;width:100%;flex:none;-webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 90%,rgba(0,0,0,.6) 95%,transparent 99.5%);mask-image:linear-gradient(to bottom,#000 0%,#000 90%,rgba(0,0,0,.6) 95%,transparent 99.5%)';
+    this.houseBox.appendChild(el);
+    this.house = null;
+    this.bindHouse(el);
+  }
+
+  async bindHouse(el) {
+    if (this.house === el) return;
+    this.house = el;
+    this.lastPreview = null;
+    try { if (el.ready) await el.ready; } catch (e) {}
+    /* The component declares these on :host, so they have to be set on the
+       element itself to take the page's palette and faces. */
+    const skin = {
+      '--tuc-card': 'var(--an-ink)',
+      '--tuc-text': 'var(--an-paper)',
+      '--tuc-accent': 'var(--an-accent-deep)',
+      '--tuc-heading-font': 'var(--an-font-serif)',
+      '--tuc-body-font': 'var(--an-font-sans)'
+    };
+    Object.keys(skin).forEach(k => el.style.setProperty(k, skin[k]));
+    this.skinHouse(el);
+    this.pushHouseConfig();
+    if (el.shadowRoot) el.shadowRoot.querySelectorAll('.tuc-window[data-domain]').forEach(g => {
+      const rc = g.querySelector('rect');
+      if (rc) this.winRects[g.dataset.domain] = { x: +rc.getAttribute('x'), y: +rc.getAttribute('y'), w: +rc.getAttribute('width'), h: +rc.getAttribute('height') };
+    });
+    this.updateCamera();
+    /* Hovering, tabbing or tapping a window moves the statement to that
+       domain. The guard on the current index is what stops the round trip
+       from looping back into preview(). */
+    /* Hover picks a window at street level and switches at window level — both
+       show the whole facade. Once inside, switching is by click only. */
+    this.onHousePreview = (e) => {
+      const id = e.detail && e.detail.domainId;
+      if (!id || this.state.level === 2) return;
+      const idx = this.D.findIndex(d => d.id === id);
+      if (idx < 0) return;
+      this.lastPreview = id;
+      if (this.state.level === 0) { this.setState({ i: idx, op: 1 }, () => this.cam()); this.setLevel(1); return; }
+      if (idx !== this.state.i) this.jump(idx);
+    };
+    el.addEventListener('trustus:preview', this.onHousePreview);
+    /* Windows no longer navigate anywhere: a click keeps the discipline in
+       the pane beside the house. */
+    this.onHouseSelect = (e) => {
+      if (e.preventDefault) e.preventDefault();
+      if (e.detail && e.detail.source === 'api') return;
+      this.bgClickAt = Date.now();
+      const id = e.detail && e.detail.domainId;
+      const idx = this.D.findIndex(d => d.id === id);
+      if (idx < 0) return;
+      this.lastPreview = id;
+      /* House → window → inside: the same window clicked twice steps in. */
+      if (this.state.level >= 1 && idx === this.state.i) { this.setLevel(2); return; }
+      if (this.state.level === 0) this.setState({ i: idx, op: 1 }, () => this.cam());
+      else this.jump(idx);
+      this.setLevel(1);
+    };
+    el.addEventListener('trustus:select', this.onHouseSelect);
+    this.syncHouse();
+  }
+
+  syncHouse(i) {
+    /* Before the first exploration the house stays unlit and the pane keeps
+       its invitation — so the initial bind must not push a preview. */
+    if (!this.house || this.state.level === 0) return;
+    const id = this.D[i == null ? this.state.i : i].id;
+    this.lastPreview = id;
+    /* select() (source 'api') keeps the window lit after the pointer leaves;
+       preview() would go dark on the component's own dismiss. */
+    try { this.house.select(id); } catch (e) {}
+  }
+
+  /* The card and the invitation are the component's own surfaces, so they get
+     the page's language for them: square corners, one hairline, no drop
+     shadow, mono micro-labels and Geist for everything but the italic hook. */
+  skinHouse(el) {
+    if (!el.shadowRoot || el.shadowRoot.querySelector('#an-skin')) return;
+    const s = document.createElement('style');
+    s.id = 'an-skin';
+    s.textContent = [
+      '.layout{grid-template-columns:minmax(0,1fr)!important;gap:0!important}.rail,.card-slot,.card,.invitation{display:none!important}.art{grid-column:1!important;max-width:none!important}',
+      '.card{border:1px solid var(--an-line-light-soft);border-radius:0;box-shadow:none;padding:var(--an-space-sm,1.25rem) var(--an-space-sm,1.25rem) 0}',
+      '.kicker{font-family:var(--an-font-mono);font-size:var(--an-text-micro-sm);letter-spacing:.16em;text-transform:uppercase;color:var(--an-on-ink-faint);gap:9px}',
+      '.lamp{box-shadow:none}',
+      '.counter{font-family:var(--an-font-mono);font-size:var(--an-text-micro-sm);letter-spacing:.16em;opacity:1;color:var(--an-on-ink-faint)}',
+      '.card h2{margin:1rem 0 .6rem;font-family:var(--an-font-sans);font-size:1.6rem;line-height:1.12;letter-spacing:-0.03em;color:var(--an-on-ink)}',
+      '.description{font-family:var(--an-font-sans);font-size:.95rem;line-height:1.55;color:var(--an-on-ink-body)}',
+      '.skills{gap:6px 14px;margin:1.1rem 0 1.2rem}',
+      '.skills span{padding-bottom:3px;border-bottom:1px solid var(--an-line-light-soft);font-family:var(--an-font-mono);font-size:var(--an-text-micro-sm);letter-spacing:.14em;text-transform:uppercase;color:var(--an-on-ink-muted)}',
+      '.card-footer{margin:0 calc(-1 * var(--an-space-sm,1.25rem));padding:.8rem var(--an-space-sm,1.25rem);border-top:1px solid var(--an-line-light-soft);background:none;font-family:var(--an-font-mono);font-size:var(--an-text-micro-sm);letter-spacing:.12em;text-transform:uppercase;color:var(--an-on-ink-strong)}',
+      '.hook > span{font-family:var(--an-font-mono);font-size:var(--an-text-micro-sm);font-style:normal;letter-spacing:.16em;text-transform:uppercase}',
+      '.hook strong{font-family:var(--an-font-serif);font-size:1.7rem;letter-spacing:-0.01em}',
+      '.hook small{font-family:var(--an-font-sans);font-size:.8rem;letter-spacing:0;color:var(--an-text-faint)}'
+    ].join('');
+    el.shadowRoot.appendChild(s);
+  }
+
+  /* Names, descriptions, skills, links and interface copy all come from this
+     page, so the house speaks the same language as the rest of the site. */
+  pushHouseConfig() {
+    if (!this.house) return;
+    const L = this.lang, da = L === 'da', H = this.HOUSE;
+    try {
+      this.house.configure({
+        domains: this.D.map(d => ({
+          id: d.id,
+          name: da ? d.name.da : H[d.id].en,
+          description: d.sub[L],
+          skills: da ? H[d.id].sda : H[d.id].sen,
+          href: ''
+        })),
+        relationships: this.edges,
+        copy: da ? {
+          psst: 'Psst…', invitation: 'Kig ind.',
+          hoverHint: 'Hold musen over et vindue.', touchHint: 'Tryk på et vindue.',
+          kicker: 'BAG DETTE VINDUE',
+          footer: 'Klik på vinduet for at møde specialisten',
+          touchFooter: 'Vælg et vindue for at møde specialisten',
+          houseLabel: 'TrustUsConsult som et hus — femten domæner, femten vinduer',
+          actionLabel: 'Vælg for at møde specialisten.'
+        } : {
+          psst: 'Psst…', invitation: 'Take a peek.',
+          hoverHint: 'Hover a window.', touchHint: 'Tap a window.',
+          kicker: 'BEHIND THIS WINDOW',
+          footer: 'Click the window to meet the specialist',
+          touchFooter: 'Select a window to find your specialist',
+          houseLabel: 'TrustUsConsult as a house — fifteen domains, fifteen windows',
+          actionLabel: 'Select to meet the specialist.'
+        }
+      });
+    } catch (e) {}
+  }
+
+  /* Per domain: the English name used in the window card, and the skill
+     lines in both languages. */
+  get HOUSE() {
+    return {
+      mentor: { en: 'Mentor & Coach', sda: ['Mentorforløb', 'Coaching', 'Ejerledere'], sen: ['Leadership', 'Coaching', 'Founder support'] },
+      salg: { en: 'Sales & Marketing', sda: ['Pipeline', 'Key accounts', 'Kampagner'], sen: ['Sales strategy', 'Pipeline', 'Key accounts'] },
+      bestyrelse: { en: 'Board & Governance', sda: ['Bestyrelsesarbejde', 'Governance', 'Strategi'], sen: ['Board work', 'Governance', 'Strategy'] },
+      invest: { en: 'Investment & Finance', sda: ['Kapitalrejsning', 'Projektøkonomi', 'Business case'], sen: ['Funding', 'Business cases', 'Financial models'] },
+      consulting: { en: 'Consulting', sda: ['Analyse', 'Beslutningsstøtte', 'Korte forløb'], sen: ['Analysis', 'Decision support', 'Business planning'] },
+      ai: { en: 'AI & IT', sda: ['Løsningsarkitektur', 'ML i drift', 'Dataplatforme'], sen: ['AI implementation', 'Data platforms', 'Software architecture'] },
+      hr: { en: 'HR & Recruitment', sda: ['Ansættelser', 'Employer branding', 'HR-jura'], sen: ['Recruitment', 'People operations', 'Employer branding'] },
+      advisory: { en: 'Advisory', sda: ['ESG', 'Risiko', 'Rapportering'], sen: ['ESG', 'Risk', 'Reporting'] },
+      supply: { en: 'Supply Chain & Logistics', sda: ['Indkøb', 'Lager', 'Transport'], sen: ['Procurement', 'Logistics', 'Inventory'] },
+      disruption: { en: 'Innovation & New Ventures', sda: ['Forretningsmodeller', 'Innovation', 'Nye ventures'], sen: ['Innovation', 'New ventures', 'Business models'] },
+      digital: { en: 'Digital & Marketing', sda: ['Web', 'Performance', 'Automation'], sen: ['Web design', 'Performance marketing', 'Automation'] },
+      projekt: { en: 'Project Management', sda: ['Projektledelse', 'Implementering', 'Drift'], sen: ['Delivery', 'Implementation', 'Change'] },
+      management: { en: 'Management Consulting', sda: ['Organisation', 'Styring', 'Drift'], sen: ['Organisation', 'Operating models', 'Strategy'] },
+      juridisk: { en: 'Legal Advisory', sda: ['Kontrakter', 'GDPR', 'NIS2'], sen: ['Contracts', 'GDPR', 'Compliance'] },
+      automation: { en: 'Automation & Produktion', sda: ['Robotter', 'OEE', 'Produktionsdata'], sen: ['Robotics', 'Production data', 'Process improvement'] }
+    };
+  }
+
+  start() {
+    clearInterval(this.timer);
+    const ms = Math.max(1800, (this.props.tourSeconds ?? 5) * 1000);
+    this.timer = setInterval(() => {
+      if (this.state.level !== 1 || this.state.paused || this.props.tourEnabled === false) return;
+      this.goTo(this.state.i + 1);
+    }, ms);
+  }
+
+  // The single writer of `i` and `op`: every call ends with a scheduled
+  // restore to op 1, so no interruption mid-crossfade can leave the copy
+  // invisible.
+  goTo(i) {
+    const n = this.D.length, next = ((i % n) + n) % n;
+    if (next === this.state.i && this.state.op === 1) return;
+    clearTimeout(this.fade);
+    if (this.state.op !== 0) this.setState({ op: 0 });
+    this.fade = setTimeout(() => { this.setState({ i: next, op: 1 }, () => this.updateCamera()); this.syncHouse(next); }, 260);
+  }
+
+  jump(i) {
+    this.holdTour();
+    if (this.state.level === 0) this.setLevel(1);
+    this.goTo(i);
+  }
+
+  // The pause always expires on its own, so hover, focus or a pointer left
+  // resting inside the hero can never freeze the tour permanently.
+  holdTour() {
+    clearTimeout(this.hold);
+    if (!this.state.paused) this.setState({ paused: true });
+    this.hold = setTimeout(() => this.setState({ paused: false }), 8000);
+  }
+
+  get lang() { return this.state.lang || this.props.lang || 'da'; }
+  t(da, en) { return this.lang === 'da' ? da : en; }
+  em(pre, mid, post) {
+    return React.createElement(React.Fragment, null, pre, React.createElement('em', null, mid), post);
+  }
+
+  get D() {
+    return [
+      { id:'mentor', num:'01', name: { da: 'Mentor & Coach', en: 'Mentor & Coach' },
+        st: { da: ['Sparring, der ', 'holder', ', når presset stiger.'], en: ['Sparring that ', 'holds', ' when the pressure rises.'] },
+        sub: { da: 'Mentor- og coachforløb for ejerledere og nye chefer. Domænet åbner og søger specialister.', en: 'Mentoring and coaching for owner-managers and first-time leaders. The domain is opening and recruiting.' } },
+      { id:'salg', num:'02', name: { da: 'Salg & Marketing', en: 'Salg & Marketing' },
+        st: { da: ['Salg, der ikke afhænger af ', 'én person', '.'], en: ['Sales that do not hinge on ', 'one person', '.'] },
+        sub: { da: 'Pipeline, key accounts og kampagner. To specialister.', en: 'Pipeline, key accounts and campaigns. Two specialists.' } },
+      { id:'bestyrelse', num:'03', name: { da: 'Bestyrelse', en: 'Bestyrelse' },
+        st: { da: ['En bestyrelse, der ', 'gør en forskel', '.'], en: ['A board that ', 'earns its seat', '.'] },
+        sub: { da: 'Professionelle bestyrelsesmedlemmer til ejerledede virksomheder. Domænet åbner nu.', en: 'Professional board members for owner-led companies. The domain is opening now.' } },
+      { id:'invest', num:'04', name: { da: 'Investering & Projekt', en: 'Investering & Projekt' },
+        st: { da: ['Kapital og business case, ', 'før', ' beslutningen.'], en: ['Capital and the business case, ', 'before', ' the decision.'] },
+        sub: { da: 'Kapitalrejsning og projektøkonomi. Fuldt booket til november.', en: 'Fundraising and project finance. Booked out to November.' } },
+      { id:'consulting', num:'05', name: { da: 'Consulting', en: 'Consulting' },
+        st: { da: ['Analyse, der ender i en ', 'beslutning', '.'], en: ['Analysis that ends in a ', 'decision', '.'] },
+        sub: { da: 'Korte forløb med beslutningsstøtte. Én specialist, plads til flere.', en: 'Short engagements with decision support. One specialist, room for more.' } },
+      { id:'ai', num:'06', name: { da: 'AI & IT', en: 'AI & IT' },
+        st: { da: ['AI, der ', 'kommer i drift', '.'], en: ['AI that ', 'reaches production', '.'] },
+        sub: { da: 'Løsningsarkitektur, ML i drift og dataplatforme. Tre specialister.', en: 'Solution architecture, ML in production and data platforms. Three specialists.' } },
+      { id:'hr', num:'07', name: { da: 'HR & Rekruttering', en: 'HR & Rekruttering' },
+        st: { da: ['En HR-afdeling ', 'på deltid', ', når I ikke skal have en hel.'], en: ['An HR department ', 'part-time', ', when a whole one is too much.'] },
+        sub: { da: 'Ansættelser, employer branding og HR-jura. To specialister.', en: 'Hiring, employer branding and HR counsel. Two specialists.' } },
+      { id:'advisory', num:'08', name: { da: 'Advisory', en: 'Advisory' },
+        st: { da: ['Rådgivning i ', 'direktionens', ' højde.'], en: ['Advice at ', 'executive', ' altitude.'] },
+        sub: { da: 'ESG, risiko og rapportering. Én specialist, flere forespørgsler end kapacitet.', en: 'ESG, risk and reporting. One specialist, more enquiries than capacity.' } },
+      { id:'supply', num:'09', name: { da: 'Supply Chain & Logistic', en: 'Supply Chain & Logistic' },
+        st: { da: ['Forsyningskæden, ', 'når den brænder', '.'], en: ['The supply chain, ', 'when it burns', '.'] },
+        sub: { da: 'Indkøb, lager og transport for producerende virksomheder. Søger to specialister.', en: 'Sourcing, warehousing and transport for manufacturers. Looking for two specialists.' } },
+      { id:'disruption', num:'10', name: { da: 'Disruption & Innovation', en: 'Disruption & Innovation' },
+        st: { da: ['Vækst, når den gamle model ', 'stopper', '.'], en: ['Growth when the old model ', 'stalls', '.'] },
+        sub: { da: 'Nye forretningsmodeller og innovationsforløb. Domænet er åbent.', en: 'New business models and innovation work. The domain is open.' } },
+      { id:'digital', num:'11', name: { da: 'Digital Web & Markedsføring', en: 'Digital Web & Markedsføring' },
+        st: { da: ['Web og kampagner, der kan ', 'måles', '.'], en: ['Web and campaigns you can ', 'measure', '.'] },
+        sub: { da: 'Web, performance, automation og identitet. Fire specialister.', en: 'Web, performance, automation and identity. Four specialists.' } },
+      { id:'projekt', num:'12', name: { da: 'Projektledelse', en: 'Projektledelse' },
+        st: { da: ['Projekter, der faktisk ', 'lander', '.'], en: ['Projects that actually ', 'land', '.'] },
+        sub: { da: 'Projektledelse af implementeringer, der skal i drift. Domænet er åbent.', en: 'Project management for implementations that have to go live. The domain is open.' } },
+      { id:'management', num:'13', name: { da: 'Management Consulting', en: 'Management Consulting' },
+        st: { da: ['Drift og styring, ', 'uden', ' et helt konsulenthus.'], en: ['Operations and governance ', 'without', ' a whole consultancy.'] },
+        sub: { da: 'Organisation og styring for virksomheder mellem 50 og 500 ansatte. Domænet er åbent.', en: 'Organisation and governance for companies of 50 to 500. The domain is open.' } },
+      { id:'juridisk', num:'14', name: { da: 'Juridisk Rådgiver', en: 'Juridisk Rådgiver' },
+        st: { da: ['Kontrakter og GDPR ', 'uden', ' et advokatkontor.'], en: ['Contracts and GDPR ', 'without', ' a law firm.'] },
+        sub: { da: 'Kontrakter, GDPR og NIS2. Én specialist, domænet søger en mere.', en: 'Contracts, GDPR and NIS2. One specialist; the domain is looking for one more.' } },
+      { id:'automation', num:'15', name: { da: 'Automation & Produktion', en: 'Automation & Produktion' },
+        st: { da: ['Produktion, der ', 'kører selv', ', hvor den kan.'], en: ['Production that ', 'runs itself', ' where it can.'] },
+        sub: { da: 'Robotter, OEE og produktionsdata på fabriksgulvet. Kollektivets nyeste domæne.', en: 'Robots, OEE and production data on the factory floor. The newest domain here.' } }
+    ];
+  }
+
+  /* Which domains work together. On the constellation these were drawn as
+     lines between dots; on the house they are the windows that light up
+     alongside the active one — same data, and it now says something a
+     facade can actually show. */
+  get edges() {
+    return [['ai','salg'],['ai','digital'],['ai','hr'],['ai','consulting'],['ai','invest'],['ai','management'],
+      ['salg','digital'],['salg','projekt'],['salg','advisory'],['digital','mentor'],['digital','bestyrelse'],
+      ['hr','mentor'],['hr','juridisk'],['hr','management'],['consulting','advisory'],['consulting','supply'],
+      ['consulting','disruption'],['invest','bestyrelse'],['invest','juridisk'],['invest','automation'],
+      ['management','projekt'],['management','disruption'],['supply','automation'],['supply','disruption'],
+      ['advisory','bestyrelse'],['projekt','mentor']];
+  }
+
+  /* One illustrative specialist per discipline — the people, rates and years
+     are examples, and the pane says so. */
+  get SPEC() {
+    return {
+      mentor: ['Anna Møller', 'Ledelsesmentor', 'Leadership mentor', 'Aalborg', 16, 1050, 0],
+      salg: ['Mikkel Sørensen', 'Salgs- og vækstspecialist', 'Commercial growth specialist', 'Aarhus', 14, 1000, 2],
+      bestyrelse: ['Lene Holm', 'Uafhængigt bestyrelsesmedlem', 'Independent board adviser', 'København', 19, 1150, 0],
+      invest: ['Thomas Berg', 'Investerings- og økonomirådgiver', 'Investment & finance adviser', 'Aarhus', 15, 1150, 1],
+      consulting: ['Sofie Lund', 'Forretningskonsulent', 'Business consultant', 'Aalborg', 11, 975, 1],
+      ai: ['Emil Jensen', 'AI- og løsningsarkitekt', 'AI & solution architect', 'Aalborg', 13, 1100, 3],
+      hr: ['Nadia Hansen', 'HR- og rekrutteringspartner', 'People & recruitment partner', 'Aarhus', 12, 950, 2],
+      advisory: ['Peter Friis', 'Risiko- og ESG-rådgiver', 'Risk & sustainability adviser', 'København', 17, 1125, 1],
+      supply: ['Jonas Nielsen', 'Supply chain-specialist', 'Supply chain specialist', 'Aalborg', 10, 975, 0],
+      disruption: ['Clara Vester', 'Innovationsstrateg', 'Innovation strategist', 'København', 12, 1050, 1],
+      digital: ['Frederik Dahl', 'Digital vækstspecialist', 'Digital growth specialist', 'Aarhus', 9, 950, 4],
+      projekt: ['Maria Koch', 'Seniorprojektleder', 'Senior project manager', 'Aalborg', 13, 1000, 1],
+      management: ['Anders Kjær', 'Organisations- og strategikonsulent', 'Organisation & strategy consultant', 'Aarhus', 18, 1150, 1],
+      juridisk: ['Julie Lind', 'Erhvervsjuridisk rådgiver', 'Commercial legal adviser', 'København', 14, 1100, 1],
+      automation: ['Rasmus Bo', 'Automationsspecialist', 'Production automation specialist', 'Aalborg', 11, 1000, 1]
+    };
+  }
+
+  renderVals() {
+    const L = this.lang, D = this.D, act = this.state.i, a = D[act];
+    const narrow = this.state.w < 1000, lvl = this.state.level;
+    const H = this.HOUSE, S = this.SPEC[a.id], da = L === 'da';
+
+    const related = [];
+    this.edges.forEach(([p, q]) => {
+      if (p === a.id) related.push(q);
+      if (q === a.id) related.push(p);
+    });
+
+    const nodes = D.map((d, idx) => {
+      const on = idx === act;
+      return {
+        id: d.id, num: d.num, name: d.name[L],
+        tickH: on && lvl > 0 ? 32 : 15,
+        tickBg: on && lvl > 0 ? (lvl === 2 ? 'var(--an-accent)' : 'var(--an-accent-deep)') : (lvl === 2 ? 'var(--an-line-light-soft)' : 'var(--an-line-contrast)'),
+        go: () => this.jump(idx)
+      };
+    });
+
+    const more = S[6];
+
+    return {
+      lang: L, nodes, op: this.state.op, houseHost: this.houseHost,
+      heroCols: narrow ? 'minmax(0,1fr)' : 'minmax(0,1.15fr) minmax(0,1fr)',
+      stageMin: narrow ? 'max(62svh, 480px)' : '100svh',
+      paneBg: lvl === 2 ? 'var(--an-ink)' : 'var(--an-paper)',
+      metaColor: lvl === 2 ? 'var(--an-on-ink-faint)' : 'var(--an-text-muted)',
+      lv0: lvl === 0, lv1: lvl === 1, lv2: lvl === 2,
+      toHouse: () => this.setLevel(0),
+      toWindow: () => this.setLevel(1),
+      enter: () => this.setLevel(2),
+      stageClick: () => { if (Date.now() - (this.bgClickAt || 0) < 80) return; if (lvl > 0) this.setLevel(lvl - 1); },
+      specMore: more === 0 ? this.t('Domænet søger specialister', 'The domain is recruiting') : more === 1 ? this.t('Alene i domænet — plads til flere', 'Alone in the domain — room for more') : this.t(S[0].split(' ')[0] + ' og ' + (more - 1) + ' kolleger', S[0].split(' ')[0] + ' and ' + (more - 1) + ' colleagues'),
+      heroType: this.state.w < 1240 ? 'clamp(2.4rem, 4.4vw, 3.4rem)' : 'clamp(3rem, 3.9vw, 4.4rem)',
+      detailType: this.state.w < 1240 ? 'clamp(2rem, 3.4vw, 2.6rem)' : 'clamp(2.2rem, 2.9vw, 3.2rem)',
+
+      explore: () => this.setLevel(1),
+      prev: () => this.jump(act - 1),
+      next: () => this.jump(act + 1),
+      prevAria: this.t('Forrige domæne', 'Previous discipline'),
+      nextAria: this.t('Næste domæne', 'Next discipline'),
+      crumb: this.t('Vindue ' + a.num, 'Window ' + a.num),
+      selName: da ? a.name.da : H[a.id].en,
+      selTagline: a.st[L].join(''),
+      selDesc: a.sub[L],
+      selSkills: (da ? H[a.id].sda : H[a.id].sen).map(k => ({ label: k })),
+      selNear: related.slice(0, 6).map(id => ({
+        name: da ? D.find(d => d.id === id).name.da : H[id].en,
+        go: () => this.jump(D.findIndex(d => d.id === id))
+      })),
+      specInitials: S[0].split(' ').map(p => p[0]).join(''),
+      specName: S[0],
+      specRole: da ? S[1] : S[2],
+      specMeta: da ? (S[3] + ' · ' + S[4] + ' år i faget') : (S[3] + ' · ' + S[4] + ' years in the craft'),
+      specRate: da ? (S[5].toLocaleString('da-DK') + ' kr. / time · illustrativ') : ('DKK ' + S[5].toLocaleString('en-US') + ' / hour · illustrative'),
+      specMeet: this.t('Mød ' + S[0].split(' ')[0], 'Meet ' + S[0].split(' ')[0]),
+
+      loginOpen: this.state.loginOpen,
+      loginEmail: this.state.loginEmail,
+      loginPass: this.state.loginPass,
+      loginError: this.state.loginError,
+      loginTitle: this.t('Log ind for at møde ' + S[0].split(' ')[0], 'Sign in to meet ' + S[0].split(' ')[0]),
+      loginCta: this.state.loginBusy ? this.t('Logger ind…', 'Signing in…') : this.t('Log ind og åbn CV', 'Sign in and open CV'),
+      openLogin: () => { this.holdTour(); this.setState({ loginOpen: true, loginError: false }); },
+      closeLogin: () => this.setState({ loginOpen: false }),
+      stopClick: (e) => e.stopPropagation(),
+      setLoginEmail: (e) => this.setState({ loginEmail: e.target.value, loginError: false }),
+      setLoginPass: (e) => this.setState({ loginPass: e.target.value, loginError: false }),
+      submitLogin: (e) => {
+        e.preventDefault();
+        const ok = /\S+@\S+\.\S+/.test(this.state.loginEmail) && this.state.loginPass.length >= 4;
+        if (!ok) { this.setState({ loginError: true }); return; }
+        this.setState({ loginBusy: true });
+        /* Prototype auth: any well-formed login opens the portal's CV view for
+           the active domain's specialist. */
+        setTimeout(() => {
+          try { sessionStorage.setItem('tuc-auth', this.state.loginEmail); } catch (err) {}
+          window.location.href = 'TrustUsConsult%20Portal.dc.html#profile=' + encodeURIComponent(a.id);
+        }, 500);
+      },
+      twoCol: narrow ? '1fr' : '1fr 1fr',
+      faqCol: narrow ? '1fr' : 'minmax(0,0.8fr) minmax(0,1.2fr)',
+      tourMeta: lvl === 0 ? this.t('15 vinduer · hold musen over ét', '15 windows · hover one') : this.t('Vindue ' + a.num + ' af 15', 'Window ' + a.num + ' of 15'),
+      headerCta: this.t('Book et møde', 'Book a meeting'),
+
+      nav: [
+        { href: '#kollektivet', label: this.t('Kollektivet', 'Collective') },
+        { href: '#saadan', label: this.t('Sådan virker det', 'How it works') },
+        { href: '#vaerktoejer', label: this.t('Værktøjer', 'Utilities') },
+        { href: '#opgaver', label: this.t('Opgaver', 'Work') },
+        { href: 'TrustUsConsult%20Freelancere.dc.html', label: this.t('For freelancere', 'For freelancers') }
+      ],
+      band: D.map(d => d.name[L].toUpperCase()),
+
+      setDa: () => this.setState({ lang: 'da' }, () => this.pushHouseConfig()),
+      setEn: () => this.setState({ lang: 'en' }, () => this.pushHouseConfig()),
+      daColor: L === 'da' ? 'var(--an-text-strong)' : 'var(--an-text-faint)',
+      enColor: L === 'en' ? 'var(--an-text-strong)' : 'var(--an-text-faint)',
+      daRule: L === 'da' ? 'var(--an-accent-deep)' : 'transparent',
+      enRule: L === 'en' ? 'var(--an-accent-deep)' : 'transparent',
+
+      l1: this.t('Kollektivet', 'Collective'),
+      l2: this.t('Sådan', 'Process'),
+      l3: this.t('Værktøjer', 'Utilities'),
+      l4: this.t('Opgaver', 'Work'),
+      l5: this.t('Spørgsmål', 'Questions'),
+
+      h1Title: this.t(this.em('Femten fag. Én ', 'ramme', '.'), this.em('Fifteen crafts. One ', 'frame', '.')),
+      h1Intro: this.t('Specialister, der arbejder for sig selv, men ikke alene. Huset ovenfor er ikke en illustration — det er den måde, kollektivet faktisk er skruet sammen.', 'Specialists who work for themselves, but not alone. The house above is not an illustration — it is how the collective is actually put together.'),
+
+      h2Title: this.t(this.em('Fra behov til ', 'specialist', ' i tre skridt.'), this.em('From need to ', 'specialist', ' in three steps.')),
+      h2Intro: this.t('Ingen indledende afdækningsfase, intet salgsmøde med en, der ikke selv skal lave arbejdet.', 'No preliminary discovery phase, no sales meeting with someone who will not be doing the work.'),
+      steps: [
+        { number: '01', title: this.t('Find domænet', 'Find the domain'), text: this.t('Klik dig ind i huset. Hvert domæne viser sine specialister, deres takst og hvornår de kan starte — før du kontakter nogen.', 'Click into the house. Every domain shows its specialists, their rate and when they can start — before you contact anyone.') },
+        { number: '02', title: this.t('Book et møde', 'Book a meeting'), text: this.t('Tyve minutter i specialistens egen kalender. Passer det ikke, foreslår domænet en anden, der kan.', 'Twenty minutes in the specialist’s own calendar. If the fit is wrong, the domain suggests someone who fits.') },
+        { number: '03', title: this.t('Arbejd sammen', 'Get to work'), text: this.t('Én aftale, én faktura, én kontaktperson — også når opgaven trækker på to eller tre domæner.', 'One agreement, one invoice, one contact — even when the brief pulls in two or three domains.') }
+      ],
+
+      h3Title: this.t(this.em('Det administrative ligger ', 'udenfor', ' fakturaen.'), this.em('The admin sits ', 'outside', ' your invoice.')),
+      h3Intro: this.t('Kollektivet driver den maskine, en enkelt freelancer sjældent får bygget. Du oplever den som forudsigelighed.', 'The collective runs the machinery a lone freelancer rarely gets built. You experience it as predictability.'),
+      tools: [
+        { number: '01', title: this.t('Fakturering', 'Invoicing'), text: this.t('Én samlet faktura pr. måned, uanset hvor mange specialister der har været på opgaven. Betalingsfrist 30 dage.', 'One consolidated invoice per month, however many specialists worked the brief. Thirty-day terms.') },
+        { number: '02', title: this.t('Booking', 'Booking'), text: this.t('Fælles kalender på tværs af domænerne, så du ser reel kapacitet — ikke et løfte om at vende tilbage.', 'A shared calendar across the domains, so you see real capacity — not a promise to get back to you.') },
+        { number: '03', title: this.t('Kontrakter', 'Contracts'), text: this.t('Standardaftale gennemgået af domænet for jura. Databehandleraftale ligger klar, når opgaven kræver det.', 'A standard agreement reviewed by the legal domain. A data processing agreement is ready when the brief needs one.') },
+        { number: '04', title: this.t('Marketing', 'Marketing'), text: this.t('Specialisterne deler profil, cases og synlighed — derfor bruger de deres tid på dit arbejde frem for på deres eget.', 'Specialists share profile, cases and visibility — which is why they spend their time on your work rather than their own.') }
+      ],
+      calloutLabel: this.t('Kollektivets princip', 'Our principle'),
+      calloutText: this.t('Du hyrer et fag, ikke et firma.', 'You hire a craft, not a company.'),
+
+      h4Title: this.t(this.em('Opgaver, der krævede ', 'mere', ' end ét fag.'), this.em('Briefs that needed ', 'more', ' than one craft.')),
+      h4Intro: this.t('Anonymiseret, men reelt. Mønstret gentager sig: problemet lå sjældent kun i det domæne, kunden ringede om.', 'Anonymised, but real. The pattern repeats: the problem rarely sat only in the domain the client called about.'),
+      cases: [
+        { tag: this.t('Data', 'Data'), title: this.t('Fjorten regneark blev én rapport', 'Fourteen spreadsheets became one report'), text: this.t('Produktionsvirksomhed, 90 ansatte. Data og Økonomi arbejdede sammen om et tal, ledelsen kunne stole på.', 'Manufacturer, 90 staff. Data and Finance worked together on a number leadership could trust.') },
+        { tag: this.t('Salg', 'Sales'), title: this.t('Et salg, der kunne overdrages', 'A sales function that could be handed over'), text: this.t('Grundlæggeren var pipelinen. Otte måneder senere lå den i systemet — og hos to sælgere.', 'The founder was the pipeline. Eight months later it lived in the system — and with two sellers.') },
+        { tag: this.t('AI', 'AI'), title: this.t('Fra pilotprojekt til drift', 'From pilot to production'), text: this.t('En model, der virkede i notebooken, kom i produktion med overvågning, ejerskab og en exit-plan.', 'A model that worked in the notebook went to production with monitoring, ownership and an exit plan.') },
+        { tag: this.t('Jura', 'Legal'), title: this.t('NIS2 uden brandslukning', 'NIS2 without firefighting'), text: this.t('Leverandør til energisektoren fik kortlagt krav, kontrakter og ansvar på seks uger.', 'An energy-sector supplier had requirements, contracts and responsibilities mapped in six weeks.') },
+        { tag: this.t('Design', 'Design'), title: this.t('Et designsystem, udviklerne brugte', 'A design system the engineers used'), text: this.t('Design og AI-domænet byggede komponenterne sammen, så biblioteket ikke blev endnu en Figma-fil.', 'Design and the AI domain built the components together, so the library did not become another Figma file.') },
+        { tag: this.t('ESG', 'ESG'), title: this.t('Klimaregnskab uden gætteri', 'Carbon accounting without guesswork'), text: this.t('ESG og Data satte kilderne op, så næste års rapportering tager dage frem for uger.', 'ESG and Data set up the sources, so next year’s reporting takes days rather than weeks.') }
+      ],
+
+      h5Title: this.t(this.em('Det, folk ', 'spørger', ' om først.'), this.em('What people ', 'ask', ' first.')),
+      h5Intro: this.t('Fire spørgsmål, vi får i næsten hvert første møde.', 'Four questions we get in almost every first meeting.'),
+
+      facts: [
+        { label: this.t('Kollektivet', 'The collective'), value: this.t('15 domæner · 15 specialister', '15 domains · 15 specialists'), detail: this.t('Aalborg · Aarhus · København', 'Aalborg · Aarhus · Copenhagen') },
+        { label: this.t('Svartid', 'Response time'), value: this.t('Under 6 timer i gennemsnit', 'Under 6 hours on average'), detail: this.t('Målt på tværs af alle domæner, seneste kvartal', 'Measured across all domains, last quarter') },
+        { label: this.t('Erfaringskrav', 'Experience bar'), value: this.t('Minimum 8 år i faget', 'Minimum 8 years in the craft'), detail: this.t('Alle optages efter samtale med domænet', 'Everyone is admitted after an interview with the domain') }
+      ],
+
+      contactEyebrow: this.t('TYVE MINUTTER ER NOK TIL AT FINDE UD AF DET', 'TWENTY MINUTES IS ENOUGH TO FIND OUT'),
+      contactTitle: this.t(this.em('Skal vi finde den rigtige ', 'specialist?', ''), this.em('Shall we find you the right ', 'specialist?', '')),
+      contactIntro: this.t('Skriv hvad opgaven handler om — så finder vi domænet. Er du selv specialist, ligger der en anden dør.', 'Tell us what the brief is about and we will find the domain. If you are a specialist yourself, there is another door.'),
+      contactLinks: [
+        { href: 'mailto:kontakt@trustusconsult.dk', label: 'kontakt@trustusconsult.dk ↗' },
+        { href: 'tel:+4570123456', label: '+45 70 12 34 56 ↗' },
+        { href: 'TrustUsConsult%20Portal.dc.html', label: this.t('Træd ind i huset ↗', 'Step inside the house ↗') },
+        { href: 'TrustUsConsult%20Freelancere.dc.html', label: this.t('Bliv en del af kollektivet ↗', 'Join the collective ↗') }
+      ],
+      toTop: this.t('Til toppen', 'Back to top'),
+      footerLine: this.t('TrustUsConsult · Specialister i femten domæner', 'TrustUsConsult · Specialists across fifteen domains')
+    };
+  }
+}
+</script>
+</body>
+</html>

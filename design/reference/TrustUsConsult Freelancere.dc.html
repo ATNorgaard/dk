@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/andreas-n-rgaard-design-system-c1ad9fd9-016e-4735-8515-9bd83c311c3b/fonts/fonts.css">
+<link rel="stylesheet" href="_ds/andreas-n-rgaard-design-system-c1ad9fd9-016e-4735-8515-9bd83c311c3b/_ds_bundle.css">
+<link rel="stylesheet" href="_ds/andreas-n-rgaard-design-system-c1ad9fd9-016e-4735-8515-9bd83c311c3b/styles.css">
+<script src="_ds/andreas-n-rgaard-design-system-c1ad9fd9-016e-4735-8515-9bd83c311c3b/_ds_bundle.js"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:var(--an-paper);-webkit-font-smoothing:antialiased}
+a{color:var(--an-accent-deep);text-decoration:none}
+a:hover{color:var(--an-text-strong)}
+[data-lang="da"] .en{display:none}
+[data-lang="en"] .da{display:none}
+</style>
+</helmet>
+
+<div data-lang="{{ lang }}">
+<x-import component-from-global-scope="ANUI.Page" hint-size="100%,100%">
+
+  <x-import component-from-global-scope="ANUI.SkipLink" hint-size="0,0"></x-import>
+  <x-import component-from-global-scope="ANUI.MotionProvider" hint-size="0,0"></x-import>
+  <x-import component-from-global-scope="ANUI.ScrollProgress" hint-size="100%,3px"></x-import>
+  <x-import component-from-global-scope="ANUI.SiteHeader" initials="TUC" items="{{ nav }}" action-label="{{ headerCta }}" action-href="#ansoeg" hint-size="100%,78px"></x-import>
+
+  <section id="top" data-screen-label="Hero — for freelancere" style="position:relative;background:var(--an-ink);color:var(--an-on-ink);padding:clamp(9rem,20vh,14rem) var(--an-gutter) clamp(4rem,9vh,7rem);border-bottom:1px solid var(--an-line-light-soft);overflow:hidden">
+    <div style="position:absolute;right:-10vmin;top:-10vmin;width:60vmin;height:60vmin;border:1px solid var(--an-line-light-soft);border-radius:50%;pointer-events:none"></div>
+    <div style="position:relative;display:grid;gap:var(--an-space-md);max-width:1100px">
+      <x-import component-from-global-scope="ANUI.Eyebrow" hint-size="auto,16px">{{ heroEyebrow }}</x-import>
+      <x-import component-from-global-scope="ANUI.DisplayHeading" as="h1" size="default" hint-size="100%,240px">{{ heroTitle }}</x-import>
+      <p style="margin:0;max-width:56ch;font-family:var(--an-font-sans);font-size:var(--an-text-lead);line-height:1.55;color:var(--an-on-ink-body);text-wrap:pretty">
+        <span class="da">Du beholder dine kunder, din takst og din kalender. Du køber dig ind i et domæne — og slipper for selv at bygge fakturering, booking, kontrakter og synlighed.</span>
+        <span class="en">You keep your clients, your rate and your calendar. You buy into a domain — and stop building invoicing, booking, contracts and visibility on your own.</span>
+      </p>
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--an-space-xs);margin-top:var(--an-space-2xs)">
+        <x-import component-from-global-scope="ANUI.Button" variant="light" href="#ansoeg" trailing-icon="↓" hint-size="auto,52px">{{ ctaPrimary }}</x-import>
+        <x-import component-from-global-scope="ANUI.Button" variant="outline" href="TrustUsConsult%20Landing%20v2.dc.html" trailing-icon="↗" hint-size="auto,52px">{{ ctaSecondary }}</x-import>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;margin-top:var(--an-space-sm)">
+        <span onClick="{{ setDa }}" style="font-family:var(--an-font-mono);font-size:var(--an-text-micro-sm);letter-spacing:.16em;cursor:pointer;color:{{ daColor }};border-bottom:1px solid {{ daRule }};padding-bottom:2px">DA</span>
+        <span onClick="{{ setEn }}" style="font-family:var(--an-font-mono);font-size:var(--an-text-micro-sm);letter-spacing:.16em;cursor:pointer;color:{{ enColor }};border-bottom:1px solid {{ enRule }};padding-bottom:2px">EN</span>
+      </div>
+    </div>
+  </section>
+
+  <x-import component-from-global-scope="ANUI.MotionBand" items="{{ band }}" hint-size="100%,60px"></x-import>
+
+  <x-import component-from-global-scope="ANUI.Section" id="hvad" tone="paper" label-number="01" label-title="{{ l1 }}" heading-id="hvad-title" hint-size="100%,700px">
+    <x-import component-from-global-scope="ANUI.SectionHeading" id="hvad-title" tone="on-paper" title="{{ h1Title }}" intro="{{ h1Intro }}" hint-size="100%,240px"></x-import>
+    <div style="margin-top:var(--an-space-xl)">
+      <x-import component-from-global-scope="ANUI.CapabilityList" tone="on-paper" items="{{ gets }}" stagger="{{ true }}" hint-size="100%,460px"></x-import>
+    </div>
+    <div style="margin-top:var(--an-space-xl)">
+      <x-import component-from-global-scope="ANUI.FactStrip" items="{{ facts }}" columns="3" hint-size="100%,200px"></x-import>
+    </div>
+  </x-import>
+
+  <x-import component-from-global-scope="ANUI.Section" id="oekonomi" tone="ink" label-number="02" label-title="{{ l2 }}" heading-id="oekonomi-title" hint-size="100%,600px">
+    <x-import component-from-global-scope="ANUI.SectionHeading" id="oekonomi-title" title="{{ h2Title }}" intro="{{ h2Intro }}" hint-size="100%,240px"></x-import>
+    <div style="display:grid;grid-template-columns:{{ twoCol }};gap:var(--an-space-md) clamp(2rem,5vw,4rem);margin-top:var(--an-space-xl);padding-top:var(--an-space-md);border-top:1px solid var(--an-line-light-soft)">
+      <div>
+        <div style="font-family:var(--an-font-mono);font-size:var(--an-text-micro);letter-spacing:.16em;text-transform:uppercase;color:var(--an-accent-bright)">
+          <span class="da">Indskud</span><span class="en">Buy-in</span>
+        </div>
+        <div style="font-family:var(--an-font-sans);font-size:var(--an-text-title);line-height:1.15;letter-spacing:-0.03em;margin-top:var(--an-space-2xs);color:var(--an-on-ink-strong)">
+          <span class="da">12.000 kr. ved optagelse</span><span class="en">DKK 12,000 on admission</span>
+        </div>
+        <p style="margin:var(--an-space-2xs) 0 0;font-family:var(--an-font-sans);font-size:var(--an-text-base);line-height:1.6;color:var(--an-on-ink-body);text-wrap:pretty">
+          <span class="da">Én gang. Det finansierer din plads i domænet, din profil og din del af den fælles maskine.</span>
+          <span class="en">Once. It funds your place in the domain, your profile and your share of the shared machinery.</span>
+        </p>
+      </div>
+      <div>
+        <div style="font-family:var(--an-font-mono);font-size:var(--an-text-micro);letter-spacing:.16em;text-transform:uppercase;color:var(--an-accent-bright)">
+          <span class="da">Løbende</span><span class="en">Ongoing</span>
+        </div>
+        <div style="font-family:var(--an-font-sans);font-size:var(--an-text-title);line-height:1.15;letter-spacing:-0.03em;margin-top:var(--an-space-2xs);color:var(--an-on-ink-strong)">
+          <span class="da">6 % af omsætning gennem kollektivet</span><span class="en">6 % of revenue booked through the collective</span>
+        </div>
+        <p style="margin:var(--an-space-2xs) 0 0;font-family:var(--an-font-sans);font-size:var(--an-text-base);line-height:1.6;color:var(--an-on-ink-body);text-wrap:pretty">
+          <span class="da">Kun på det arbejde, kollektivet skaffer. Dine egne kunder er dine egne — vi tager ikke en andel af dem.</span>
+          <span class="en">Only on work the collective brings you. Your own clients stay your own — we take no share of them.</span>
+        </p>
+      </div>
+    </div>
+  </x-import>
+
+  <x-import component-from-global-scope="ANUI.Section" id="optagelse" tone="paper" label-number="03" label-title="{{ l3 }}" heading-id="optagelse-title" hint-size="100%,700px">
+    <x-import component-from-global-scope="ANUI.SectionHeading" id="optagelse-title" tone="on-paper" title="{{ h3Title }}" intro="{{ h3Intro }}" hint-size="100%,240px"></x-import>
+    <div style="margin-top:var(--an-space-xl)">
+      <x-import component-from-global-scope="ANUI.Timeline" items="{{ steps }}" hint-size="100%,420px"></x-import>
+    </div>
+    <div style="margin-top:var(--an-space-xl)">
+      <x-import component-from-global-scope="ANUI.Callout" label="{{ calloutLabel }}" tone="on-paper" hint-size="100%,140px">{{ calloutText }}</x-import>
+    </div>
+  </x-import>
+
+  <x-import component-from-global-scope="ANUI.Section" id="aabne" tone="ink-panel" label-number="04" label-title="{{ l4 }}" heading-id="aabne-title" hint-size="100%,600px">
+    <x-import component-from-global-scope="ANUI.SectionHeading" id="aabne-title" title="{{ h4Title }}" intro="{{ h4Intro }}" hint-size="100%,240px"></x-import>
+    <div style="margin-top:var(--an-space-xl)">
+      <x-import component-from-global-scope="ANUI.CaseGrid" items="{{ openings }}" columns="{{ 3 }}" stagger="{{ true }}" hint-size="100%,320px"></x-import>
+    </div>
+  </x-import>
+
+  <x-import component-from-global-scope="ANUI.ContactBlock" id="ansoeg" heading-id="ansoeg-title" eyebrow="{{ contactEyebrow }}" title="{{ contactTitle }}" intro="{{ contactIntro }}" links="{{ contactLinks }}" hint-size="100%,520px"></x-import>
+
+  <x-import component-from-global-scope="ANUI.SiteFooter" initials="TUC" action-label="{{ toTop }}" action-href="#top" hint-size="100%,120px">{{ footerLine }}</x-import>
+
+</x-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;lang&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;da&quot;,&quot;en&quot;],&quot;default&quot;:&quot;da&quot;,&quot;tsType&quot;:&quot;\&quot;da\&quot; | \&quot;en\&quot;&quot;}}">
+class Component extends DCLogic {
+  state = { lang: null, w: 1440 };
+
+  componentDidMount() {
+    this.onResize = () => this.setState({ w: window.innerWidth });
+    window.addEventListener('resize', this.onResize);
+    this.onResize();
+  }
+  componentWillUnmount() { window.removeEventListener('resize', this.onResize); }
+
+  get lang() { return this.state.lang || this.props.lang || 'da'; }
+  t(da, en) { return this.lang === 'da' ? da : en; }
+  em(pre, mid, post) {
+    return React.createElement(React.Fragment, null, pre, React.createElement('em', null, mid), post);
+  }
+
+  renderVals() {
+    const L = this.lang, narrow = this.state.w < 900;
+    return {
+      lang: L,
+      twoCol: narrow ? '1fr' : '1fr 1fr',
+      setDa: () => this.setState({ lang: 'da' }),
+      setEn: () => this.setState({ lang: 'en' }),
+      daColor: L === 'da' ? 'var(--an-on-ink-strong)' : 'var(--an-on-ink-faint)',
+      enColor: L === 'en' ? 'var(--an-on-ink-strong)' : 'var(--an-on-ink-faint)',
+      daRule: L === 'da' ? 'var(--an-accent-bright)' : 'transparent',
+      enRule: L === 'en' ? 'var(--an-accent-bright)' : 'transparent',
+
+      nav: [
+        { href: '#hvad', label: this.t('Hvad du får', 'What you get') },
+        { href: '#oekonomi', label: this.t('Økonomi', 'Economics') },
+        { href: '#optagelse', label: this.t('Optagelse', 'Admission') },
+        { href: '#aabne', label: this.t('Åbne pladser', 'Open seats') },
+        { href: 'TrustUsConsult%20Landing%20v2.dc.html', label: this.t('For kunder', 'For clients') }
+      ],
+      headerCta: this.t('Søg optagelse', 'Apply'),
+      band: this.t(['EGEN TAKST', 'EGNE KUNDER', 'FÆLLES MASKINE', 'FEMTEN DOMÆNER', 'ÉN FAKTURA'],
+        ['YOUR RATE', 'YOUR CLIENTS', 'SHARED MACHINERY', 'FIFTEEN DOMAINS', 'ONE INVOICE']),
+
+      heroEyebrow: this.t('FOR SELVSTÆNDIGE SPECIALISTER', 'FOR INDEPENDENT SPECIALISTS'),
+      heroTitle: this.t(this.em('Selvstændig. Men ikke ', 'alene', '.'), this.em('Independent. But not ', 'alone', '.')),
+      ctaPrimary: this.t('Søg optagelse i et domæne', 'Apply to a domain'),
+      ctaSecondary: this.t('Se kollektivet som kunderne ser det', 'See what clients see'),
+
+      l1: this.t('Hvad du får', 'What you get'),
+      l2: this.t('Økonomi', 'Economics'),
+      l3: this.t('Optagelse', 'Admission'),
+      l4: this.t('Åbne pladser', 'Open seats'),
+
+      h1Title: this.t(this.em('Den maskine, du aldrig ', 'fik bygget', '.'), this.em('The machinery you never ', 'got around to', '.')),
+      h1Intro: this.t('Otte af ti freelancere bruger en dag om ugen på noget, ingen betaler dem for. Det er den dag, kollektivet køber tilbage.', 'Eight in ten freelancers spend a day a week on work nobody pays for. That is the day the collective buys back.'),
+      gets: [
+        { number: '01', title: this.t('En plads på kortet', 'A place on the map'), text: this.t('Din profil ligger i domænet, hvor kunderne leder — med takst, kapacitet og cases. Ikke bagerst i et katalog.', 'Your profile sits in the domain where clients are already looking — with rate, capacity and cases. Not at the back of a directory.') },
+        { number: '02', title: this.t('Fakturering og opkrævning', 'Invoicing and collection'), text: this.t('Kollektivet fakturerer, rykker og følger op. Du sender timer ind; pengene kommer ind på en fast dato.', 'The collective invoices, chases and follows up. You submit hours; the money lands on a fixed date.') },
+        { number: '03', title: this.t('Booking i din egen kalender', 'Booking in your own calendar'), text: this.t('Kunder booker de tider, du selv har åbnet. Ingen mailtråde om hvornår du kan.', 'Clients book the slots you opened yourself. No mail threads about when you are free.') },
+        { number: '04', title: this.t('Kontrakter og jura', 'Contracts and legal'), text: this.t('Standardaftale, databehandleraftale og ansvarsforsikring gennem kollektivet. Gennemgået af domænet for jura.', 'Standard agreement, data processing agreement and liability cover through the collective. Reviewed by the legal domain.') },
+        { number: '05', title: this.t('Kolleger, når opgaven kræver det', 'Colleagues when the brief needs them'), text: this.t('Fjorten andre specialister at trække på — og en fordelingsnøgle, der er aftalt på forhånd.', 'Fourteen other specialists to draw on — and a split agreed in advance.') }
+      ],
+      facts: [
+        { label: this.t('Indskud', 'Buy-in'), value: this.t('12.000 kr. én gang', 'DKK 12,000 once'), detail: this.t('Betales ved optagelse i domænet', 'Paid on admission to the domain') },
+        { label: this.t('Andel', 'Share'), value: this.t('6 % af formidlet arbejde', '6 % of brokered work'), detail: this.t('Dine egne kunder er undtaget', 'Your own clients are exempt') },
+        { label: this.t('Opsigelse', 'Notice'), value: this.t('En måned, ingen binding', 'One month, no lock-in'), detail: this.t('Du beholder profil, cases og kunder', 'You keep your profile, cases and clients') }
+      ],
+
+      h2Title: this.t(this.em('Prisen står ', 'på bordet', '.'), this.em('The price is ', 'on the table', '.')),
+      h2Intro: this.t('Ingen provisionstrappe, ingen fælles pulje, ingen forhandling om hvad din tid er værd.', 'No commission ladder, no shared pool, no negotiation about what your time is worth.'),
+
+      h3Title: this.t(this.em('Optagelse tager ', 'tre uger', '.'), this.em('Admission takes ', 'three weeks', '.')),
+      h3Intro: this.t('Domænet afgør selv, hvem der kommer ind. Kravet er otte år i faget og en reference, vi kan ringe til.', 'The domain decides who joins. The bar is eight years in the craft and a reference we can call.'),
+      steps: [
+        { period: this.t('Uge 1', 'Week 1'), title: this.t('Ansøgning', 'Application'), role: this.t('Dig og domænet', 'You and the domain'), text: this.t('Du sender CV, to cases og hvilket domæne du søger. Vi svarer inden for fem hverdage.', 'You send a CV, two cases and the domain you are applying to. We answer within five working days.') },
+        { period: this.t('Uge 2', 'Week 2'), title: this.t('Faglig samtale', 'Craft interview'), role: this.t('To specialister fra domænet', 'Two specialists from the domain'), text: this.t('En time om dit fag, ikke om din motivation. Domænet skal kunne stå bag dit arbejde over for kunder.', 'An hour about your craft, not your motivation. The domain has to be able to stand behind your work.') },
+        { period: this.t('Uge 3', 'Week 3'), title: this.t('Optagelse', 'Admission'), role: this.t('Kollektivet', 'The collective'), text: this.t('Indskud, aftale og profil. Du er på kortet, dagen efter din profil er godkendt.', 'Buy-in, agreement and profile. You are on the map the day after your profile is approved.') }
+      ],
+      calloutLabel: this.t('Optagelseskravet', 'The bar'),
+      calloutText: this.t('Otte år i faget. En reference, vi kan ringe til.', 'Eight years in the craft. A reference we can call.'),
+
+      h4Title: this.t(this.em('Syv domæner ', 'mangler', ' folk lige nu.'), this.em('Seven domains are ', 'short', ' right now.')),
+      h4Intro: this.t('Efterspørgslen ligger foran bemandingen her. Ansøger du til et af dem, ryger du forrest i køen.', 'Demand runs ahead of staffing in these. Apply to one of them and you go to the front of the queue.'),
+      openings: [
+        { tag: this.t('Bestyrelse', 'Bestyrelse'), title: this.t('Bestyrelsesmedlemmer', 'Board members'), text: this.t('Domænet åbner nu og har fire virksomheder på venteliste.', 'The domain is opening now with four companies already waiting.') },
+        { tag: this.t('Supply Chain & Logistic', 'Supply Chain & Logistic'), title: this.t('Indkøb & logistik', 'Sourcing & logistics'), text: this.t('Producerende kunder spørger hver uge. Der er plads til to.', 'Manufacturing clients ask every week. There is room for two.') },
+        { tag: this.t('Automation & Produktion', 'Automation & Produktion'), title: this.t('Robotter & OEE', 'Robots & OEE'), text: this.t('Kollektivets nyeste domæne. Ingen specialister endnu.', 'The newest domain here. No specialists yet.') },
+        { tag: this.t('Juridisk Rådgiver', 'Juridisk Rådgiver'), title: this.t('Kontrakter & NIS2', 'Contracts & NIS2'), text: this.t('Længste svartid i kollektivet: 14 timer. Vi vil under seks.', 'Longest response time in the collective: 14 hours. We want it under six.') }
+      ],
+
+      contactEyebrow: this.t('DOMÆNET SVARER SELV — INDEN FOR FEM HVERDAGE', 'THE DOMAIN ANSWERS ITSELF — WITHIN FIVE WORKING DAYS'),
+      contactTitle: this.t(this.em('Skal din plads stå ', 'på kortet?', ''), this.em('Should your seat be ', 'on the map?', '')),
+      contactIntro: this.t('Send CV, to cases og det domæne, du søger. Er du i tvivl om domænet, skriver du bare faget.', 'Send a CV, two cases and the domain you are applying to. If you are unsure which domain, just name the craft.'),
+      contactLinks: [
+        { href: 'mailto:optagelse@trustusconsult.dk', label: 'optagelse@trustusconsult.dk ↗' },
+        { href: 'TrustUsConsult%20Portal.dc.html', label: this.t('Se domænekortet ↗', 'See the domain map ↗') },
+        { href: 'TrustUsConsult%20Landing%20v2.dc.html', label: this.t('Forsiden ↗', 'Front page ↗') }
+      ],
+      toTop: this.t('Til toppen', 'Back to top'),
+      footerLine: this.t('TrustUsConsult · Femten domæner, femten specialister', 'TrustUsConsult · Fifteen domains, fifteen specialists')
+    };
+  }
+}
+</script>
+</body>
+</html>

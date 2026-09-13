@@ -13,7 +13,11 @@ if (config.domains.length !== 15) throw new Error('Expected all fifteen domain d
 // Keep all runtime CSS in the component's one shadow stylesheet. The editable
 // source SVG retains its own stylesheet for standalone use.
 let svgCss = '';
-const runtimeSvg = svg.replace(/<style\b[^>]*>([\s\S]*?)<\/style>/g, (_, rules) => { svgCss += rules + '\n'; return ''; });
+const runtimeSvg = svg
+  // The exported SVG carries a signed C2PA provenance manifest in <metadata>.
+  // It is ~50 KB of base64 the browser never uses; keep it in src, drop it here.
+  .replace(/<metadata\b[\s\S]*?<\/metadata>/g, '')
+  .replace(/<style\b[^>]*>([\s\S]*?)<\/style>/g, (_, rules) => { svgCss += rules + '\n'; return ''; });
 const payload = JSON.stringify({version:'1.0.0', css:svgCss + css, svg:runtimeSvg, config}).replace(/</g, '\\u003c');
 const bundle = source.replace(marker, () => payload);
 const out = new URL('../../public/house/', import.meta.url);
