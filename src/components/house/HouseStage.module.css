@@ -37,28 +37,39 @@
   width: 100%;
 }
 .houseHost { display: block; }
-.lights {
+/* Static window art (glass, panes, frame, focus ring): drawn once, never
+   changes on hover. */
+.windows {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   pointer-events: none;
   overflow: visible;
-  /* Own compositing layer: fading a light never repaints the facade. */
-  will-change: opacity;
-  transform: translateZ(0);
 }
-/* The artwork's own light rules, applied to the cloned windows. */
-.lights :global(.tuc-light) {
+.windows :global(.tuc-focus) { opacity: 0; }
+.windows :global(.tuc-window[data-focus="true"] .tuc-focus) { opacity: 1; }
+
+/* The lamps: one small SVG element per window, holding only that window's
+   clipped light. Opacity animates on the element itself, so the compositor
+   blends it without repainting anything. */
+.lamps {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.lamps > svg {
+  position: absolute;
+  display: block;
+  overflow: visible;
   opacity: 0;
   transition: opacity 380ms ease;
+  will-change: opacity;
 }
-.lights :global(.is-neighbour .tuc-light) { opacity: 0.25; }
-.lights :global(.is-active .tuc-light) { opacity: 1; }
-.lights :global(.tuc-focus) { opacity: 0; }
-.lights :global(.tuc-window[data-focus="true"] .tuc-focus) { opacity: 1; }
+.lamps > svg[data-state="near"] { opacity: 0.25; }
+.lamps > svg[data-state="active"] { opacity: 1; }
 @media (prefers-reduced-motion: reduce) {
-  .lights :global(.tuc-light) { transition: none; }
+  .lamps > svg { transition: none; }
 }
 /* Soft bottom edge, formerly a mask on the drawing. */
 .stageFade {

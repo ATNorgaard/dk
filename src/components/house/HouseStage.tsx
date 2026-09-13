@@ -34,22 +34,51 @@ const VIEW_H = 1448;
  * underneath never repaints when a light fades. Hit areas and titles are left
  * out; pointer events stay with the real windows in the shadow root.
  */
-function buildOverlay(el: HouseElement, overlay: SVGSVGElement) {
+function buildOverlay(el: HouseElement, overlay: SVGSVGElement, lamps: HTMLDivElement) {
   const root = el.shadowRoot;
   if (!root) return;
   const ns = "http://www.w3.org/2000/svg";
   const defs = document.createElementNS(ns, "defs");
   const seen = new Set<string>();
   const wins = document.createElementNS(ns, "g");
+  const lampEls: SVGSVGElement[] = [];
+
   root.querySelectorAll<SVGGElement>(".tuc-window[data-domain]").forEach((g) => {
+    const domain = g.dataset.domain!;
     const clone = g.cloneNode(true) as SVGGElement;
     clone.querySelectorAll(".tuc-hit, title").forEach((n) => n.remove());
-    clone.removeAttribute("tabindex");
-    clone.removeAttribute("role");
-    clone.removeAttribute("aria-label");
-    clone.removeAttribute("aria-pressed");
-    clone.removeAttribute("aria-describedby");
+    for (const a of ["tabindex", "role", "aria-label", "aria-pressed", "aria-describedby"]) clone.removeAttribute(a);
     clone.classList.remove("is-active", "is-neighbour");
+
+    /* The light leaves the static clone and becomes its own element, so
+       fading it is a compositor-only change: nothing is repainted. */
+    const light = clone.querySelector<SVGRectElement>("rect.tuc-light");
+    if (light) {
+      const clipped = light.closest<SVGElement>("[clip-path]");
+      const clipId = clipped?.getAttribute("clip-path")?.match(/#([^)]+)/)?.[1];
+      const def = clipId ? root.getElementById(clipId) : null;
+      const x = +light.getAttribute("x")!, y = +light.getAttribute("y")!;
+      const w = +light.getAttribute("width")!, h = +light.getAttribute("height")!;
+      const lamp = document.createElementNS(ns, "svg");
+      lamp.setAttribute("viewBox", `${x} ${y} ${w} ${h}`);
+      lamp.setAttribute("aria-hidden", "true");
+      lamp.dataset.domain = domain;
+      lamp.dataset.state = "off";
+      lamp.style.cssText = `left:${(x / VIEW_W) * 100}%;top:${(y / VIEW_H) * 100}%;width:${(w / VIEW_W) * 100}%;height:${(h / VIEW_H) * 100}%`;
+      const rect = light.cloneNode(true) as SVGRectElement;
+      if (def && clipId) {
+        const d = document.createElementNS(ns, "defs");
+        const c = def.cloneNode(true) as SVGElement;
+        c.id = `${clipId}-lamp`;
+        d.appendChild(c);
+        lamp.appendChild(d);
+        rect.setAttribute("clip-path", `url(#${clipId}-lamp)`);
+      }
+      lamp.appendChild(rect);
+      lampEls.push(lamp);
+      light.remove();
+    }
+
     for (const m of clone.outerHTML.matchAll(/url\(#([^)]+)\)/g)) {
       const id = m[1];
       if (seen.has(id)) continue;
@@ -62,6 +91,7 @@ function buildOverlay(el: HouseElement, overlay: SVGSVGElement) {
     wins.appendChild(clone);
   });
   overlay.replaceChildren(defs, wins);
+  lamps.replaceChildren(...lampEls);
 }
 
 export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
@@ -76,6 +106,7 @@ export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
   const [bound, setBound] = useState(false);
   const hostRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<SVGSVGElement>(null);
+  const lampsRef = useRef<HTMLDivElement>(null);
   /* The subject carries size and camera transform; the house and the light
      overlay sit inside it and move together. */
   const subjectRef = useRef<HTMLDivElement>(null);
@@ -200,7 +231,7 @@ export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
             h: +rc.getAttribute("height")!,
           };
       });
-      if (overlayRef.current) buildOverlay(el, overlayRef.current);
+      if (overlayRef.current && lampsRef.current) buildOverlay(el, overlayRef.current, lampsRef.current);
       /* Mirror keyboard focus onto the overlay's focus ring. */
       const syncFocus = () => {
         const focused = (el.shadowRoot?.activeElement as HTMLElement | null)?.closest?.(".tuc-window") as
@@ -322,10 +353,10 @@ export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
      Applied as the artwork's own classes on the overlay clones. */
   const relatedIds = useMemo(() => new Set(related.map((m) => m.id)), [related]);
   useEffect(() => {
-    overlayRef.current?.querySelectorAll<SVGGElement>(".tuc-window").forEach((w) => {
-      const id = w.dataset.domain;
-      w.classList.toggle("is-active", level > 0 && id === active.id);
-      w.classList.toggle("is-neighbour", level > 0 && id !== active.id && relatedIds.has(id ?? ""));
+    lampsRef.current?.querySelectorAll<SVGSVGElement>("svg[data-domain]").forEach((lamp) => {
+      const id = lamp.dataset.domain ?? "";
+      lamp.dataset.state =
+        level === 0 ? "off" : id === active.id ? "active" : relatedIds.has(id) ? "near" : "off";
     });
   }, [active.id, level, relatedIds, bound]);
 
@@ -343,7 +374,8 @@ export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
         <div ref={hostRef} className={s.host}>
           <div ref={subjectRef} className={s.subject}>
             <div ref={houseHostRef} className={s.houseHost} />
-            <svg ref={overlayRef} className={s.lights} viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} aria-hidden="true" focusable="false" />
+            <svg ref={overlayRef} className={s.windows} viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} aria-hidden="true" focusable="false" />
+            <div ref={lampsRef} className={s.lamps} aria-hidden="true" />
           </div>
         </div>
         <div className={s.stageFade} aria-hidden="true" />
