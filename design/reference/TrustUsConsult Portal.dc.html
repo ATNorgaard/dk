@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/andreas-n-rgaard-design-system-c1ad9fd9-016e-4735-8515-9bd83c311c3b/fonts/fonts.css">
+<link rel="stylesheet" href="_ds/andreas-n-rgaard-design-system-c1ad9fd9-016e-4735-8515-9bd83c311c3b/_ds_bundle.css">
+<link rel="stylesheet" href="_ds/andreas-n-rgaard-design-system-c1ad9fd9-016e-4735-8515-9bd83c311c3b/styles.css">
+<link rel="stylesheet" href="_ds/nocturne-084d4475-94f8-486e-8638-ea01aa814f66/styles.css">
+<script src="_ds/andreas-n-rgaard-design-system-c1ad9fd9-016e-4735-8515-9bd83c311c3b/_ds_bundle.js"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);overflow:hidden}
+a{color:var(--color-accent);text-decoration:none}
+a:hover{color:var(--color-accent-400)}
+[data-lang="da"] .en{display:none!important}
+[data-lang="en"] .da{display:none!important}
+[data-links="off"] .linklayer{opacity:0!important}
+[data-filter="needs"] .node:not([data-status="needs"]){opacity:.3!important;filter:grayscale(1)}
+[data-filter="open"] .node:not([data-open="true"]){opacity:.3!important;filter:grayscale(1)}
+.node{transition:opacity .4s ease,filter .4s ease}
+.node:hover{z-index:90!important}
+.node:hover .face{border-color:var(--color-accent)!important;box-shadow:0 0 0 1px var(--color-accent),0 0 44px -6px var(--color-accent)!important;transform:scale(1.045)}
+.node[data-sel="true"] .face{border-color:var(--color-accent)!important;border-style:solid!important;box-shadow:0 0 0 1px var(--color-accent),0 0 70px -4px var(--color-accent)!important;transform:scale(1.06)}
+.node[data-sel="true"] .ring{opacity:1;transform:scale(1)}
+.ring{position:absolute;inset:-14px;border-radius:50%;border:1px solid color-mix(in srgb,#708046 45%,transparent);opacity:0;transform:scale(.86);transition:opacity .3s ease,transform .3s ease;pointer-events:none}
+[data-canvas]{transition:transform .62s cubic-bezier(.36,.06,.2,1)}
+.peek{opacity:0;transform:translate(-50%,8px);pointer-events:none;transition:opacity .18s ease,transform .18s ease}
+.node:hover .peek{opacity:1;transform:translate(-50%,0)}
+.boardonly{display:none!important}
+[data-role="board"] .boardonly{display:block!important}
+.tab[data-active="true"]{color:var(--color-accent);box-shadow:inset 0 -2px 0 var(--color-accent)}
+.chip[data-sel="true"]{border-color:var(--color-accent)!important;color:var(--color-accent);background:color-mix(in srgb,var(--color-accent) 12%,transparent)!important}
+.rowlink:hover{background:color-mix(in srgb,var(--color-text) 5%,transparent)}
+.scroll{overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(20,34,33,.28) transparent}
+@keyframes zin{from{opacity:0;transform:scale(.955)}to{opacity:1;transform:none}}
+@keyframes fup{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes sright{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:.9}}
+:root{
+  --color-bg:#f1efe7;--color-surface:#faf8f2;--color-text:#142221;
+  --color-accent:#708046;--color-accent-2:#a9bd6e;--color-divider:rgba(20,34,33,.18);
+  --color-neutral-100:#142221;--color-neutral-200:#223331;--color-neutral-300:#4e5752;
+  --color-neutral-400:#666b65;--color-neutral-500:#7f857d;--color-neutral-600:#a8a294;
+  --color-neutral-700:#cfcabb;--color-neutral-800:#e6e2d7;--color-neutral-900:#efece3;
+  --color-accent-100:#3d4a22;--color-accent-200:#50602e;--color-accent-300:#5f7038;
+  --color-accent-400:#708046;--color-accent-500:#8a9d55;--color-accent-600:#a9bd6e;
+  --color-accent-700:#c4d987;--color-accent-800:#d7e3ab;--color-accent-900:#eef2e0;
+  --font-heading:var(--an-font-sans);--font-body:var(--an-font-sans);
+  --radius-sm:0;--radius-md:0;--radius-lg:0;
+  --shadow-sm:0 0 0 1px rgba(20,34,33,.18);
+  --shadow-md:0 0 0 1px rgba(20,34,33,.18),0 6px 18px rgba(20,34,33,.07);
+  --shadow-lg:0 0 0 1px rgba(20,34,33,.18),0 16px 40px rgba(20,34,33,.10);
+}
+h1,h2,h3,h4,h5,h6{font-family:var(--an-font-sans);letter-spacing:-0.02em;color:var(--an-text-strong)}
+h6{font-family:var(--an-font-mono);letter-spacing:.14em;text-transform:uppercase;font-size:var(--an-text-micro)}
+.node:hover .face{border-color:var(--an-accent-deep)!important;box-shadow:0 0 0 1px var(--an-accent-deep),0 10px 24px -14px rgba(20,34,33,.45)!important}
+.node[data-sel="true"] .face{background:#fff!important;border-color:var(--an-accent-deep)!important;box-shadow:0 0 0 2px var(--an-accent-deep),0 16px 34px -16px rgba(20,34,33,.45)!important}
+.node[data-status="needs"] .face{border-style:dashed!important}
+.face{color:var(--an-text-strong)}
+.zbtn{width:34px;height:34px;display:grid;place-items:center;cursor:pointer;border:1px solid rgba(20,34,33,.28);background:#faf8f2;font-family:var(--an-font-mono);font-size:13px;color:var(--an-text-strong);transition:background .15s ease,color .15s ease}
+.zbtn:hover{background:var(--an-accent);color:var(--an-text-strong);border-color:var(--an-accent-deep)}
+.zbtn[data-on="true"]{background:var(--an-accent);border-color:var(--an-accent-deep)}
+.zbtn[data-lim="true"]{opacity:.35;pointer-events:none}
+</style>
+</helmet>
+
+<div data-lang="{{ lang }}" data-role="{{ role }}" data-links="{{ linksOn }}" style="height:100vh;display:flex;flex-direction:column;background:radial-gradient(1200px 700px at 62% -10%, #f7f5f0 0%, var(--an-paper) 62%);color:var(--color-text)">
+
+  <header style="display:flex;align-items:center;gap:18px;padding:0 20px;height:56px;flex:none;border-bottom:1px solid color-mix(in srgb,#142221 10%,transparent);background:color-mix(in srgb,#f4f2ea 76%,transparent);backdrop-filter:blur(14px);position:relative;z-index:200">
+    <div onClick="{{ goMap }}" style="display:flex;align-items:center;gap:9px;cursor:pointer;margin-right:4px">
+      <div style="width:22px;height:22px;border-radius:0;border:1px solid var(--color-accent);display:grid;place-items:center">
+        <div style="width:7px;height:7px;border-radius:50%;background:var(--color-accent);box-shadow:0 0 12px 1px var(--color-accent)"></div>
+      </div>
+      <span style="font-weight:500;font-size:15px;letter-spacing:-0.01em">TrustUsConsult</span>
+    </div>
+
+    <nav style="display:flex;align-items:center;gap:2px;height:100%">
+      <div class="tab" onClick="{{ goMap }}" data-active="{{ tabMap }}" style="display:flex;align-items:center;height:100%;padding:0 12px;font-size:13px;cursor:pointer;color:color-mix(in srgb,#142221 72%,transparent)">
+        <span class="da">Domænekort</span><span class="en">Domain map</span>
+      </div>
+      <div class="tab" onClick="{{ goBoard }}" data-active="{{ tabBoard }}" style="display:flex;align-items:center;height:100%;padding:0 12px;font-size:13px;cursor:pointer;color:color-mix(in srgb,#142221 72%,transparent)">
+        <span class="da">Bestyrelse</span><span class="en">Board</span>
+      </div>
+      <div class="tab" onClick="{{ goMe }}" data-active="{{ tabMe }}" style="display:flex;align-items:center;height:100%;padding:0 12px;font-size:13px;cursor:pointer;color:color-mix(in srgb,#142221 72%,transparent)">
+        <span class="da">Min side</span><span class="en">My space</span>
+      </div>
+    </nav>
+
+    <div style="position:relative;flex:1;max-width:380px;margin-left:auto">
+      <input class="input" value="{{ q }}" onChange="{{ onQ }}" placeholder="{{ searchPh }}" style="height:34px;min-height:34px;padding-left:32px;font-size:13px;background:color-mix(in srgb,#faf8f2 80%,transparent)">
+      <svg viewBox="0 0 256 256" width="15" height="15" style="position:absolute;left:10px;top:10px;opacity:.5" fill="currentColor"><path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path></svg>
+      <sc-if value="{{ hasResults }}" hint-placeholder-val="{{ false }}">
+        <div class="scroll" style="position:absolute;top:40px;left:0;right:0;max-height:320px;background:var(--color-surface);border-radius:0;box-shadow:var(--shadow-lg);padding:5px;z-index:300;animation:fup .16s ease">
+          <sc-for list="{{ results }}" as="r" hint-placeholder-count="3">
+            <div class="rowlink" onClick="{{ r.open }}" style="display:flex;align-items:center;gap:10px;padding:7px 9px;border-radius:0;cursor:pointer">
+              <div style="width:26px;height:26px;flex:none;border-radius:0;display:grid;place-items:center;font-size:10px;letter-spacing:.03em;background:var(--color-neutral-900);box-shadow:inset 0 0 0 1px rgba(20,34,33,.28);color:var(--color-accent-300)">{{ r.badge }}</div>
+              <div style="min-width:0">
+                <div style="font-size:13px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.title }}</div>
+                <div style="font-size:11px;color:color-mix(in srgb,#142221 72%,transparent)">{{ r.sub }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:1px;border:1px solid var(--color-divider);border-radius:0;overflow:hidden;height:30px">
+      <div onClick="{{ setDa }}" data-sel="{{ isDa }}" class="chip" style="padding:0 9px;height:100%;display:grid;place-items:center;font-size:11.5px;cursor:pointer">DA</div>
+      <div onClick="{{ setEn }}" data-sel="{{ isEn }}" class="chip" style="padding:0 9px;height:100%;display:grid;place-items:center;font-size:11.5px;cursor:pointer">EN</div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:8px">
+      <div style="text-align:right;line-height:1.15">
+        <div style="font-size:11.5px">{{ roleName }}</div>
+        <div style="font-size:10px;color:color-mix(in srgb,#142221 72%,transparent)">
+          <span class="da">Skift visning</span><span class="en">Switch view</span>
+        </div>
+      </div>
+      <div onClick="{{ cycleRole }}" title="Switch role" style="width:32px;height:32px;border-radius:50%;cursor:pointer;display:grid;place-items:center;font-size:11px;background:var(--color-accent-900);box-shadow:inset 0 0 0 1px var(--color-accent-700);color:var(--color-accent-200)">{{ roleInitials }}</div>
+    </div>
+  </header>
+
+  <!-- ══ MAP ══ -->
+  <sc-if value="{{ isMap }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1;display:flex;min-height:0">
+
+      <aside class="scroll" style="width:252px;flex:none;padding:18px 16px;border-right:1px solid color-mix(in srgb,#142221 8%,transparent);display:flex;flex-direction:column;gap:20px">
+        <div>
+          <h6 style="margin:0 0 9px;color:color-mix(in srgb,#142221 72%,transparent)">
+            <span class="da">Når et domæne åbnes</span><span class="en">When a domain opens</span>
+          </h6>
+          <div style="display:flex;align-items:flex-start;gap:9px;padding:10px;border:1px solid var(--color-divider);background:var(--color-surface)">
+            <svg viewBox="0 0 120 56" width="46" height="22" style="flex:none;margin-top:2px" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="76" y="8" width="36" height="40"></rect><path d="M82 18h24M82 26h18M82 34h22" stroke-width="1"></path><circle cx="34" cy="28" r="11" fill="currentColor" stroke="none"></circle><circle cx="12" cy="14" r="3.5" opacity=".45" fill="currentColor" stroke="none"></circle><circle cx="16" cy="44" r="3" opacity=".45" fill="currentColor" stroke="none"></circle><circle cx="56" cy="42" r="3" opacity=".45" fill="currentColor" stroke="none"></circle></svg>
+            <div style="font-size:11px;line-height:1.5;color:color-mix(in srgb,#142221 72%,transparent)">
+              <span class="da">Domænet fremhæves på kortet, og detaljerne åbner i panelet til højre.</span>
+              <span class="en">The domain is highlighted on the map and its detail opens in the panel to the right.</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h6 style="margin:0 0 10px;color:color-mix(in srgb,#142221 72%,transparent)">
+            <span class="da">Filtre</span><span class="en">Filters</span>
+          </h6>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div class="chip" onClick="{{ fAll }}" data-sel="{{ isFAll }}" style="padding:7px 10px;border:1px solid var(--color-divider);border-radius:0;cursor:pointer;font-size:12.5px;display:flex;justify-content:space-between">
+              <span><span class="da">Alle domæner</span><span class="en">All domains</span></span><span style="opacity:.5">15</span>
+            </div>
+            <div class="chip" onClick="{{ fNeeds }}" data-sel="{{ isFNeeds }}" style="padding:7px 10px;border:1px solid var(--color-divider);border-radius:0;cursor:pointer;font-size:12.5px;display:flex;justify-content:space-between">
+              <span><span class="da">Mangler profiler</span><span class="en">Needs freelancers</span></span><span style="opacity:.5">10</span>
+            </div>
+            <div class="chip" onClick="{{ fOpen }}" data-sel="{{ isFOpen }}" style="padding:7px 10px;border:1px solid var(--color-divider);border-radius:0;cursor:pointer;font-size:12.5px;display:flex;justify-content:space-between">
+              <span><span class="da">Ledig kapacitet</span><span class="en">Open capacity</span></span><span style="opacity:.5">14</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h6 style="margin:0 0 10px;color:color-mix(in srgb,#142221 72%,transparent)">
+            <span class="da">Signatur</span><span class="en">Legend</span>
+          </h6>
+          <div style="display:flex;flex-direction:column;gap:9px;font-size:11.5px;color:color-mix(in srgb,#142221 72%,transparent)">
+            <div style="display:flex;align-items:center;gap:9px"><div style="width:16px;height:16px;border-radius:50%;border:1px solid rgba(20,34,33,.4)"></div><span><span class="da">Cirkelstørrelse = trafik</span><span class="en">Circle size = traffic</span></span></div>
+            <div style="display:flex;align-items:center;gap:9px"><div style="width:16px;height:16px;border-radius:50%;border:1px dashed var(--color-accent)"></div><span><span class="da">Mangler profiler</span><span class="en">Needs freelancers</span></span></div>
+            <div style="display:flex;align-items:center;gap:9px"><div style="width:16px;height:16px;border-radius:50%;background:var(--color-neutral-800);box-shadow:inset 0 0 0 1px rgba(20,34,33,.32)"></div><span><span class="da">Fuldt booket</span><span class="en">Fully booked</span></span></div>
+            <div style="display:flex;align-items:center;gap:9px"><div style="width:16px;height:1px;background:rgba(20,34,33,.32)"></div><span><span class="da">Samarbejdsflade</span><span class="en">Shared engagements</span></span></div>
+          </div>
+        </div>
+
+        <div>
+          <h6 style="margin:0 0 10px;color:color-mix(in srgb,#142221 72%,transparent)">
+            <span class="da">Domæneoversigt</span><span class="en">Domain key</span>
+          </h6>
+          <div style="display:flex;flex-direction:column;gap:1px">
+            <sc-for list="{{ domRows }}" as="r" hint-placeholder-count="15">
+              <div class="rowlink" onClick="{{ r.open }}" style="display:flex;gap:9px;align-items:baseline;padding:4px 6px;border-radius:0;cursor:pointer;font-size:12px">
+                <span style="font-family:var(--an-font-mono);color:var(--color-accent);font-size:10px;width:15px;flex:none">{{ r.num }}</span>
+                <span>{{ r.name }}</span>
+                <span style="margin-left:auto;opacity:.35;font-size:10.5px">{{ r.count }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div class="boardonly" style="margin-top:auto;padding:12px;border-radius:0;background:var(--color-accent-900);box-shadow:inset 0 0 0 1px var(--color-accent-800)">
+          <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-300);margin-bottom:6px">
+            <span class="da">Bestyrelseslag</span><span class="en">Board layer</span>
+          </div>
+          <div style="font-size:12px;line-height:1.45;color:color-mix(in srgb,#142221 78%,transparent)">
+            <span class="da">Trafik og bookinger vises direkte på kortet. 10 domæner er under bemandingsmål.</span>
+            <span class="en">Traffic and bookings are painted onto the map. 10 domains are below staffing target.</span>
+          </div>
+        </div>
+      </aside>
+
+      <div data-mapstage="1" style="flex:1;position:relative;overflow:hidden;min-width:0" data-filter="{{ filter }}">
+        <div style="position:absolute;inset:0;background-image:linear-gradient(color-mix(in srgb,#142221 8%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,#142221 8%,transparent) 1px,transparent 1px);background-size:56px 56px;mask-image:radial-gradient(circle at 50% 45%,#000 30%,transparent 78%)"></div>
+
+        <sc-if value="{{ showTitle }}" hint-placeholder-val="{{ true }}">
+        <div style="position:absolute;top:18px;left:22px;z-index:20">
+          <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent);margin-bottom:4px">
+            <span class="da">Kollektivet</span><span class="en">The collective</span>
+          </div>
+          <h3 style="margin:0 0 2px"><span class="da">15 domæner · 15 specialister</span><span class="en">15 domains · 15 specialists</span></h3>
+          <div style="font-size:12.5px;color:color-mix(in srgb,#142221 72%,transparent);max-width:330px">
+            <span class="da">Hold musen over et domæne for nøgletal. Klik for at åbne det i panelet.</span>
+            <span class="en">Hover a domain for the essentials. Click to open it in the panel.</span>
+          </div>
+        </div>
+        </sc-if>
+
+        <!-- constellation -->
+        <div class="m-con" style="position:absolute;inset:0">
+          <div data-canvas="con" style="position:absolute;left:50%;top:50%;width:1000px;height:620px;transform:translate(-50%,-50%) scale(.7)">
+            <svg class="linklayer" viewBox="0 0 1000 620" width="1000" height="620" style="position:absolute;inset:0;transition:opacity .3s ease" fill="none" stroke="color-mix(in srgb,#142221 15%,transparent)" stroke-width="1">
+              <sc-for list="{{ conEdges }}" as="e" hint-placeholder-count="26">
+                <path d="{{ e.d }}"></path>
+              </sc-for>
+            </svg>
+
+            <sc-for list="{{ conNodes }}" as="n" hint-placeholder-count="15">
+              <div class="node" data-status="{{ n.status }}" data-open="{{ n.seat }}" data-node="{{ n.id }}" onClick="{{ n.go }}" style="{{ n.box }}">
+                <div class="ring"></div>
+                <div class="face" style="position:absolute;inset:0;border-radius:50%;border:1px solid rgba(20,34,33,.3);background:radial-gradient(circle at 38% 30%,#ffffff,#eceadf);box-shadow:0 8px 26px rgba(20,34,33,0.10);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0 9px;text-align:center;transition:all .22s ease">
+                  <span style="font-family:var(--an-font-mono);font-size:9.5px;letter-spacing:.12em;color:var(--color-accent)">{{ n.num }}</span>
+                  <span style="font-weight:500;letter-spacing:-.01em;line-height:1.12;font-size:{{ n.type }}">{{ n.short }}</span>
+                  <span style="font-size:10.5px;color:color-mix(in srgb,#142221 72%,transparent)">{{ n.count }}</span>
+                  <span class="boardonly" style="font-size:10px;color:var(--color-accent-300)">{{ n.metrics }}</span>
+                </div>
+                <div class="peek" style="position:absolute;bottom:calc(100% + 12px);left:50%;width:246px;padding:12px;border-radius:0;background:var(--color-surface);box-shadow:var(--shadow-lg);z-index:120">
+                  <div style="font-family:var(--an-font-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent);margin-bottom:4px">{{ n.domLabel }}</div>
+                  <div style="font-size:15px;margin-bottom:6px">{{ n.name }}</div>
+                  <div style="font-size:12px;line-height:1.45;color:color-mix(in srgb,#142221 72%,transparent);margin-bottom:9px">{{ n.blurb }}</div>
+                  <div style="display:flex;gap:14px;font-size:11px;color:color-mix(in srgb,#142221 72%,transparent)">
+                    <span><b style="color:#142221;font-weight:500">{{ n.pcount }}</b> {{ n.pLabel }}</span>
+                    <span><b style="color:#142221;font-weight:500">{{ n.resp }}</b> {{ n.rLabel }}</span>
+                    <span><b style="color:#142221;font-weight:500">{{ n.bookings }}</b> {{ n.bLabel }}</span>
+                  </div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <sc-if value="{{ panelOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;right:0;top:0;bottom:0;width:74px;z-index:28;pointer-events:none;background:linear-gradient(90deg,transparent,color-mix(in srgb,#f1efe7 92%,transparent))"></div>
+        </sc-if>
+
+        <div style="position:absolute;right:20px;bottom:20px;z-index:30;display:flex;flex-direction:column;gap:6px">
+          <div class="zbtn" onClick="{{ zoomFit }}" data-on="true" title="{{ fitLabel }}">⤢</div>
+          <div class="zbtn" onClick="{{ zoomIn }}" data-lim="{{ atMax }}">+</div>
+          <div class="zbtn" onClick="{{ zoomOut }}" data-lim="{{ atMin }}">−</div>
+        </div>
+
+      </div>
+
+      <sc-if value="{{ panelOpen }}" hint-placeholder-val="{{ false }}">
+        <aside class="scroll" style="width:396px;flex:none;border-left:1px solid color-mix(in srgb,#142221 9%,transparent);background:color-mix(in srgb,#faf8f2 92%,transparent);animation:sright .3s cubic-bezier(.2,.7,.3,1)">
+          <div style="padding:20px 22px 30px;display:flex;flex-direction:column;gap:18px">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+              <div>
+                <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent);margin-bottom:5px"><span class="da">Domæne</span><span class="en">Domain</span> {{ dom.num }}</div>
+                <h3 style="margin:0;font-size:22px;line-height:1.2">{{ dom.name }}</h3>
+              </div>
+              <div onClick="{{ closePanel }}" style="cursor:pointer;width:26px;height:26px;flex:none;border-radius:0;display:grid;place-items:center;font-size:16px;line-height:1;color:color-mix(in srgb,#142221 72%,transparent);border:1px solid var(--color-divider)">×</div>
+            </div>
+
+            <p style="margin:0;font-size:13px;line-height:1.55;color:color-mix(in srgb,#142221 72%,transparent);text-wrap:pretty">{{ dom.blurb }}</p>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:color-mix(in srgb,#142221 8%,transparent);border-radius:0;overflow:hidden">
+              <div style="background:#f4f2ea;padding:11px 13px"><div style="font-size:19px">{{ dom.traffic }}</div><div style="font-size:10.5px;color:color-mix(in srgb,#142221 72%,transparent)"><span class="da">Besøg / 30d</span><span class="en">Visits / 30d</span></div></div>
+              <div style="background:#f4f2ea;padding:11px 13px"><div style="font-size:19px">{{ dom.bookings }}</div><div style="font-size:10.5px;color:color-mix(in srgb,#142221 72%,transparent)"><span class="da">Bookinger</span><span class="en">Bookings</span></div></div>
+              <div style="background:#f4f2ea;padding:11px 13px"><div style="font-size:19px">{{ dom.count }}</div><div style="font-size:10.5px;color:color-mix(in srgb,#142221 72%,transparent)"><span class="da">Profiler</span><span class="en">Profiles</span></div></div>
+              <div style="background:#f4f2ea;padding:11px 13px"><div style="font-size:19px">{{ dom.resp }}</div><div style="font-size:10.5px;color:color-mix(in srgb,#142221 72%,transparent)"><span class="da">Svartid</span><span class="en">Response</span></div></div>
+            </div>
+
+            <div>
+              <h6 style="margin:0 0 9px;color:color-mix(in srgb,#142221 72%,transparent)"><span class="da">Specialister</span><span class="en">Specialists</span></h6>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <sc-for list="{{ dom.profiles }}" as="p" hint-placeholder-count="3">
+                  <div style="padding:12px;border-radius:0;background:var(--color-surface);box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:10px">
+                    <div style="display:flex;gap:11px;align-items:flex-start">
+                      <div style="width:38px;height:38px;flex:none;border-radius:0;background:linear-gradient(150deg,#223331,#142221);box-shadow:inset 0 0 0 1px rgba(20,34,33,.28);display:grid;place-items:center;font-size:12px;color:var(--an-accent-bright)">{{ p.initials }}</div>
+                      <div style="min-width:0;flex:1">
+                        <div style="font-size:14px;line-height:1.2">{{ p.name }}</div>
+                        <div style="font-size:12px;color:var(--color-accent-300);margin-top:1px">{{ p.title }}</div>
+                        <div style="font-size:11px;color:color-mix(in srgb,#142221 72%,transparent);margin-top:2px">{{ p.avail }}</div>
+                      </div>
+                    </div>
+                    <div style="display:flex;gap:6px">
+                      <button class="btn btn-secondary" onClick="{{ p.open }}" style="flex:1;font-size:12px"><span class="da">Profil</span><span class="en">Profile</span></button>
+                      <button class="btn btn-primary" onClick="{{ p.book }}" style="flex:1;font-size:12px"><span class="da">Book møde</span><span class="en">Book</span></button>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <sc-if value="{{ dom.needs }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:13px;border-radius:0;border:1px dashed color-mix(in srgb,#708046 40%,transparent);font-size:12.5px;line-height:1.5;color:color-mix(in srgb,#142221 72%,transparent)">
+                <span class="da">Efterspørgslen overstiger kapaciteten — der er plads til én specialist mere i dette domæne.</span>
+                <span class="en">Demand exceeds capacity — there is room for one more specialist in this domain.</span>
+              </div>
+            </sc-if>
+
+            <button class="btn btn-secondary btn-block" onClick="{{ openFull }}">
+              <span class="da">Åbn hele domænesiden</span><span class="en">Open the full domain page</span>
+            </button>
+          </div>
+        </aside>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <!-- ══ DOMAIN DETAIL ══ -->
+  <sc-if value="{{ isDomain }}" hint-placeholder-val="{{ false }}">
+    <div class="scroll" style="flex:1;min-height:0;animation:zin .3s cubic-bezier(.2,.7,.3,1)">
+      <div style="max-width:1180px;margin:0 auto;padding:26px 32px 60px">
+        <div onClick="{{ goMap }}" style="display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:color-mix(in srgb,#142221 72%,transparent);cursor:pointer;margin-bottom:20px">
+          <svg viewBox="0 0 256 256" width="13" height="13" fill="currentColor"><path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"></path></svg>
+          <span class="da">Tilbage til kortet</span><span class="en">Back to the map</span>
+        </div>
+
+        <div style="display:flex;align-items:flex-start;gap:24px;flex-wrap:wrap;margin-bottom:26px">
+          <div style="flex:1;min-width:320px">
+            <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent);margin-bottom:6px"><span class="da">Domæne</span><span class="en">Domain</span> {{ dom.num }}</div>
+            <h1 style="font-size:38px;margin:0 0 8px">{{ dom.name }}</h1>
+            <p style="max-width:640px;font-size:14.5px;line-height:1.6;color:color-mix(in srgb,#142221 72%,transparent);margin:0">{{ dom.blurb }}</p>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,minmax(78px,1fr));gap:1px;background:color-mix(in srgb,#142221 8%,transparent);border-radius:0;overflow:hidden;min-width:340px">
+            <div style="background:#f4f2ea;padding:12px 14px"><div style="font-size:21px">{{ dom.count }}</div><div style="font-size:10.5px;color:color-mix(in srgb,#142221 72%,transparent)"><span class="da">Profiler</span><span class="en">Profiles</span></div></div>
+            <div style="background:#f4f2ea;padding:12px 14px"><div style="font-size:21px">{{ dom.traffic }}</div><div style="font-size:10.5px;color:color-mix(in srgb,#142221 72%,transparent)"><span class="da">Besøg / 30d</span><span class="en">Visits / 30d</span></div></div>
+            <div style="background:#f4f2ea;padding:12px 14px"><div style="font-size:21px">{{ dom.bookings }}</div><div style="font-size:10.5px;color:color-mix(in srgb,#142221 72%,transparent)"><span class="da">Bookinger</span><span class="en">Bookings</span></div></div>
+            <div style="background:#f4f2ea;padding:12px 14px"><div style="font-size:21px">{{ dom.resp }}</div><div style="font-size:10.5px;color:color-mix(in srgb,#142221 72%,transparent)"><span class="da">Svartid</span><span class="en">Response</span></div></div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(324px,1fr));gap:16px">
+          <sc-for list="{{ dom.profiles }}" as="p" hint-placeholder-count="3">
+            <div style="padding:18px;border-radius:0;background:var(--color-surface);box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:12px;animation:fup .3s ease both">
+              <div style="display:flex;gap:13px;align-items:flex-start">
+                <div style="width:52px;height:52px;flex:none;border-radius:0;background:linear-gradient(150deg,#223331,#142221);box-shadow:inset 0 0 0 1px rgba(20,34,33,.28);display:grid;place-items:center;font-size:15px;color:var(--an-accent-bright)">{{ p.initials }}</div>
+                <div style="min-width:0;flex:1">
+                  <div style="font-size:16px;line-height:1.2">{{ p.name }}</div>
+                  <div style="font-size:12.5px;color:var(--color-accent-300);margin-top:2px">{{ p.title }}</div>
+                  <div style="font-size:11.5px;color:color-mix(in srgb,#142221 72%,transparent);margin-top:3px">{{ p.location }}</div>
+                </div>
+              </div>
+              <p style="margin:0;font-size:12.5px;line-height:1.5;color:color-mix(in srgb,#142221 72%,transparent)">{{ p.tagline }}</p>
+              <div style="display:flex;flex-wrap:wrap;gap:5px">
+                <sc-for list="{{ p.skills }}" as="s" hint-placeholder-count="3">
+                  <span class="tag tag-neutral">{{ s.t }}</span>
+                </sc-for>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:11px;margin-top:auto;border-top:1px solid color-mix(in srgb,#142221 8%,transparent)">
+                <div style="font-size:11.5px;color:color-mix(in srgb,#142221 72%,transparent)">{{ p.avail }}</div>
+                <div style="display:flex;gap:6px">
+                  <button class="btn btn-secondary" onClick="{{ p.open }}" style="font-size:12.5px"><span class="da">Profil</span><span class="en">Profile</span></button>
+                  <button class="btn btn-primary" onClick="{{ p.book }}" style="font-size:12.5px"><span class="da">Book møde</span><span class="en">Book</span></button>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+
+          <sc-if value="{{ dom.needs }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:18px;border-radius:0;border:1px dashed color-mix(in srgb,#708046 40%,transparent);display:flex;flex-direction:column;justify-content:center;gap:8px;min-height:200px;text-align:center">
+              <div style="font-size:22px;color:var(--color-accent);line-height:1">+</div>
+              <div style="font-size:14px"><span class="da">Plads til én specialist mere</span><span class="en">Room for one more specialist</span></div>
+              <div style="font-size:12px;color:color-mix(in srgb,#142221 72%,transparent);max-width:230px;margin:0 auto"><span class="da">Efterspørgslen i dette domæne overstiger kapaciteten.</span><span class="en">Demand in this domain exceeds capacity.</span></div>
+              <button class="btn btn-ghost" style="margin-top:4px"><span class="da">Ansøg om pladsen</span><span class="en">Apply for the seat</span></button>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ══ PROFILE ══ -->
+  <sc-if value="{{ isProfile }}" hint-placeholder-val="{{ false }}">
+    <div class="scroll" style="flex:1;min-height:0;animation:zin .3s cubic-bezier(.2,.7,.3,1)">
+      <div style="max-width:1080px;margin:0 auto;padding:24px 32px 70px">
+        <div onClick="{{ backToDomain }}" style="display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:color-mix(in srgb,#142221 72%,transparent);cursor:pointer;margin-bottom:18px">
+          <svg viewBox="0 0 256 256" width="13" height="13" fill="currentColor"><path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"></path></svg>
+          <span>{{ prof.domainName }}</span>
+        </div>
+
+        <div style="display:grid;grid-template-columns:300px 1fr;gap:30px;align-items:start">
+          <div style="display:flex;flex-direction:column;gap:16px;position:sticky;top:0">
+            <div style="aspect-ratio:1;border-radius:0;background:linear-gradient(155deg,#e6e2d7,#f4f2ea);box-shadow:inset 0 0 0 1px rgba(20,34,33,.28);display:grid;place-items:center;position:relative;overflow:hidden">
+              <div style="font-size:52px;font-weight:500;color:color-mix(in srgb,#142221 72%,transparent)">{{ prof.initials }}</div>
+              <div style="position:absolute;bottom:10px;left:0;right:0;text-align:center;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:color-mix(in srgb,#142221 72%,transparent)"><span class="da">Portrætfoto</span><span class="en">Portrait photo</span></div>
+            </div>
+
+            <div style="padding:15px;border-radius:0;background:var(--color-surface);box-shadow:var(--shadow-sm)">
+              <h6 style="margin:0 0 10px;color:color-mix(in srgb,#142221 72%,transparent)"><span class="da">Kontakt</span><span class="en">Contact</span></h6>
+              <div style="display:flex;flex-direction:column;gap:8px;font-size:12.5px">
+                <div style="display:flex;gap:8px;align-items:center"><svg viewBox="0 0 256 256" width="14" height="14" fill="currentColor" style="opacity:.5;flex:none"><path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48Zm-96,85.15L52.57,64H203.43ZM98.71,128,40,181.81V74.19Zm11.84,10.85,12,11.05a8,8,0,0,0,10.82,0l12-11.05,58,53.15H52.57ZM157.29,128,216,74.18V181.82Z"></path></svg><span style="word-break:break-all">{{ prof.email }}</span></div>
+                <div style="display:flex;gap:8px;align-items:center"><svg viewBox="0 0 256 256" width="14" height="14" fill="currentColor" style="opacity:.5;flex:none"><path d="M216,24H40A16,16,0,0,0,24,40V216a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V40A16,16,0,0,0,216,24ZM96,176a8,8,0,0,1-16,0V112a8,8,0,0,1,16,0Zm-8-84a12,12,0,1,1,12-12A12,12,0,0,1,88,92Zm96,84a8,8,0,0,1-16,0V140a20,20,0,0,0-40,0v36a8,8,0,0,1-16,0V112a8,8,0,0,1,15.79-1.78A36,36,0,0,1,184,140Z"></path></svg><span>LinkedIn</span></div>
+                <div style="display:flex;gap:8px;align-items:center"><svg viewBox="0 0 256 256" width="14" height="14" fill="currentColor" style="opacity:.5;flex:none"><path d="M128,64a40,40,0,1,0,40,40A40,40,0,0,0,128,64Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,128,128Zm0-112a88.1,88.1,0,0,0-88,88c0,31.4,14.51,64.68,42,96.25a254.19,254.19,0,0,0,41.45,38.3,8,8,0,0,0,9.18,0A254.19,254.19,0,0,0,174,192.25c27.45-31.57,42-64.85,42-96.25A88.1,88.1,0,0,0,128,16Z"></path></svg><span>{{ prof.location }}</span></div>
+              </div>
+            </div>
+
+            <div style="padding:15px;border-radius:0;background:var(--color-surface);box-shadow:var(--shadow-sm)">
+              <h6 style="margin:0 0 10px;color:color-mix(in srgb,#142221 72%,transparent)"><span class="da">Mest repræsenterede kompetencer</span><span class="en">Top skills</span></h6>
+              <div style="display:flex;flex-wrap:wrap;gap:5px">
+                <sc-for list="{{ prof.skills }}" as="s" hint-placeholder-count="4"><span class="tag tag-accent">{{ s.t }}</span></sc-for>
+              </div>
+            </div>
+
+            <div style="padding:15px;border-radius:0;background:var(--color-surface);box-shadow:var(--shadow-sm)">
+              <h6 style="margin:0 0 10px;color:color-mix(in srgb,#142221 72%,transparent)"><span class="da">Certificeringer</span><span class="en">Certifications</span></h6>
+              <div style="display:flex;flex-direction:column;gap:7px;font-size:12.5px">
+                <sc-for list="{{ prof.certs }}" as="c" hint-placeholder-count="2">
+                  <div style="display:flex;gap:8px;align-items:flex-start"><svg viewBox="0 0 256 256" width="14" height="14" fill="currentColor" style="opacity:.55;flex:none;margin-top:2px"><path d="M225.86,102.82c-3.77-3.94-7.67-8-9.14-11.57-1.36-3.27-1.44-8.69-1.52-13.94-.15-9.76-.31-20.82-8-28.51s-18.75-7.85-28.51-8c-5.25-.08-10.67-.16-13.94-1.52-3.56-1.47-7.63-5.37-11.57-9.14C146.28,23.51,138.44,16,128,16s-18.27,7.51-25.18,14.14c-3.94,3.77-8,7.67-11.57,9.14C88,40.64,82.56,40.72,77.31,40.8c-9.76.15-20.82.31-28.51,8S41,67.55,40.8,77.31c-.08,5.25-.16,10.67-1.52,13.94-1.47,3.56-5.37,7.63-9.14,11.57C23.51,109.72,16,117.56,16,128s7.51,18.27,14.14,25.18c3.77,3.94,7.67,8,9.14,11.57,1.36,3.27,1.44,8.69,1.52,13.94.15,9.76.31,20.82,8,28.51s18.75,7.85,28.51,8c5.25.08,10.67.16,13.94,1.52,3.56,1.47,7.63,5.37,11.57,9.14C109.72,232.49,117.56,240,128,240s18.27-7.51,25.18-14.14c3.94-3.77,8-7.67,11.57-9.14,3.27-1.36,8.69-1.44,13.94-1.52,9.76-.15,20.82-.31,28.51-8s7.85-18.75,8-28.51c.08-5.25.16-10.67,1.52-13.94,1.47-3.56,5.37-7.63,9.14-11.57C232.49,146.28,240,138.44,240,128S232.49,109.73,225.86,102.82Zm-52.2,6.84-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35a8,8,0,0,1,11.32,11.32Z"></path></svg><span>{{ c.t }}</span></div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div style="padding:22px;border-radius:0;background:linear-gradient(140deg,#22243100,#faf8f2);box-shadow:var(--shadow-sm);margin-bottom:22px">
+              <div style="display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:flex-start">
+                <div>
+                  <h2 style="margin:0 0 4px;font-size:30px">{{ prof.name }}</h2>
+                  <div style="font-size:14.5px;color:var(--color-accent-300);margin-bottom:8px">{{ prof.title }}</div>
+                  <div style="font-size:12.5px;color:color-mix(in srgb,#142221 72%,transparent)">{{ prof.location }} · {{ prof.domainName }}</div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:8px;align-items:stretch;min-width:210px">
+                  <button class="btn btn-primary" onClick="{{ bookThis }}" style="height:38px">
+                    <svg viewBox="0 0 256 256" width="15" height="15" fill="currentColor"><path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Z"></path></svg>
+                    <span class="da">Book et møde</span><span class="en">Book a meeting</span>
+                  </button>
+                  <div style="display:flex;gap:8px;font-size:11.5px;color:color-mix(in srgb,#142221 72%,transparent);justify-content:space-between;padding:0 2px">
+                    <span>{{ prof.avail }}</span><span>{{ prof.rate }}</span>
+                  </div>
+                </div>
+              </div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:14px">
+                <sc-for list="{{ prof.langs }}" as="l" hint-placeholder-count="2"><span class="tag tag-outline">{{ l.t }}</span></sc-for>
+              </div>
+            </div>
+
+            <section style="margin-bottom:26px">
+              <h6 style="color:var(--color-accent);margin:0 0 8px"><span class="da">Resumé</span><span class="en">Summary</span></h6>
+              <p style="margin:0;font-size:14px;line-height:1.65;color:color-mix(in srgb,#142221 78%,transparent);max-width:66ch;text-wrap:pretty">{{ prof.summary }}</p>
+            </section>
+
+            <section style="margin-bottom:26px">
+              <h6 style="color:var(--color-accent);margin:0 0 12px"><span class="da">Erfaring</span><span class="en">Experience</span></h6>
+              <div style="display:flex;flex-direction:column">
+                <sc-for list="{{ prof.exp }}" as="e" hint-placeholder-count="3">
+                  <div style="display:grid;grid-template-columns:14px 1fr;gap:14px;padding-bottom:18px">
+                    <div style="position:relative;display:flex;justify-content:center">
+                      <div style="width:1px;background:color-mix(in srgb,#142221 12%,transparent);height:100%"></div>
+                      <div style="position:absolute;top:5px;width:7px;height:7px;border-radius:50%;background:var(--color-accent-600);box-shadow:0 0 0 3px #f4f2ea"></div>
+                    </div>
+                    <div>
+                      <div style="font-size:15px;line-height:1.25">{{ e.role }}</div>
+                      <div style="font-size:13px;color:var(--color-accent-300);margin-top:1px">{{ e.org }}</div>
+                      <div style="font-size:11.5px;color:color-mix(in srgb,#142221 72%,transparent);margin-top:2px">{{ e.period }} · {{ e.place }}</div>
+                      <p style="margin:7px 0 0;font-size:13px;line-height:1.55;color:color-mix(in srgb,#142221 72%,transparent);max-width:64ch;text-wrap:pretty">{{ e.text }}</p>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </section>
+
+            <section>
+              <h6 style="color:var(--color-accent);margin:0 0 12px"><span class="da">Uddannelse</span><span class="en">Education</span></h6>
+              <sc-for list="{{ prof.edu }}" as="u" hint-placeholder-count="1">
+                <div style="padding:14px 16px;border-radius:0;background:var(--color-surface);margin-bottom:8px">
+                  <div style="font-size:14.5px">{{ u.school }}</div>
+                  <div style="font-size:12.5px;color:color-mix(in srgb,#142221 72%,transparent);margin-top:2px">{{ u.degree }} · {{ u.period }}</div>
+                </div>
+              </sc-for>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ══ BOARD ══ -->
+  <sc-if value="{{ isBoard }}" hint-placeholder-val="{{ false }}">
+    <div class="scroll" style="flex:1;min-height:0">
+      <div style="max-width:1240px;margin:0 auto;padding:26px 32px 60px">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:22px">
+          <div>
+            <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent);margin-bottom:5px"><span class="da">Bestyrelsesvisning</span><span class="en">Board view</span></div>
+            <h1 style="font-size:34px;margin:0"><span class="da">Domæneoverblik</span><span class="en">Domain overview</span></h1>
+          </div>
+          <div class="seg">
+            <label class="seg-opt"><input type="radio" name="per" checked><span class="da">30 dage</span><span class="en">30 days</span></label>
+            <label class="seg-opt"><input type="radio" name="per"><span class="da">Kvartal</span><span class="en">Quarter</span></label>
+            <label class="seg-opt"><input type="radio" name="per"><span class="da">År</span><span class="en">Year</span></label>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-bottom:26px">
+          <div style="padding:16px;border-radius:0;background:var(--color-surface);box-shadow:var(--shadow-sm)">
+            <div style="font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:color-mix(in srgb,#142221 72%,transparent);margin-bottom:7px"><span class="da">Trafik i alt</span><span class="en">Total traffic</span></div>
+            <div style="font-size:30px;line-height:1">{{ kpiTraffic }}</div>
+            <div style="font-size:11.5px;color:var(--color-accent-300);margin-top:5px">+12,4% <span style="color:color-mix(in srgb,#142221 72%,transparent)"><span class="da">vs. forrige</span><span class="en">vs. previous</span></span></div>
+          </div>
+          <div style="padding:16px;border-radius:0;background:var(--color-surface);box-shadow:var(--shadow-sm)">
+            <div style="font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:color-mix(in srgb,#142221 72%,transparent);margin-bottom:7px"><span class="da">Bookinger</span><span class="en">Bookings</span></div>
+            <div style="font-size:30px;line-height:1">{{ kpiBookings }}</div>
+            <div style="font-size:11.5px;color:var(--color-accent-300);margin-top:5px">+8,1%</div>
+          </div>
+          <div style="padding:16px;border-radius:0;background:var(--color-surface);box-shadow:var(--shadow-sm)">
+            <div style="font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:color-mix(in srgb,#142221 72%,transparent);margin-bottom:7px"><span class="da">Gns. svartid</span><span class="en">Avg. response</span></div>
+            <div style="font-size:30px;line-height:1">{{ kpiResp }}<span style="font-size:16px"><span class="da">t</span><span class="en">h</span></span></div>
+            <div style="font-size:11.5px;color:color-mix(in srgb,#142221 72%,transparent);margin-top:5px">{{ kpiRespNote }}</div>
+          </div>
+          <div style="padding:16px;border-radius:0;background:var(--color-accent-900);box-shadow:inset 0 0 0 1px var(--color-accent-800)">
+            <div style="font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--color-accent-300);margin-bottom:7px"><span class="da">Domæner der mangler profiler</span><span class="en">Domains needing freelancers</span></div>
+            <div style="font-size:30px;line-height:1;color:var(--color-accent-100)">{{ kpiNeeds }}</div>
+            <div style="font-size:11.5px;color:color-mix(in srgb,#142221 72%,transparent);margin-top:5px">{{ kpiNeedsList }}</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start">
+          <div style="padding:10px 8px 12px;border-radius:0;background:var(--color-surface);box-shadow:var(--shadow-sm)">
+            <div style="display:grid;grid-template-columns:2.1fr 1.35fr .7fr .6fr .7fr 1fr;gap:0 10px;padding:6px 10px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:color-mix(in srgb,#142221 72%,transparent);background:linear-gradient(to right,transparent,var(--color-divider) 48px,var(--color-divider) calc(100% - 48px),transparent) no-repeat bottom / 100% 1px">
+              <div><span class="da">Domæne</span><span class="en">Domain</span></div>
+              <div><span class="da">Trafik</span><span class="en">Traffic</span></div>
+              <div><span class="da">Bookinger</span><span class="en">Bookings</span></div>
+              <div><span class="da">Konv.</span><span class="en">Conv.</span></div>
+              <div><span class="da">Svartid</span><span class="en">Response</span></div>
+              <div><span class="da">Status</span><span class="en">Status</span></div>
+            </div>
+            <sc-for list="{{ rows }}" as="r" hint-placeholder-count="15">
+              <div class="rowlink" onClick="{{ r.open }}" style="display:grid;grid-template-columns:2.1fr 1.35fr .7fr .6fr .7fr 1fr;gap:0 10px;align-items:center;padding:9px 10px;font-size:14px;cursor:pointer;background:linear-gradient(to right,transparent,color-mix(in srgb,#142221 8%,transparent) 48px,color-mix(in srgb,#142221 8%,transparent) calc(100% - 48px),transparent) no-repeat bottom / 100% 1px">
+                <div style="display:flex;align-items:center;gap:9px;min-width:0">
+                  <span style="font-size:10px;color:color-mix(in srgb,#142221 72%,transparent);width:14px;flex:none">{{ r.num }}</span>
+                  <span style="line-height:1.2;text-wrap:pretty">{{ r.name }}</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div style="width:84px;flex:none;height:5px;border-radius:0;background:color-mix(in srgb,#142221 10%,transparent);overflow:hidden">
+                    <div style="height:100%;border-radius:0;background:var(--color-accent-600);width:{{ r.bar }}"></div>
+                  </div>
+                  <span style="font-size:12px;flex:none;color:color-mix(in srgb,#142221 72%,transparent)">{{ r.traffic }}</span>
+                </div>
+                <div>{{ r.bookings }}</div>
+                <div>{{ r.conv }}</div>
+                <div>{{ r.resp }}</div>
+                <div><span class="{{ r.tagClass }}">{{ r.status }}</span></div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div style="padding:16px;border-radius:0;background:var(--color-surface);box-shadow:var(--shadow-sm)">
+              <h6 style="margin:0 0 12px;color:color-mix(in srgb,#142221 72%,transparent)"><span class="da">Trafik pr. uge</span><span class="en">Traffic per week</span></h6>
+              <div style="display:flex;align-items:flex-end;gap:6px;height:96px">
+                <div style="flex:1;height:44%;background:var(--color-neutral-800);border-radius:0 3px 0 0"></div>
+                <div style="flex:1;height:56%;background:var(--color-neutral-800);border-radius:0 3px 0 0"></div>
+                <div style="flex:1;height:48%;background:var(--color-neutral-800);border-radius:0 3px 0 0"></div>
+                <div style="flex:1;height:70%;background:var(--color-neutral-800);border-radius:0 3px 0 0"></div>
+                <div style="flex:1;height:66%;background:var(--color-neutral-800);border-radius:0 3px 0 0"></div>
+                <div style="flex:1;height:82%;background:var(--color-accent-700);border-radius:0 3px 0 0"></div>
+                <div style="flex:1;height:100%;background:var(--color-accent-500);border-radius:0 3px 0 0"></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:10px;color:color-mix(in srgb,#142221 72%,transparent);margin-top:6px"><span>U27</span><span>U33</span></div>
+            </div>
+
+            <div style="padding:16px;border-radius:0;background:var(--color-surface);box-shadow:var(--shadow-sm)">
+              <h6 style="margin:0 0 10px;color:color-mix(in srgb,#142221 72%,transparent)"><span class="da">Handling påkrævet</span><span class="en">Needs action</span></h6>
+              <div style="display:flex;flex-direction:column;gap:10px;font-size:12.5px">
+                <sc-for list="{{ actions }}" as="a" hint-placeholder-count="4">
+                  <div style="display:flex;gap:9px"><span style="color:var(--color-accent)">·</span><span><b style="font-weight:500">{{ a.name }}</b> {{ a.text }}</span></div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ══ FREELANCER ══ -->
+  <sc-if value="{{ isMe }}" hint-placeholder-val="{{ false }}">
+    <div class="scroll" style="flex:1;min-height:0">
+      <div style="max-width:1120px;margin:0 auto;padding:26px 32px 60px">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:24px">
+          <div style="width:44px;height:44px;border-radius:0;background:linear-gradient(150deg,#223331,#142221);box-shadow:inset 0 0 0 1px rgba(20,34,33,.28);display:grid;place-items:center;font-size:14px;color:var(--color-accent-200)">AN</div>
+          <div>
+            <h2 style="margin:0;font-size:24px">Andreas Torp Nørgaard</h2>
+            <div style="font-size:12.5px;color:color-mix(in srgb,#142221 72%,transparent)">AI &amp; IT · <span class="da">Medlem siden 2025</span><span class="en">Member since 2025</span></div>
+          </div>
+          <button class="btn btn-secondary" onClick="{{ viewOwn }}" style="margin-left:auto"><span class="da">Se offentlig profil</span><span class="en">View public profile</span></button>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 300px;gap:20px;align-items:start">
+          <div>
+            <h6 style="color:var(--color-accent);margin:0 0 10px"><span class="da">Værktøjskassen</span><span class="en">The utility box</span></h6>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:12px;margin-bottom:26px">
+              <div style="padding:14px;border-radius:0;background:var(--color-surface);box-shadow:var(--shadow-sm);cursor:pointer">
+                <svg viewBox="0 0 256 256" width="18" height="18" fill="var(--color-accent)" style="margin-bottom:24px"><path d="M224,48H32A16,16,0,0,0,16,64V192a16,16,0,0,0,16,16H224a16,16,0,0,0,16-16V64A16,16,0,0,0,224,48Zm0,144H32V64H224V192ZM56,96a8,8,0,0,1,8-8H192a8,8,0,0,1,0,16H64A8,8,0,0,1,56,96Zm0,32a8,8,0,0,1,8-8h64a8,8,0,0,1,0,16H64A8,8,0,0,1,56,128Z"></path></svg>
+                <div style="font-size:14px"><span class="da">Fakturering</span><span class="en">Invoicing</span></div>
+                <div style="font-size:11.5px;color:color-mix(in srgb,#142221 72%,transparent);margin-top:2px"><span class="da">2 kladder · 1 forfalden</span><span class="en">2 drafts · 1 overdue</span></div>
+              </div>
+              <div style="padding:14px;border-radius:0;background:var(--color-surface);box-shadow:var(--shadow-sm);cursor:pointer">
+                <svg viewBox="0 0 256 256" width="18" height="18" fill="var(--color-accent)" style="margin-bottom:24px"><path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM48,208V96H208V208Z"></path></svg>
+                <div style="font-size:14px"><span class="da">Bookinger</span><span class="en">Bookings</span></div>
+                <div style="font-size:11.5px;color:color-mix(in srgb,#142221 72%,transparent);margin-top:2px"><span class="da">3 nye denne uge</span><span class="en">3 new this week</span></div>
+              </div>
+              <div style="padding:14px;border-radius:0;background:var(--color-surface);box-shadow:var(--shadow-sm);cursor:pointer">
+                <svg viewBox="0 0 256 256" width="18" height="18" fill="var(--color-accent)" style="margin-bottom:24px"><path d="M240,120a48.05,48.05,0,0,0-48-48H152.2c-2.91-.17-53.62-3.74-101.91-44.24A16,16,0,0,0,24,40V200a16,16,0,0,0,26.29,12.25c37.77-31.68,77-40.76,93.71-43.3v31.72a16,16,0,0,0,7.12,13.32l11,7.33A16,16,0,0,0,186,214.86l11.77-44.36A48.07,48.07,0,0,0,240,120Z"></path></svg>
+                <div style="font-size:14px">Marketing</div>
+                <div style="font-size:11.5px;color:color-mix(in srgb,#142221 72%,transparent);margin-top:2px"><span class="da">Kampagne aktiv</span><span class="en">Campaign live</span></div>
+              </div>
+              <div style="padding:14px;border-radius:0;background:var(--color-surface);box-shadow:var(--shadow-sm);cursor:pointer">
+                <svg viewBox="0 0 256 256" width="18" height="18" fill="var(--color-accent)" style="margin-bottom:24px"><path d="M213.66,82.34l-56-56A8,8,0,0,0,152,24H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V88A8,8,0,0,0,213.66,82.34ZM152,88V44l44,44Z"></path></svg>
+                <div style="font-size:14px"><span class="da">Kontrakter</span><span class="en">Contracts</span></div>
+                <div style="font-size:11.5px;color:color-mix(in srgb,#142221 72%,transparent);margin-top:2px"><span class="da">1 afventer signatur</span><span class="en">1 awaiting signature</span></div>
+              </div>
+              <div style="padding:14px;border-radius:0;background:var(--color-surface);box-shadow:var(--shadow-sm);cursor:pointer">
+                <svg viewBox="0 0 256 256" width="18" height="18" fill="var(--color-accent)" style="margin-bottom:24px"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm56,112H128a8,8,0,0,1-8-8V72a8,8,0,0,1,16,0v48h48a8,8,0,0,1,0,16Z"></path></svg>
+                <div style="font-size:14px"><span class="da">Timeregistrering</span><span class="en">Time tracking</span></div>
+                <div style="font-size:11.5px;color:color-mix(in srgb,#142221 72%,transparent);margin-top:2px">31,5 <span class="da">timer denne uge</span><span class="en">hours this week</span></div>
+              </div>
+              <div style="padding:14px;border-radius:0;background:var(--color-surface);box-shadow:var(--shadow-sm);cursor:pointer">
+                <svg viewBox="0 0 256 256" width="18" height="18" fill="var(--color-accent)" style="margin-bottom:24px"><path d="M117.25,157.92a60,60,0,1,0-66.5,0A95.83,95.83,0,0,0,3.53,195.63a8,8,0,1,0,13.4,8.74,80,80,0,0,1,134.14,0,8,8,0,0,0,13.4-8.74A95.83,95.83,0,0,0,117.25,157.92ZM40,108a44,44,0,1,1,44,44A44.05,44.05,0,0,1,40,108Zm210.14,98.7a8,8,0,0,1-11.07-2.33A79.83,79.83,0,0,0,172,168a8,8,0,0,1,0-16,44,44,0,1,0-16.34-84.87,8,8,0,1,1-5.94-14.85,60,60,0,0,1,55.53,105.64,95.83,95.83,0,0,1,47.22,37.71A8,8,0,0,1,250.14,206.7Z"></path></svg>
+                <div style="font-size:14px"><span class="da">Kollektivet</span><span class="en">The collective</span></div>
+                <div style="font-size:11.5px;color:color-mix(in srgb,#142221 72%,transparent);margin-top:2px"><span class="da">2 henvisninger</span><span class="en">2 referrals</span></div>
+              </div>
+            </div>
+
+            <h6 style="color:var(--color-accent);margin:0 0 10px"><span class="da">Indgående forespørgsler</span><span class="en">Inbound requests</span></h6>
+            <div style="border-radius:0;background:var(--color-surface);box-shadow:var(--shadow-sm);overflow:hidden">
+              <div class="rowlink" style="display:flex;align-items:center;gap:14px;padding:13px 16px">
+                <div style="width:34px;height:34px;border-radius:0;background:#e6e2d7;display:grid;place-items:center;font-size:11px">NV</div>
+                <div style="flex:1;min-width:0"><div style="font-size:13.5px">Nordjysk Vandforsyning</div><div style="font-size:11.5px;color:color-mix(in srgb,#142221 72%,transparent)"><span class="da">AI-strategi · 60 min · tor. 10:30</span><span class="en">AI strategy · 60 min · Thu 10:30</span></div></div>
+                <span class="tag tag-accent"><span class="da">Ny</span><span class="en">New</span></span>
+              </div>
+              <div class="rowlink" style="display:flex;align-items:center;gap:14px;padding:13px 16px;border-top:1px solid color-mix(in srgb,#142221 7%,transparent)">
+                <div style="width:34px;height:34px;border-radius:0;background:#e6e2d7;display:grid;place-items:center;font-size:11px">HP</div>
+                <div style="flex:1;min-width:0"><div style="font-size:13.5px">Hedegaard Plast A/S</div><div style="font-size:11.5px;color:color-mix(in srgb,#142221 72%,transparent)"><span class="da">Dataplatform · 30 min · fre. 09:00</span><span class="en">Data platform · 30 min · Fri 09:00</span></div></div>
+                <span class="tag tag-neutral"><span class="da">Bekræftet</span><span class="en">Confirmed</span></span>
+              </div>
+              <div class="rowlink" style="display:flex;align-items:center;gap:14px;padding:13px 16px;border-top:1px solid color-mix(in srgb,#142221 7%,transparent)">
+                <div style="width:34px;height:34px;border-radius:0;background:#e6e2d7;display:grid;place-items:center;font-size:11px">KM</div>
+                <div style="flex:1;min-width:0"><div style="font-size:13.5px">Kommune Nord — Digitalisering</div><div style="font-size:11.5px;color:color-mix(in srgb,#142221 72%,transparent)"><span class="da">Sparring · 30 min · man. 13:00</span><span class="en">Advisory · 30 min · Mon 13:00</span></div></div>
+                <span class="tag tag-neutral"><span class="da">Bekræftet</span><span class="en">Confirmed</span></span>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div style="padding:16px;border-radius:0;background:var(--color-surface);box-shadow:var(--shadow-sm)">
+              <h6 style="margin:0 0 12px;color:color-mix(in srgb,#142221 72%,transparent)"><span class="da">Min profil</span><span class="en">My profile</span></h6>
+              <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:7px"><span><span class="da">Profilvisninger</span><span class="en">Profile views</span></span><b style="font-weight:500">412</b></div>
+              <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:7px"><span><span class="da">Bookinger / 30d</span><span class="en">Bookings / 30d</span></span><b style="font-weight:500">9</b></div>
+              <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:12px"><span><span class="da">Svartid</span><span class="en">Response time</span></span><b style="font-weight:500">1,8<span class="da">t</span><span class="en">h</span></b></div>
+              <div style="font-size:11px;color:color-mix(in srgb,#142221 72%,transparent);margin-bottom:5px"><span class="da">Profilen er 85% komplet</span><span class="en">Profile 85% complete</span></div>
+              <div style="height:5px;border-radius:0;background:#e6e2d7;overflow:hidden"><div style="width:85%;height:100%;background:var(--color-accent-500)"></div></div>
+            </div>
+            <div style="padding:16px;border-radius:0;background:var(--color-accent-900);box-shadow:inset 0 0 0 1px var(--color-accent-800)">
+              <div style="font-size:13px;line-height:1.5;color:color-mix(in srgb,#142221 80%,transparent)">
+                <span class="da">Tilføj to referencer, så rykker din profil op i AI &amp; IT-domænet.</span>
+                <span class="en">Add two references and your profile moves up within the AI &amp; IT domain.</span>
+              </div>
+              <button class="btn btn-primary btn-block" style="margin-top:10px"><span class="da">Tilføj reference</span><span class="en">Add reference</span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ══ BOOKING ══ -->
+  <sc-if value="{{ bookingOpen }}" hint-placeholder-val="{{ false }}">
+    <div class="dialog-backdrop" style="z-index:500;backdrop-filter:blur(3px)">
+      <div class="dialog" style="width:min(520px,100%);animation:fup .22s ease">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+          <div>
+            <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent);margin-bottom:4px"><span class="da">Book et møde</span><span class="en">Book a meeting</span></div>
+            <div class="dialog-title">{{ bk.name }}</div>
+            <div style="font-size:12.5px;color:color-mix(in srgb,#142221 72%,transparent)">{{ bk.title }}</div>
+          </div>
+          <div onClick="{{ bookClose }}" style="cursor:pointer;opacity:.5;font-size:18px;line-height:1;padding:2px 4px">×</div>
+        </div>
+
+        <div style="display:flex;gap:5px;margin:2px 0 4px">
+          <div style="flex:1;height:3px;border-radius:0;background:var(--color-accent-500)"></div>
+          <div style="flex:1;height:3px;border-radius:0;background:{{ bk.b2 }}"></div>
+          <div style="flex:1;height:3px;border-radius:0;background:{{ bk.b3 }}"></div>
+        </div>
+
+        <sc-if value="{{ bk.s1 }}" hint-placeholder-val="{{ true }}">
+          <div>
+            <div style="font-size:12px;color:color-mix(in srgb,#142221 72%,transparent);margin-bottom:7px"><span class="da">Varighed</span><span class="en">Duration</span></div>
+            <div style="display:flex;gap:7px;margin-bottom:16px">
+              <div class="chip" onClick="{{ bk.d30 }}" data-sel="{{ bk.is30 }}" style="padding:7px 14px;border:1px solid var(--color-divider);border-radius:0;font-size:13px;cursor:pointer">30 min</div>
+              <div class="chip" onClick="{{ bk.d60 }}" data-sel="{{ bk.is60 }}" style="padding:7px 14px;border:1px solid var(--color-divider);border-radius:0;font-size:13px;cursor:pointer">60 min</div>
+            </div>
+            <div style="font-size:12px;color:color-mix(in srgb,#142221 72%,transparent);margin-bottom:7px"><span class="da">Dato</span><span class="en">Date</span></div>
+            <div style="display:flex;gap:7px;margin-bottom:16px">
+              <sc-for list="{{ bk.dates }}" as="d" hint-placeholder-count="5">
+                <div class="chip" onClick="{{ d.pick }}" data-sel="{{ d.sel }}" style="flex:1;padding:9px 4px;border:1px solid var(--color-divider);border-radius:0;text-align:center;cursor:pointer">
+                  <div style="font-size:10.5px;opacity:.6">{{ d.wd }}</div>
+                  <div style="font-size:15px;margin-top:1px">{{ d.dm }}</div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="font-size:12px;color:color-mix(in srgb,#142221 72%,transparent);margin-bottom:7px"><span class="da">Tidspunkt</span><span class="en">Time</span></div>
+            <div style="display:flex;gap:7px;flex-wrap:wrap">
+              <sc-for list="{{ bk.slots }}" as="s" hint-placeholder-count="5">
+                <div class="chip" onClick="{{ s.pick }}" data-sel="{{ s.sel }}" style="padding:7px 13px;border:1px solid var(--color-divider);border-radius:0;font-size:13px;cursor:pointer">{{ s.t }}</div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ bk.s2 }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="padding:10px 12px;border-radius:0;background:var(--color-accent-900);font-size:12.5px;color:var(--color-accent-100)">{{ bk.when }}</div>
+            <div class="field"><label><span class="da">Navn</span><span class="en">Name</span></label><input class="input" value="{{ bk.f1 }}" onChange="{{ bk.set1 }}" placeholder="Mette Sørensen"></div>
+            <div class="field"><label><span class="da">Arbejdsmail</span><span class="en">Work email</span></label><input class="input" value="{{ bk.f2 }}" onChange="{{ bk.set2 }}" placeholder="mette@virksomhed.dk"></div>
+            <div class="field"><label><span class="da">Virksomhed</span><span class="en">Company</span></label><input class="input" value="{{ bk.f3 }}" onChange="{{ bk.set3 }}" placeholder="Nordjysk Vandforsyning"></div>
+            <div class="field"><label><span class="da">Hvad handler det om?</span><span class="en">What is it about?</span></label><textarea class="input" value="{{ bk.f4 }}" onChange="{{ bk.set4 }}" style="min-height:74px"></textarea></div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ bk.s3 }}" hint-placeholder-val="{{ false }}">
+          <div style="text-align:center;padding:14px 0 4px">
+            <div style="width:46px;height:46px;margin:0 auto 12px;border-radius:50%;display:grid;place-items:center;box-shadow:inset 0 0 0 1px var(--color-accent);color:var(--color-accent)">
+              <svg viewBox="0 0 256 256" width="22" height="22" fill="currentColor"><path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"></path></svg>
+            </div>
+            <div style="font-size:18px;margin-bottom:5px"><span class="da">Mødet er booket</span><span class="en">Meeting booked</span></div>
+            <div style="font-size:13px;color:color-mix(in srgb,#142221 72%,transparent);max-width:330px;margin:0 auto">{{ bk.confirm }}</div>
+            <div style="display:flex;gap:7px;justify-content:center;margin-top:14px">
+              <button class="btn btn-secondary" style="font-size:12.5px"><span class="da">Tilføj til kalender</span><span class="en">Add to calendar</span></button>
+              <button class="btn btn-secondary" style="font-size:12.5px"><span class="da">Send invitation</span><span class="en">Send invite</span></button>
+            </div>
+          </div>
+        </sc-if>
+
+        <div class="dialog-actions">
+          <button class="btn btn-secondary" onClick="{{ bk.back }}">{{ bk.backLabel }}</button>
+          <button class="btn btn-primary" onClick="{{ bk.next }}">{{ bk.nextLabel }}</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;startRole&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;visitor&quot;,&quot;freelancer&quot;,&quot;board&quot;],&quot;default&quot;:&quot;visitor&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Prototype&quot;},&quot;startLang&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;da&quot;,&quot;en&quot;],&quot;default&quot;:&quot;da&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Prototype&quot;},&quot;showConnections&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Map&quot;}}">
+class Component extends DCLogic {
+  state = {
+    role: this.props.startRole || 'visitor',
+    lang: this.props.startLang || 'da',
+    view: 'map',
+    zoomStep: 1,
+    filter: 'all',
+    q: '',
+    sel: null,
+    domain: null,
+    profile: null,
+    bk: null
+  };
+
+  get D() {
+    return [
+      { id:'mentor', num:'01', name:{da:'Mentor & Coach',en:'Mentor & Coach'}, blurb:{da:'Sparring for ejerledere og nye chefer — fast kadence, ingen kursusmappe.',en:'Sparring for owner-managers and first-time leaders — a fixed cadence, no course binder.'}, traffic:1240, bookings:9, conv:'2,1%', resp:{da:'12t',en:'12h'}, status:'needs', x:470, y:110, size:72 },
+      { id:'salg', num:'02', name:{da:'Salg & Marketing',en:'Salg & Marketing'}, blurb:{da:'Pipeline, key accounts og kampagner — fra strategi til lukket aftale.',en:'Pipeline, key accounts and campaigns — strategy through signature.'}, traffic:3110, bookings:41, conv:'3,3%', resp:{da:'5t',en:'5h'}, status:'healthy', x:700, y:205, size:108 },
+      { id:'bestyrelse', num:'03', name:{da:'Bestyrelse',en:'Bestyrelse'}, blurb:{da:'Professionelle bestyrelsesmedlemmer til ejerledede virksomheder. Domænet åbner nu.',en:'Professional board members for owner-led companies. The domain is opening now.'}, traffic:980, bookings:6, conv:'1,8%', resp:{da:'14t',en:'14h'}, status:'needs', x:190, y:150, size:74 },
+      { id:'invest', num:'04', name:{da:'Investering & Projekt',en:'Investering & Projekt'}, blurb:{da:'Kapitalrejsning, business cases og projektøkonomi. Fuldt booket til november.',en:'Fundraising, business cases and project finance. Booked out to November.'}, traffic:1460, bookings:19, conv:'3,8%', resp:{da:'3t',en:'3h'}, status:'full', x:235, y:385, size:86 },
+      { id:'consulting', num:'05', name:{da:'Consulting',en:'Consulting'}, blurb:{da:'Analyse og beslutningsstøtte i korte forløb. Én specialist, plads til flere.',en:'Analysis and decision support in short engagements. One specialist, room for more.'}, traffic:1670, bookings:26, conv:'4,4%', resp:{da:'3t',en:'3h'}, status:'needs', x:715, y:430, size:88 },
+      { id:'ai', num:'06', name:{da:'AI & IT',en:'AI & IT'}, blurb:{da:'Løsningsarkitektur, maskinlæring i drift og dataplatforme. Domænets bredeste hold.',en:'Solution architecture, machine learning in production and data platforms. The broadest team here.'}, traffic:4820, bookings:63, conv:'4,1%', resp:{da:'2t',en:'2h'}, status:'healthy', x:500, y:300, size:124 },
+      { id:'hr', num:'07', name:{da:'HR & Rekruttering',en:'HR & Rekruttering'}, blurb:{da:'Ansættelser, employer branding og HR-jura på deltid.',en:'Hiring, employer branding and part-time HR counsel.'}, traffic:1980, bookings:22, conv:'2,9%', resp:{da:'4t',en:'4h'}, status:'healthy', x:425, y:480, size:94 },
+      { id:'advisory', num:'08', name:{da:'Advisory',en:'Advisory'}, blurb:{da:'Rådgivning på direktionsniveau — ESG, risiko og rapportering.',en:'Board-level advisory — ESG, risk and reporting.'}, traffic:620, bookings:5, conv:'1,4%', resp:{da:'18t',en:'18h'}, status:'needs', x:845, y:315, size:78 },
+      { id:'supply', num:'09', name:{da:'Supply Chain & Logistic',en:'Supply Chain & Logistic'}, blurb:{da:'Indkøb, lager og transport for producerende virksomheder. Søger to specialister.',en:'Sourcing, warehousing and transport for manufacturers. Looking for two specialists.'}, traffic:1120, bookings:7, conv:'1,9%', resp:{da:'16t',en:'16h'}, status:'needs', x:830, y:505, size:74 },
+      { id:'disruption', num:'10', name:{da:'Disruption & Innovation',en:'Disruption & Innovation'}, blurb:{da:'Nye forretningsmodeller, når den nuværende holder op med at vokse.',en:'New business models when the current one stops growing.'}, traffic:860, bookings:4, conv:'1,2%', resp:{da:'20t',en:'20h'}, status:'needs', x:675, y:545, size:70 },
+      { id:'digital', num:'11', name:{da:'Digital Web & Markedsføring',en:'Digital Web & Markedsføring'}, blurb:{da:'Web, performance, automation og identitet — fire specialister i samme domæne.',en:'Web, performance, automation and identity — four specialists in one domain.'}, traffic:2740, bookings:28, conv:'2,6%', resp:{da:'6t',en:'6h'}, status:'healthy', x:315, y:195, size:104 },
+      { id:'projekt', num:'12', name:{da:'Projektledelse',en:'Projektledelse'}, blurb:{da:'Projektledere til implementeringer, der skal i drift. Domænet er åbent.',en:'Project managers for implementations that have to go live. The domain is open.'}, traffic:1340, bookings:11, conv:'2,2%', resp:{da:'11t',en:'11h'}, status:'needs', x:810, y:110, size:72 },
+      { id:'management', num:'13', name:{da:'Management Consulting',en:'Management Consulting'}, blurb:{da:'Organisation, drift og styring for virksomheder mellem 50 og 500 ansatte.',en:'Organisation, operations and governance for companies of 50 to 500.'}, traffic:1520, bookings:13, conv:'2,4%', resp:{da:'9t',en:'9h'}, status:'needs', x:515, y:530, size:84 },
+      { id:'juridisk', num:'14', name:{da:'Juridisk Rådgiver',en:'Juridisk Rådgiver'}, blurb:{da:'Kontrakter, GDPR og NIS2 for små og mellemstore virksomheder.',en:'Contracts, GDPR and NIS2 for small and mid-sized companies.'}, traffic:910, bookings:8, conv:'1,9%', resp:{da:'14t',en:'14h'}, status:'needs', x:200, y:530, size:72 },
+      { id:'automation', num:'15', name:{da:'Automation & Produktion',en:'Automation & Produktion'}, blurb:{da:'Robotter, OEE og produktionsdata på fabriksgulvet. Kollektivets nyeste domæne.',en:'Robots, OEE and production data on the factory floor. The newest domain here.'}, traffic:740, bookings:3, conv:'1,1%', resp:{da:'22t',en:'22h'}, status:'needs', x:195, y:272, size:70 }
+    ];
+  }
+
+  /* Which domains share engagements. Drawn as the hairlines between nodes. */
+  get EDGES() {
+    return [['ai','salg'],['ai','digital'],['ai','hr'],['ai','consulting'],['ai','invest'],['ai','management'],
+      ['salg','digital'],['salg','projekt'],['salg','advisory'],['digital','mentor'],['digital','bestyrelse'],
+      ['hr','mentor'],['hr','juridisk'],['hr','management'],['consulting','advisory'],['consulting','supply'],
+      ['consulting','disruption'],['invest','bestyrelse'],['invest','juridisk'],['invest','automation'],
+      ['management','projekt'],['management','disruption'],['supply','automation'],['supply','disruption'],
+      ['advisory','bestyrelse'],['projekt','mentor']];
+  }
+
+  get P() {
+    const g = (da, en) => ({ da, en });
+    return [
+      { id:'andreas', dom:'ai', initials:'AN', name:'Andreas Torp Nørgaard',
+        title:g('AI Solutions Architect','AI Solutions Architect'),
+        location:g('Aalborg, Region Nordjylland','Aalborg, North Denmark'),
+        email:'andreastorp123@gmail.com', rate:g('1.450 kr/t','DKK 1,450/h'), avail:g('Ledig fra 24. aug','Available Aug 24'),
+        tagline:g('Data Driven by Nature. Shaped by AI. Business First by Discipline.','Data driven by nature. Shaped by AI. Business first by discipline.'),
+        skills:[g('Forretningsstrategi','Business strategy'),g('Virksomhedsanalyse','Business analysis'),g('Arkitekturdesign','Architecture design'),g('Maskinlæring','Machine learning'),g('Agentbaserede systemer','Agent-based systems')],
+        langs:g(['Dansk','Engelsk'],['Danish','English']),
+        summary:g('Jeg arbejder professionelt med AI i bred forstand — maskinlæring, sprogmodeller, computer vision og agentbaserede systemer — og følger feltet tæt nok til at vide, hvornår noget er et egentligt skift, og hvornår det er støj. Det er den forskel, jeg hjælper virksomheder med at navigere. Jeg arbejder sammen med ledere, der vil have et reelt billede af teknologiens muligheder — ikke et salgspitch og ikke en skræmmetale. Jeg er baseret i Aalborg, men den verden jeg følger med i, er global.','I work professionally with AI in the broad sense — machine learning, language models, computer vision and agent-based systems — and follow the field closely enough to know when something is a genuine shift and when it is noise. That difference is what I help companies navigate. I work with leaders who want a real picture of what the technology can do — not a sales pitch and not a scare story. I am based in Aalborg, but the world I follow is global.'),
+        exp:[
+          { role:'AI-Lead', org:'Combine A/S', period:g('aug. 2025 – nu','Aug 2025 – present'), place:g('Region Nordjylland','North Denmark'), text:g('Modner og udvikler AI-forretningen — både som grundlag for nye ydelser og som drivkraft internt. Løfter komplekse kundesager fra første analyse til færdig implementering og rådgiver større danske virksomheder om datastrategi, arkitektur og forretningsudvikling.','Maturing and growing the AI practice — both as the basis for new services and as an internal driver. Carries complex client cases from first analysis to finished implementation and advises larger Danish companies on data strategy, architecture and business development.') },
+          { role:'Consulting Software Engineer', org:'DIS — CREADIS Engineering Solutions', period:g('sep. 2021 – aug. 2025','Sep 2021 – Aug 2025'), place:g('Aalborg, Nordjylland','Aalborg, North Denmark'), text:g('Softwarerådgivning og udvikling for industrielle kunder på tværs af Nordjylland.','Software consulting and development for industrial clients across North Denmark.') },
+          { role:g('Sælger','Sales Assistant'), org:'Elgiganten A/S', period:g('maj 2018 – sep. 2019','May 2018 – Sep 2019'), place:g('Nordjylland','North Denmark'), text:g('Salg af AV-udstyr og computere.','Sales of AV equipment and computers.') },
+          { role:g('Soldat','Soldier'), org:g('Forsvaret','Danish Armed Forces'), period:g('feb. 2014 – aug. 2016','Feb 2014 – Aug 2016'), place:'Aalborg', text:g('Udlært som sanitetssoldat.','Trained as a medical corps soldier.') }
+        ],
+        edu:[{ school:'Aalborg Universitet', degree:g('Kandidatgrad, Biomedicin/medikoteknik','MSc, Biomedical Engineering'), period:'2016 – 2021' }],
+        certs:['Microsoft Certified: Azure AI Fundamentals','Microsoft Certified: Azure Fundamentals'] },
+
+      { id:'mette', dom:'ai', initials:'MK', name:'Mette Krogh', title:g('Cloud & Platform Engineer','Cloud & Platform Engineer'), location:g('Aarhus','Aarhus'), email:'mette@trustusconsult.dk', rate:g('1.250 kr/t','DKK 1,250/h'), avail:g('Ledig nu','Available now'), tagline:g('Bygger den platform, resten af domænet leverer ovenpå.','Builds the platform the rest of the domain delivers on.'), skills:['Azure','Kubernetes','IaC',g('Sikkerhed','Security')], langs:g(['Dansk','Engelsk'],['Danish','English']),
+        summary:g('Ti år med drift og platformsarbejde i danske produktionsvirksomheder. Jeg gør AI-projekter til noget, der kan køre i produktion uden at holde nogen vågne om natten.','Ten years of operations and platform work in Danish manufacturing. I turn AI projects into something that runs in production without keeping anyone awake at night.'),
+        exp:[{ role:'Platform Engineer', org:'Vestas', period:'2019 – 2024', place:'Aarhus', text:g('Ansvarlig for intern udviklerplatform på tværs af 200+ ingeniører.','Owned the internal developer platform across 200+ engineers.') },{ role:'DevOps Consultant', org:'Netcompany', period:'2015 – 2019', place:g('København','Copenhagen'), text:g('Leverance af offentlige digitaliseringsprojekter.','Delivery of public-sector digitalisation projects.') }],
+        edu:[{ school:'Aarhus Universitet', degree:g('Cand.scient., Datalogi','MSc, Computer Science'), period:'2010 – 2015' }], certs:['CKA — Certified Kubernetes Administrator'] },
+
+      { id:'jonas', dom:'ai', initials:'JB', name:'Jonas Bay', title:g('Data Engineer / MLOps','Data Engineer / MLOps'), location:g('København','Copenhagen'), email:'jonas@trustusconsult.dk', rate:g('1.300 kr/t','DKK 1,300/h'), avail:g('Ledig fra 1. okt','Available Oct 1'), tagline:g('Pipelines der holder, og modeller der bliver ved med at virke.','Pipelines that hold, and models that keep working.'), skills:['dbt','Python','Streaming','MLOps'], langs:g(['Dansk','Engelsk','Tysk'],['Danish','English','German']),
+        summary:g('Jeg bygger dataflows, der overlever kontakten med virkeligheden — og overvågningen der fanger det, når de ikke gør.','I build data flows that survive contact with reality — and the monitoring that catches it when they do not.'),
+        exp:[{ role:'Lead Data Engineer', org:'Trustpilot', period:'2020 – 2025', place:g('København','Copenhagen'), text:g('Datateam på seks, event-pipeline i milliardklassen.','Data team of six, event pipeline at billion scale.') },{ role:'Data Engineer', org:'Danske Bank', period:'2017 – 2020', place:g('København','Copenhagen'), text:g('Regulatorisk rapportering og datakvalitet.','Regulatory reporting and data quality.') }],
+        edu:[{ school:'DTU', degree:g('Cand.polyt., Matematisk modellering','MSc, Mathematical Modelling'), period:'2012 – 2017' }], certs:[] },
+
+      { id:'camilla', dom:'salg', initials:'CR', name:'Camilla Ravn', title:g('B2B Salgsleder','B2B Sales Lead'), location:'Aalborg', email:'camilla@trustusconsult.dk', rate:g('1.100 kr/t','DKK 1,100/h'), avail:g('Ledig nu','Available now'), tagline:g('Fra første møde til underskrift — uden at kunden føler sig solgt til.','From first meeting to signature — without the client feeling sold to.'), skills:['Pipeline',g('Forhandling','Negotiation'),'SaaS','CRM'], langs:g(['Dansk','Engelsk'],['Danish','English']),
+        summary:g('Femten år i B2B-salg, de sidste otte som leder. Jeg hjælper mindre virksomheder med at bygge et salg, der ikke afhænger af én person.','Fifteen years in B2B sales, the last eight leading. I help smaller companies build a sales function that does not depend on one person.'),
+        exp:[{ role:'Head of Sales', org:'Konsolidator', period:'2019 – 2024', place:g('København','Copenhagen'), text:g('Opbygning af salgsorganisation fra 3 til 14 personer.','Grew the sales organisation from 3 to 14.') },{ role:'Key Account Manager', org:'TDC Erhverv', period:'2012 – 2019', place:'Aalborg', text:g('Ansvar for nordjyske nøglekunder.','Owned key accounts across North Denmark.') }],
+        edu:[{ school:'Aalborg Universitet', degree:g('HA(alm.)','BSc, Business Administration'), period:'2007 – 2010' }], certs:[] },
+
+      { id:'henrik', dom:'salg', initials:'HD', name:'Henrik Dam', title:g('Key Account & Partnerskaber','Key Accounts & Partnerships'), location:g('Randers','Randers'), email:'henrik@trustusconsult.dk', rate:g('1.050 kr/t','DKK 1,050/h'), avail:g('Ledig fra 8. sep','Available Sep 8'), tagline:g('Partnerskaber der holder længere end kvartalet.','Partnerships that outlast the quarter.'), skills:[g('Partnerskaber','Partnerships'),g('Kanalsalg','Channel sales'),g('Industri','Industrials')], langs:g(['Dansk','Engelsk'],['Danish','English']),
+        summary:g('Jeg åbner døre i industrien og bliver hængende, til aftalen faktisk leverer.','I open doors in industry and stay until the deal actually delivers.'),
+        exp:[{ role:'Partner Manager', org:'Grundfos', period:'2016 – 2024', place:'Bjerringbro', text:g('Kanalpartnere i Norden og DACH.','Channel partners across the Nordics and DACH.') },{ role:'Salgskonsulent', org:'Kramp', period:'2011 – 2016', place:'Randers', text:g('Teknisk salg til produktionskunder.','Technical sales to manufacturing clients.') }],
+        edu:[{ school:'Erhvervsakademi Dania', degree:g('Markedsføringsøkonom','AP Degree, Marketing Management'), period:'2008 – 2010' }], certs:[] },
+
+      { id:'sofie', dom:'digital', initials:'SL', name:'Sofie Lind', title:g('Performance Marketing','Performance Marketing'), location:'Aalborg', email:'sofie@trustusconsult.dk', rate:g('950 kr/t','DKK 950/h'), avail:g('Fuldt booket i sep','Booked through Sep'), tagline:g('Betalte kanaler med et regnestykke bagved.','Paid channels with the arithmetic to back them.'), skills:['Google Ads','Meta','Analytics','SEO'], langs:g(['Dansk','Engelsk'],['Danish','English']),
+        summary:g('Jeg arbejder kun med kampagner, der kan måles hele vejen til omsætning.','I only run campaigns that can be measured all the way to revenue.'),
+        exp:[{ role:'Performance Lead', org:'Obsidian Digital', period:'2018 – 2024', place:'Aalborg', text:g('Mediebudgetter for 20+ danske e-commerce-brands.','Media budgets for 20+ Danish e-commerce brands.') },{ role:'SEM Specialist', org:'Bownty', period:'2015 – 2018', place:g('København','Copenhagen'), text:g('Søgeannoncering på seks markeder.','Search advertising across six markets.') }],
+        edu:[{ school:'Aalborg Universitet', degree:g('Cand.merc., Markedsføring','MSc, Marketing'), period:'2010 – 2015' }], certs:['Google Ads Search Certification'] },
+
+      { id:'rasmus', dom:'digital', initials:'RH', name:'Rasmus Holt', title:g('Marketing Automation','Marketing Automation'), location:'Aarhus', email:'rasmus@trustusconsult.dk', rate:g('1.000 kr/t','DKK 1,000/h'), avail:g('Ledig fra 15. sep','Available Sep 15'), tagline:g('Flows, segmenter og livscyklus — marketing der kører videre uden dig.','Flows, segments and lifecycle — marketing that keeps running without you.'), skills:['HubSpot','Klaviyo','CRM','Lifecycle'], langs:g(['Dansk','Engelsk'],['Danish','English']),
+        summary:g('Jeg sætter systemerne op, så salget får de rigtige leads i den rigtige rækkefølge.','I set up the systems so sales gets the right leads in the right order.'),
+        exp:[{ role:'Automation Consultant', org:'Avidly', period:'2019 – 2025', place:'Aarhus', text:g('HubSpot-implementeringer for B2B-kunder.','HubSpot implementations for B2B clients.') },{ role:'CRM Specialist', org:'Salling Group', period:'2016 – 2019', place:'Aarhus', text:g('Loyalitetsprogram og e-mailflows.','Loyalty programme and email flows.') }],
+        edu:[{ school:'Aarhus BSS', degree:g('Cand.merc., Digital Business','MSc, Digital Business'), period:'2011 – 2016' }], certs:['HubSpot Marketing Software'] },
+
+      { id:'line', dom:'hr', initials:'LV', name:'Line Vestergaard', title:g('HR Business Partner','HR Business Partner'), location:'Aalborg', email:'line@trustusconsult.dk', rate:g('980 kr/t','DKK 980/h'), avail:g('Ledig nu','Available now'), tagline:g('HR for virksomheder, der er for små til en HR-afdeling.','HR for companies too small for an HR department.'), skills:[g('Ansættelsesret','Employment law'),'Onboarding',g('Ledersparring','Leader coaching')], langs:g(['Dansk','Engelsk'],['Danish','English']),
+        summary:g('Jeg fungerer som HR-afdeling på deltid for 4-6 virksomheder ad gangen.','I act as a part-time HR department for four to six companies at a time.'),
+        exp:[{ role:'HR Manager', org:'Siemens Gamesa', period:'2017 – 2024', place:g('Brande','Brande'), text:g('HR for 300 medarbejdere i produktion og udvikling.','HR for 300 staff across production and engineering.') },{ role:'HR Consultant', org:'Aalborg Kommune', period:'2013 – 2017', place:'Aalborg', text:g('Rekruttering og arbejdsmiljø.','Recruitment and workplace environment.') }],
+        edu:[{ school:'Aalborg Universitet', degree:g('Cand.merc., HRM','MSc, HRM'), period:'2008 – 2013' }], certs:[] },
+
+      { id:'thomas', dom:'hr', initials:'TS', name:'Thomas Sund', title:g('Rekruttering & Employer Branding','Recruitment & Employer Branding'), location:g('København','Copenhagen'), email:'thomas@trustusconsult.dk', rate:g('1.020 kr/t','DKK 1,020/h'), avail:g('Ledig fra 22. sep','Available Sep 22'), tagline:g('De rigtige ansøgere, ikke bare flere ansøgere.','The right applicants, not simply more of them.'), skills:[g('Tech-rekruttering','Tech recruiting'),'Employer brand','Assessment'], langs:g(['Dansk','Engelsk'],['Danish','English']),
+        summary:g('Jeg har ansat over 400 mennesker og lært, at annoncen sjældent er problemet.','I have hired more than 400 people and learned the job ad is rarely the problem.'),
+        exp:[{ role:'Talent Acquisition Lead', org:'Zendesk', period:'2018 – 2024', place:g('København','Copenhagen'), text:g('Tech-rekruttering i Norden.','Technical recruitment across the Nordics.') },{ role:'Recruiter', org:'Hays', period:'2014 – 2018', place:g('København','Copenhagen'), text:g('IT- og ingeniørprofiler.','IT and engineering profiles.') }],
+        edu:[{ school:'CBS', degree:g('Cand.soc., HRM','MSc, HRM'), period:'2009 – 2014' }], certs:[] },
+
+      { id:'ida', dom:'digital', initials:'IB', name:'Ida Brandt', title:g('Produktdesigner','Product Designer'), location:'Aarhus', email:'ida@trustusconsult.dk', rate:g('1.150 kr/t','DKK 1,150/h'), avail:g('Ledig nu','Available now'), tagline:g('Interfaces der kan bygges, ikke bare præsenteres.','Interfaces that can be built, not just presented.'), skills:[g('Produktdesign','Product design'),g('Designsystemer','Design systems'),'Research'], langs:g(['Dansk','Engelsk'],['Danish','English']),
+        summary:g('Jeg arbejder tæt på udviklerne og leverer design, der overlever implementeringen.','I work close to the engineers and deliver design that survives implementation.'),
+        exp:[{ role:'Senior Product Designer', org:'Podimo', period:'2020 – 2025', place:g('København','Copenhagen'), text:g('Designsystem og lytteoplevelse på tværs af platforme.','Design system and listening experience across platforms.') },{ role:'UX Designer', org:'Systematic', period:'2016 – 2020', place:'Aarhus', text:g('Sundhedsplatforme til hospitaler.','Health platforms for hospitals.') }],
+        edu:[{ school:'Designskolen Kolding', degree:g('Cand.des., Interaktionsdesign','MDes, Interaction Design'), period:'2011 – 2016' }], certs:[] },
+
+      { id:'noah', dom:'digital', initials:'NE', name:'Noah Ellegaard', title:g('Brand & Identitet','Brand & Identity'), location:'Aalborg', email:'noah@trustusconsult.dk', rate:g('1.080 kr/t','DKK 1,080/h'), avail:g('Ledig fra 29. aug','Available Aug 29'), tagline:g('Identiteter der stadig virker, når marketing er færdig med dem.','Identities that still work once marketing is done with them.'), skills:[g('Identitet','Identity'),g('Typografi','Typography'),'Art direction'], langs:g(['Dansk','Engelsk'],['Danish','English']),
+        summary:g('Visuel identitet for virksomheder i vækst — og de retningslinjer, der holder dem sammen bagefter.','Visual identity for growing companies — and the guidelines that hold it together afterwards.'),
+        exp:[{ role:'Art Director', org:'Kontrapunkt', period:'2018 – 2024', place:g('København','Copenhagen'), text:g('Identitetsprogrammer for nordiske kunder.','Identity programmes for Nordic clients.') },{ role:'Designer', org:'Bysted', period:'2014 – 2018', place:'Aarhus', text:g('Brand og kampagne.','Brand and campaign work.') }],
+        edu:[{ school:'Danmarks Medie- og Journalisthøjskole', degree:g('Grafisk design','Graphic Design'), period:'2010 – 2014' }], certs:[] },
+
+      { id:'kasper', dom:'consulting', initials:'KT', name:'Kasper Toft', title:g('BI & Analyse','BI & Analytics'), location:'Aalborg', email:'kasper@trustusconsult.dk', rate:g('1.120 kr/t','DKK 1,120/h'), avail:g('Fuldt booket til nov.','Booked out to Nov'), tagline:g('Tal, ledelsen faktisk kan handle på.','Numbers a management team can actually act on.'), skills:['Power BI','SQL','Forecasting'], langs:g(['Dansk','Engelsk'],['Danish','English']),
+        summary:g('Jeg bygger rapportering, der bliver brugt — og fjerner den, der ikke bliver.','I build reporting that gets used — and remove the reporting that does not.'),
+        exp:[{ role:'BI Lead', org:'Spar Nord', period:'2019 – 2025', place:'Aalborg', text:g('Ledelsesrapportering på tværs af forretningsområder.','Management reporting across business units.') },{ role:'Analyst', org:'Nordjyske Medier', period:'2015 – 2019', place:'Aalborg', text:g('Læser- og annonceanalyse.','Reader and advertising analytics.') }],
+        edu:[{ school:'Aalborg Universitet', degree:g('Cand.oecon.','MSc, Economics'), period:'2010 – 2015' }], certs:['Microsoft Certified: Power BI Data Analyst'] },
+
+      { id:'anne', dom:'invest', initials:'AS', name:'Anne Skov', title:g('Fractional CFO','Fractional CFO'), location:'Aalborg', email:'anne@trustusconsult.dk', rate:g('1.400 kr/t','DKK 1,400/h'), avail:g('Ledig fra 5. sep','Available Sep 5'), tagline:g('Økonomistyring for virksomheder mellem bogholder og CFO.','Financial control for companies between a bookkeeper and a CFO.'), skills:['Budget','Cash flow',g('Rapportering','Reporting')], langs:g(['Dansk','Engelsk'],['Danish','English']),
+        summary:g('Jeg er økonomichef to dage om ugen for virksomheder, der ikke har brug for fem.','I am the finance lead two days a week for companies that do not need five.'),
+        exp:[{ role:'CFO', org:'Nordisk Film Biografer', period:'2016 – 2023', place:g('København','Copenhagen'), text:g('Økonomifunktion og rapportering til koncern.','Finance function and group reporting.') },{ role:'Financial Controller', org:'Deloitte', period:'2011 – 2016', place:'Aalborg', text:g('Revision og rådgivning for SMV-segmentet.','Audit and advisory in the SME segment.') }],
+        edu:[{ school:'Aalborg Universitet', degree:g('Cand.merc.aud.','MSc, Auditing'), period:'2006 – 2011' }], certs:[] },
+
+      { id:'peter', dom:'juridisk', initials:'PA', name:'Peter Aagaard', title:g('Kontrakter & Compliance','Contracts & Compliance'), location:'Aarhus', email:'peter@trustusconsult.dk', rate:g('1.500 kr/t','DKK 1,500/h'), avail:g('Ledig nu','Available now'), tagline:g('Jura skrevet, så forretningen kan læse den.','Law written so the business can read it.'), skills:[g('Kontrakter','Contracts'),'GDPR','NIS2'], langs:g(['Dansk','Engelsk'],['Danish','English']),
+        summary:g('Erhvervsjura uden forbehold i hver anden sætning. Jeg svarer i almindeligt sprog og siger, hvad jeg ville gøre.','Commercial law without a caveat in every other sentence. I answer in plain language and say what I would do.'),
+        exp:[{ role:g('Advokat','Attorney'), org:'Kromann Reumert', period:'2015 – 2024', place:'Aarhus', text:g('IT-kontrakter og databeskyttelse.','IT contracts and data protection.') },{ role:g('Advokatfuldmægtig','Associate'), org:'Bech-Bruun', period:'2012 – 2015', place:g('København','Copenhagen'), text:g('Selskabsret og M&A.','Corporate law and M&A.') }],
+        edu:[{ school:'Aarhus Universitet', degree:g('Cand.jur.','LLM'), period:'2006 – 2012' }], certs:[] },
+
+      { id:'malene', dom:'advisory', initials:'MR', name:'Malene Riis', title:g('ESG & Rapportering','ESG & Reporting'), location:g('Hjørring','Hjørring'), email:'malene@trustusconsult.dk', rate:g('1.180 kr/t','DKK 1,180/h'), avail:g('Ledig nu','Available now'), tagline:g('CSRD uden at gøre det til et konsulentprojekt på to år.','CSRD without turning it into a two-year consulting project.'), skills:['CSRD',g('Klimaregnskab','Carbon accounting'),g('Rapportering','Reporting')], langs:g(['Dansk','Engelsk'],['Danish','English']),
+        summary:g('Jeg hjælper mellemstore virksomheder med at komme igennem den første ESG-rapportering — og med at bruge tallene bagefter.','I help mid-sized companies get through their first ESG report — and use the numbers afterwards.'),
+        exp:[{ role:'ESG Manager', org:'Hjørring Forsyning', period:'2020 – 2025', place:g('Hjørring','Hjørring'), text:g('Klimaregnskab og bæredygtighedsrapport.','Carbon accounting and sustainability reporting.') },{ role:'Miljøkonsulent', org:'Rambøll', period:'2015 – 2020', place:'Aalborg', text:g('Miljøvurderinger for kommuner og forsyning.','Environmental assessments for municipalities and utilities.') }],
+        edu:[{ school:'Aalborg Universitet', degree:g('Cand.scient.techn., Miljøledelse','MSc, Environmental Management'), period:'2009 – 2015' }], certs:[] }
+    ];
+  }
+
+  fit() {
+    const stage = document.querySelector('[data-mapstage]');
+    if (!stage) return;
+    const el = stage.querySelector('[data-canvas]');
+    if (!el) return;
+    // The 140px reservation belongs to the constellation's title block, which
+    // no longer renders on the pin map — reserving it there crushed the fit
+    // scale below the legibility floor and made the zoom buttons inert.
+    //
+    // Both maps are measured against the panel-CLOSED stage width: the detail
+    // panel is a flex sibling, so opening it narrows the stage and would
+    // otherwise shrink the fixed-px card and label type to an illegible ~5px.
+    // The selected node is panned into the remaining strip instead.
+    const sid = this.state.sel;
+    if (!sid) this._openW = stage.clientWidth;
+    const wRef = Math.max(stage.clientWidth, this._openW || 0);
+    const w = wRef - 48, h = stage.clientHeight - 140;
+    if (w <= 0 || h <= 0) return;
+    const base = Math.min(w / 800, h / 445, 1.15);
+    const s = Math.max(0.34, base * (this.state.zoomStep || 1));
+    const target = sid;
+    el.style.transformOrigin = 'center center';
+    el.style.pointerEvents = '';
+    if (target) {
+      const n = el.querySelector('[data-node="' + target + '"]');
+      const z = 1.24, mx = 500, my = 310;
+      const cx = n ? n.offsetLeft + n.offsetWidth / 2 : mx;
+      const cy = n ? n.offsetTop + n.offsetHeight / 2 : my;
+      const dx = (mx - cx) * s * z, dy = (my - cy) * s * z;
+      el.style.transform = 'translate(-50%,-50%) translate(' + dx + 'px,' + dy + 'px) scale(' + (s * z) + ')';
+    } else {
+      el.style.transform = 'translate(-50%,-50%) translate(' + (-42 * s) + 'px,' + (34 - 20 * s) + 'px) scale(' + s + ')';
+    }
+    const link = el.querySelector('.linklayer');
+    if (link) link.style.opacity = '';
+    const ghost = el.querySelector('[data-ghost]');
+    if (ghost) { ghost.style.transition = 'opacity .4s ease'; ghost.style.opacity = target ? '0' : ''; }
+    el.querySelectorAll('.node').forEach(n => {
+      const id = n.getAttribute('data-node');
+      if (sid) { n.style.opacity = id === sid ? '1' : '.42'; n.style.filter = id === sid ? '' : 'grayscale(.5)'; }
+      else { n.style.opacity = ''; n.style.filter = ''; }
+      n.setAttribute('data-sel', id === sid ? 'true' : 'false');
+    });
+  }
+  componentDidMount() {
+    this.fit();
+    /* Deep link from the landing's login gate: #profile=<domainId|profileId>
+       opens the CV view directly. */
+    const m = /profile=([^&]+)/.exec(window.location.hash || '');
+    if (m) {
+      const key = decodeURIComponent(m[1]);
+      const p = this.P.find(x => x.id === key) || this.P.find(x => x.dom === key);
+      if (p) this.openProfile(p.id);
+      else { const d = this.D && this.D.find(x => x.id === key); if (d) this.go('domain', { domain: d.id }); }
+    }
+    if (window.ResizeObserver) {
+      this._ro = new ResizeObserver(() => this.fit());
+      this._observe();
+    }
+    this._rf = () => this.fit();
+    window.addEventListener('resize', this._rf);
+  }
+  _observe() {
+    const s = document.querySelector('[data-mapstage]');
+    if (this._ro && s && s !== this._obs) { this._ro.disconnect(); this._ro.observe(s); this._obs = s; }
+  }
+  componentDidUpdate() { this._observe(); this.fit(); }
+  componentWillUnmount() { if (this._ro) this._ro.disconnect(); window.removeEventListener('resize', this._rf); }
+
+  L(v) { const l = this.state.lang; return v && typeof v === 'object' && !Array.isArray(v) && (v.da !== undefined) ? v[l] : v; }
+  T(da, en) { return this.state.lang === 'da' ? da : en; }
+  tags(a) { return (a || []).map(t => ({ t: this.L(t) })); }
+
+  go(view, extra) { this.setState(Object.assign({ view: view, q: '' }, extra || {})); }
+
+  openDomain(id) {
+    if (this.state.view !== 'map') { this.go('domain', { domain: id, sel: null }); return; }
+    // Refit in the setState callback so the pan lands with the panel's
+    // layout change rather than a frame later, via the ResizeObserver.
+    this.setState({ sel: id, domain: id, q: '' }, () => this.fit());
+  }
+
+  backToMap() { this.go('map', { sel: null }); }
+  openProfile(id) { const p = this.P.find(x => x.id === id); this.go('profile', { profile: id, domain: p ? p.dom : this.state.domain }); }
+
+  startBooking(id) {
+    this.setState({ bk: { pid: id, step: 1, dur: 30, di: 0, si: null, f1: '', f2: '', f3: '', f4: '' } });
+  }
+  bkSet(patch) { this.setState(s => ({ bk: Object.assign({}, s.bk, patch) })); }
+
+  dates() {
+    const wd = this.state.lang === 'da'
+      ? ['søn', 'man', 'tir', 'ons', 'tor', 'fre', 'lør']
+      : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const mo = this.state.lang === 'da'
+      ? ['jan', 'feb', 'mar', 'apr', 'maj', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec']
+      : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const out = []; const base = new Date(); let i = 0;
+    while (out.length < 5 && i < 20) {
+      i++; const d = new Date(base.getTime() + i * 86400000);
+      if (d.getDay() === 0 || d.getDay() === 6) continue;
+      out.push({ wd: wd[d.getDay()], dm: d.getDate() + '. ' + mo[d.getMonth()], long: wd[d.getDay()] + ' ' + d.getDate() + '. ' + mo[d.getMonth()] });
+    }
+    return out;
+  }
+
+  renderVals() {
+    const s = this.state, L = v => this.L(v), T = (a, b) => this.T(a, b);
+    const doms = this.D, profs = this.P;
+    const openers = {};
+    doms.forEach(d => { openers[d.id] = () => this.openDomain(d.id); });
+
+    const dom = doms.find(d => d.id === s.domain) || doms[0];
+    const domProfiles = profs.filter(p => p.dom === dom.id).map(p => ({
+      initials: p.initials, name: p.name, title: L(p.title), location: L(p.location),
+      tagline: L(p.tagline), avail: L(p.avail), skills: this.tags(p.skills),
+      open: () => this.openProfile(p.id), book: () => this.startBooking(p.id)
+    }));
+
+    const pr = profs.find(p => p.id === s.profile) || profs[0];
+    const prDom = doms.find(d => d.id === pr.dom) || doms[0];
+
+    const q = s.q.trim().toLowerCase();
+    let results = [];
+    if (q.length > 0) {
+      doms.forEach(d => {
+        if (L(d.name).toLowerCase().indexOf(q) >= 0) results.push({ badge: d.num, title: L(d.name), sub: T('Domæne', 'Domain'), open: () => this.openDomain(d.id) });
+      });
+      profs.forEach(p => {
+        const hay = (p.name + ' ' + L(p.title) + ' ' + p.skills.join(' ')).toLowerCase();
+        if (hay.indexOf(q) >= 0) {
+          const d = doms.find(x => x.id === p.dom);
+          results.push({ badge: p.initials, title: p.name, sub: L(p.title) + ' · ' + L(d.name), open: () => this.openProfile(p.id) });
+        }
+      });
+      results = results.slice(0, 7);
+    }
+
+    const byId = {};
+    doms.forEach(d => { byId[d.id] = d; });
+    const pc = id => profs.filter(p => p.dom === id).length;
+    const short = d => L(d.name).split(' & ')[0].replace('Digital Web', 'Digital Web');
+
+    const conEdges = this.EDGES.map(([a, b]) => {
+      const p = byId[a], q = byId[b];
+      return { d: 'M' + p.x + ',' + p.y + ' L' + q.x + ',' + q.y };
+    });
+
+    const conNodes = doms.map(d => {
+      const n = pc(d.id), big = d.size >= 100;
+      return {
+        id: d.id, num: d.num, name: L(d.name), short: short(d), blurb: L(d.blurb),
+        status: d.status, seat: d.status === 'full' ? 'false' : 'true',
+        box: 'position:absolute;left:' + (d.x - d.size / 2) + 'px;top:' + (d.y - d.size / 2) + 'px;width:' + d.size + 'px;height:' + d.size + 'px;cursor:pointer;z-index:10',
+        type: (big ? 15 : d.size >= 84 ? 13 : 11.5) + 'px',
+        count: n > 0 ? n + '' : T('søger', 'recruiting'),
+        metrics: d.traffic.toLocaleString('da-DK') + ' · ' + d.bookings,
+        domLabel: T('Domæne ' + d.num, 'Domain ' + d.num),
+        pcount: n, resp: L(d.resp), bookings: d.bookings,
+        pLabel: T('profiler', 'profiles'), rLabel: T('svartid', 'response'), bLabel: T('bookinger', 'bookings'),
+        go: () => this.openDomain(d.id)
+      };
+    });
+
+    const domRows = doms.map(d => ({
+      num: d.num, name: L(d.name), count: pc(d.id) > 0 ? pc(d.id) + '' : '—',
+      open: () => this.openDomain(d.id)
+    }));
+
+    const sumT = doms.reduce((a, d) => a + d.traffic, 0);
+    const sumB = doms.reduce((a, d) => a + d.bookings, 0);
+    const meanR = doms.reduce((a, d) => a + parseFloat(String(d.resp.en)), 0) / doms.length;
+    const needs = doms.filter(d => d.status === 'needs');
+    const unstaffed = needs.filter(d => pc(d.id) === 0);
+
+    const rn = d => parseFloat(String(d.resp.en));
+    const slowest = doms.slice().sort((a, b) => rn(b) - rn(a))[0];
+    const overTarget = doms.filter(d => rn(d) > 6).length;
+    const booked = doms.find(d => d.status === 'full') || doms[0];
+    const cv = d => parseFloat(String(d.conv).replace(',', '.'));
+    const worstConv = doms.slice().sort((a, b) => cv(a) - cv(b))[0];
+    const busiest = doms.slice().sort((a, b) => b.traffic - a.traffic)[0];
+    const actions = [
+      { name: L(slowest.name), text: T('svarer på ' + L(slowest.resp) + ' — langsomste i kollektivet, mål er 6t.', 'replies in ' + L(slowest.resp) + ' — slowest in the collective; the target is 6h.') },
+      { name: L(booked.name), text: T('er fuldt booket til november.', 'is booked out to November.') },
+      { name: L(worstConv.name), text: T('konverterer ' + worstConv.conv + ' — laveste i kollektivet.', 'converts at ' + worstConv.conv + ' — lowest in the collective.') },
+      { name: T(unstaffed.length + ' domæner', unstaffed.length + ' domains'), text: T('står uden specialister og optager ansøgninger nu.', 'have no specialists yet and are taking applications now.') }
+    ];
+
+    const maxT = 4820;
+    const rows = doms.map(d => ({
+      num: d.num, name: L(d.name), traffic: d.traffic.toLocaleString('da-DK'), bookings: d.bookings,
+      conv: d.conv, resp: L(d.resp), bar: Math.round(24 + (d.traffic / maxT) * 76) + '%',
+      status: d.status === 'needs' ? T('Mangler profil', 'Needs freelancer') : d.status === 'full' ? T('Fuldt booket', 'Fully booked') : T('Sund', 'Healthy'),
+      tagClass: d.status === 'needs' ? 'tag tag-outline' : 'tag tag-neutral',
+      open: () => this.openDomain(d.id)
+    }));
+
+    const roleNames = { visitor: T('Gæst', 'Visitor'), freelancer: T('Freelancer', 'Freelancer'), board: T('Bestyrelse', 'Board') };
+    const roleInit = { visitor: T('GÆ', 'VI'), freelancer: 'AN', board: T('BE', 'BO') };
+
+    let bk = { s1: true, s2: false, s3: false, dates: [], slots: [] };
+    if (s.bk) {
+      const bp = profs.find(p => p.id === s.bk.pid) || profs[0];
+      const ds = this.dates();
+      const slotTimes = ['09:00', '10:30', '13:00', '14:30', '16:00'];
+      const sel = ds[s.bk.di] || ds[0];
+      const when = (sel ? sel.long : '') + (s.bk.si !== null ? ' · ' + slotTimes[s.bk.si] : '') + ' · ' + s.bk.dur + ' min';
+      const canNext = s.bk.step === 1 ? s.bk.si !== null : true;
+      bk = {
+        name: bp.name, title: L(bp.title),
+        s1: s.bk.step === 1, s2: s.bk.step === 2, s3: s.bk.step === 3,
+        b2: s.bk.step >= 2 ? '#a9bd6e' : 'rgba(20,34,33,.28)', b3: s.bk.step >= 3 ? '#a9bd6e' : 'rgba(20,34,33,.28)',
+        is30: s.bk.dur === 30, is60: s.bk.dur === 60,
+        d30: () => this.bkSet({ dur: 30 }), d60: () => this.bkSet({ dur: 60 }),
+        dates: ds.map((d, i) => ({ wd: d.wd, dm: d.dm, sel: s.bk.di === i, pick: () => this.bkSet({ di: i }) })),
+        slots: slotTimes.map((t, i) => ({ t: t, sel: s.bk.si === i, pick: () => this.bkSet({ si: i }) })),
+        when: when,
+        confirm: T('Vi har sendt en bekræftelse til ' + (s.bk.f2 || 'din mail') + '. ' + bp.name + ' svarer typisk inden for 2 timer.', 'A confirmation is on its way to ' + (s.bk.f2 || 'your inbox') + '. ' + bp.name + ' usually replies within 2 hours.'),
+        f1: s.bk.f1, f2: s.bk.f2, f3: s.bk.f3, f4: s.bk.f4,
+        set1: e => this.bkSet({ f1: e.target.value }), set2: e => this.bkSet({ f2: e.target.value }),
+        set3: e => this.bkSet({ f3: e.target.value }), set4: e => this.bkSet({ f4: e.target.value }),
+        backLabel: s.bk.step === 1 ? T('Annuller', 'Cancel') : s.bk.step === 3 ? T('Luk', 'Close') : T('Tilbage', 'Back'),
+        nextLabel: s.bk.step === 1 ? T('Vælg tidspunkt', 'Choose time') : s.bk.step === 2 ? T('Bekræft booking', 'Confirm booking') : T('Se profilen igen', 'Back to profile'),
+        back: () => { if (s.bk.step === 1 || s.bk.step === 3) this.setState({ bk: null }); else this.bkSet({ step: s.bk.step - 1 }); },
+        next: () => { if (s.bk.step === 3) { this.setState({ bk: null }); } else if (canNext) this.bkSet({ step: s.bk.step + 1 }); }
+      };
+    }
+
+    return {
+      lang: s.lang, role: s.role, filter: s.filter, q: s.q,
+      panelOpen: s.view === 'map' && !!s.sel,
+      zoomIn: () => this.setState(st => ({ zoomStep: Math.min(2.6, (st.zoomStep || 1) * 1.18) }), () => this.fit()),
+      zoomOut: () => this.setState(st => ({ zoomStep: Math.max(0.5, (st.zoomStep || 1) / 1.18) }), () => this.fit()),
+      atMax: (s.zoomStep || 1) >= 2.59 ? 'true' : 'false',
+      atMin: (s.zoomStep || 1) <= 0.51 ? 'true' : 'false',
+      zoomFit: () => this.setState({ zoomStep: 1, sel: null }, () => this.fit()),
+      fitLabel: T('Tilpas kortet', 'Fit the map'),
+      showTitle: !(s.view === 'map' && !!s.sel),
+      closePanel: () => this.setState({ sel: null }),
+      openFull: () => this.go('domain', { domain: s.sel || s.domain, sel: null }),
+      linksOn: (this.props.showConnections === false) ? 'off' : 'on',
+      isDa: s.lang === 'da', isEn: s.lang === 'en',
+      isFAll: s.filter === 'all', isFNeeds: s.filter === 'needs', isFOpen: s.filter === 'open',
+      isMap: s.view === 'map', isDomain: s.view === 'domain', isProfile: s.view === 'profile',
+      isBoard: s.view === 'board', isMe: s.view === 'me',
+      tabMap: s.view === 'map' || s.view === 'domain' || s.view === 'profile', tabBoard: s.view === 'board', tabMe: s.view === 'me',
+      searchPh: T('Søg domæne, profil eller kompetence…', 'Search domain, profile or skill…'),
+      hasResults: results.length > 0, results: results, rows: rows,
+      conNodes: conNodes, conEdges: conEdges, domRows: domRows,
+      kpiTraffic: sumT.toLocaleString('da-DK'),
+      kpiBookings: sumB,
+      kpiResp: (Math.round(meanR * 10) / 10).toLocaleString(s.lang === 'da' ? 'da-DK' : 'en-GB'),
+      kpiNeeds: needs.length,
+      kpiRespNote: T('Mål: under 6t · ' + overTarget + ' domæner er over', 'Target: under 6h · ' + overTarget + ' domains are above'),
+      actions: actions,
+      kpiNeedsList: needs.slice(0, 4).map(d => L(d.name)).join(' · ') + (needs.length > 4 ? T(' + ' + (needs.length - 4) + ' flere', ' + ' + (needs.length - 4) + ' more') : ''),
+      roleName: roleNames[s.role], roleInitials: roleInit[s.role],
+      setDa: () => this.setState({ lang: 'da' }), setEn: () => this.setState({ lang: 'en' }),
+
+      fAll: () => this.setState({ filter: 'all' }), fNeeds: () => this.setState({ filter: 'needs' }), fOpen: () => this.setState({ filter: 'open' }),
+      cycleRole: () => this.setState(st => ({ role: st.role === 'visitor' ? 'freelancer' : st.role === 'freelancer' ? 'board' : 'visitor' })),
+      goMap: () => this.backToMap(), goBoard: () => this.go('board', { sel: null }), goMe: () => this.go('me', { sel: null }),
+      viewOwn: () => this.openProfile('andreas'),
+      backToDomain: () => this.go('domain', { domain: pr.dom }),
+      openers: openers,
+      onQ: e => this.setState({ q: e.target.value }),
+      dom: {
+        num: dom.num, name: L(dom.name), blurb: L(dom.blurb), count: domProfiles.length,
+        traffic: dom.traffic.toLocaleString('da-DK'), bookings: dom.bookings, resp: L(dom.resp),
+        needs: dom.status === 'needs', profiles: domProfiles
+      },
+      prof: {
+        initials: pr.initials, name: pr.name, title: L(pr.title), location: L(pr.location),
+        email: pr.email, rate: L(pr.rate), avail: L(pr.avail), summary: L(pr.summary),
+        domainName: L(prDom.name), skills: this.tags(pr.skills), certs: this.tags(pr.certs),
+        langs: this.tags(L(pr.langs)),
+        exp: pr.exp.map(e => ({ role: L(e.role), org: L(e.org), period: L(e.period), place: L(e.place), text: L(e.text) })),
+        edu: pr.edu.map(u => ({ school: u.school, degree: L(u.degree), period: u.period }))
+      },
+      bookThis: () => this.startBooking(pr.id),
+      bookingOpen: !!s.bk, bk: bk, bookClose: () => this.setState({ bk: null })
+    };
+  }
+}
+</script>
+</body>
+</html>

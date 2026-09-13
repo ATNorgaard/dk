@@ -1,0 +1,263 @@
+/* ============================================================
+   Huset theme for TrustUsConsult
+   ------------------------------------------------------------
+   Re-tints the an-ui design system onto the Huset brand palette,
+   sampled from the TrustUsConsult logo (brickwork blue, charcoal,
+   gold heart) and the cover of "Huset paa Christianshavn"
+   (orange spine, terracotta, window green, limewash).
+
+   Loaded AFTER the an-ui stylesheet in each artboard, so every
+   rule here wins. Nothing in _ds/ is modified — re-syncing the
+   an-ui design system will not disturb this file.
+
+   Two kinds of rule live here:
+     1. Token remap — the bulk of the retint.
+     2. A few component rules where an-ui's single lime accent has
+        to split across Huset's three accent roles:
+        blue builds · orange marks · gold means.
+   ============================================================ */
+
+:root {
+  /* ---- Ink: the charcoal foundation ---- */
+  --an-ink: #1b1b1d;         /* logo, dark brick course */
+  --an-ink-soft: #26262a;
+  --an-ink-panel: #202023;
+  --an-ink-deep: #141416;
+
+  /* ---- Paper: limewashed render ---- */
+  --an-paper: #f2ede5;       /* cover, limewash */
+  --an-paper-deep: #e7e0d3;
+
+  /* ---- Accent: brickwork blue.
+     -bright is the on-ink / large-panel value and must stay legible
+     both ON charcoal and WITH charcoal text on top of it, so it is
+     the light brick rather than the saturated one.
+     -deep is the on-paper value: 6.16:1 on limewash. ---- */
+  --an-accent: #a8cbf0;
+  --an-accent-bright: #7fb2e8;
+  --an-accent-deep: #1c589c;   /* logo, wordmark + hexagon */
+  --an-accent-shadow: #144171; /* logo, brick shadow side */
+
+  /* ---- Text on paper ---- */
+  --an-text-strong: var(--an-ink);
+  --an-text-body: #4a423c;
+  --an-text-body-soft: #544b44;
+  --an-text-muted: #6b615a;    /* plaster ink, 5.17:1 on limewash */
+  --an-text-faint: #8b807a;
+
+  /* ---- Hairlines: charcoal, not green-black ---- */
+  --an-line-dark: rgba(27, 27, 29, 0.18);
+  --an-line-contrast: rgba(27, 27, 29, 0.35);
+
+  --an-shadow-lift: 0 22px 60px rgba(27, 27, 29, 0.24);
+  --an-shadow-header: 0 14px 40px rgba(27, 27, 29, 0.16);
+
+  /* ---- Huset brand constants, for the house drawing ---- */
+  --hus-gold: #c49c2c;         /* the heart — a lit window */
+  --hus-gold-pane: #ebce72;
+  --hus-gold-soft: rgba(196, 156, 44, 0.18);
+  --hus-door: #a63a24;         /* the street door — one entry per surface */
+  --hus-door-hover: #8d2d19;
+  --hus-cta: #de602a;          /* the button orange */
+  --hus-cta-hover: #c9531f;
+
+  /* Christianshavn facade: pantile terracotta, limewash render,
+     window green — sampled from the booklab elevation. */
+  --hus-tile: #b5573f;
+  --hus-tile-line: rgba(97, 40, 27, 0.34);
+  --hus-render-grey: #c8c1b7;
+  --hus-render-cream: #e6e0cf;
+  --hus-green: #3f5b39;
+  --hus-green-soft: rgba(63, 91, 57, 0.55);
+  --hus-glass: rgba(27, 27, 29, 0.55);
+  --hus-glass-deep: rgba(20, 20, 22, 0.72);
+  --hus-pane: rgba(27, 27, 29, 0.42);
+  --hus-ink-line: rgba(27, 27, 29, 0.58);
+  --hus-ink-soft: rgba(27, 27, 29, 0.33);
+}
+
+/* ---- Header: charcoal, not green-black ---- */
+.an-header { background: rgba(27, 27, 29, 0.92); }
+.an-header.is-scrolled { background: rgba(20, 20, 22, 0.96); }
+
+/* ---- The drifting outline circles were lime; make them brick ---- */
+.an-hero-copy::after { border-color: rgba(127, 178, 232, 0.22); }
+.an-section--ink::after,
+.an-section--ink-panel::after { border-color: rgba(127, 178, 232, 0.14); }
+.an-contact::after { border-color: rgba(27, 27, 29, 0.22); }
+
+/* ---- Callout spine: brickwork, was a hardcoded olive ---- */
+.an-callout { border-left-color: var(--an-accent-deep); }
+
+/* ---- Portrait placeholder ground ---- */
+.an-portrait { background: #ddd6c8; }
+
+/* ============================================================
+   Where an-ui's one accent has to become Huset's three
+   ============================================================ */
+
+/* The door. Huset allows exactly ONE orange call to action per
+   surface, so only the accent button variant takes it — outline and
+   light buttons stay as they are. Charcoal on the door orange is
+   4.76:1; white would be 3.61 and fail, which is why the label is
+   dark. */
+.an-button--accent {
+  background: var(--hus-cta);
+  color: var(--an-ink);
+}
+.an-button--accent:hover,
+.an-button--accent:focus-visible {
+  background: var(--hus-cta-hover);
+  color: var(--an-ink);
+  transform: translateY(-2px);
+}
+
+/* Every other button hovers to brick, not to the door. */
+.an-button:hover,
+.an-button:focus-visible {
+  background: var(--an-accent-bright);
+  color: var(--an-ink);
+}
+
+/* The contact block is the building's entrance in page terms, but it
+   is a whole panel — orange at that size would shout. It takes the
+   light brick, with the deep brick for its eyebrow. */
+.an-contact { background: var(--an-accent-bright); color: var(--an-ink); }
+.an-eyebrow--on-accent { color: var(--an-accent-shadow); }
+
+/* Gold means people and values — it appears once, on the principle
+   callout, and nowhere else. */
+.an-callout--on-ink { border-left-color: var(--hus-gold); }
+.an-callout--on-ink > span { color: var(--hus-gold); }
+
+/* ============================================================
+   The house — two adjoining Christianshavn townhouses, drawn as an
+   elevation after the booklab reference: pantile roofs, green sashes,
+   a shopfront fascia and one street door.
+   ------------------------------------------------------------
+   Colour is flat and local; every edge is still a hairline, and the
+   weights carry the drawing:
+
+     ground     1.10   the heaviest line on the sheet
+     profile    0.80   roof and facade outline
+     band       0.60   cornice, plinth, chimney
+     frame      0.55   window and door openings (green)
+     course     0.40   string courses, sills, lintels
+     tile/bar   0.30   pantile courses, glazing bars
+   ============================================================ */
+
+.hus-house {
+  position: absolute;
+  /* The header is fixed and opaque, so the drawing centres in the space
+     BELOW it — otherwise the taller house loses its ridge and chimney. */
+  top: 88px;
+  bottom: clamp(2.5rem, 6vh, 4rem);
+  right: 2.5%;
+  z-index: 4;
+  aspect-ratio: 25 / 32;
+  max-width: min(40vw, 600px);
+}
+
+.hus-plan { width: 100%; height: 100%; overflow: visible; }
+
+.hus-ground  { fill: none; stroke: var(--hus-ink-line); stroke-width: 1.1; }
+.hus-profile { fill: none; stroke: var(--hus-ink-line); stroke-width: 0.8; stroke-linejoin: round; }
+.hus-band    { fill: var(--an-paper-deep); stroke: var(--hus-ink-line); stroke-width: 0.6; }
+.hus-frame   { fill: none; stroke: var(--hus-green); stroke-width: 0.6; }
+.hus-course  { fill: none; stroke: var(--hus-ink-soft); stroke-width: 0.4; }
+.hus-bar     { fill: none; stroke: var(--hus-green-soft); stroke-width: 0.3; }
+.hus-tile    { fill: none; stroke: var(--hus-tile-line); stroke-width: 0.3; }
+.hus-sill    { fill: var(--hus-ink-soft); stroke: none; }
+
+/* ---- Masonry, roof and paint ---- */
+
+.hus-roof-plane { fill: var(--hus-tile); stroke: none; }
+.hus-stack { fill: var(--an-paper-deep); stroke: var(--hus-ink-line); stroke-width: 0.6; }
+.hus-wall-l { fill: var(--hus-render-grey); stroke: none; }
+.hus-wall-r { fill: var(--hus-render-cream); stroke: none; }
+.hus-paint  { fill: var(--hus-cta); opacity: 0.62; }
+.hus-patch  { fill: rgba(242, 237, 229, 0.55); }
+.hus-passage { fill: var(--hus-glass-deep); }
+.hus-shop { fill: rgba(27, 27, 29, 0.06); }
+.hus-glass { fill: var(--hus-glass); }
+
+/* ---- Windows ---- */
+
+.hus-win { cursor: pointer; }
+.hus-pane { fill: var(--hus-pane); transition: fill 620ms var(--an-ease); }
+.hus-win--near .hus-pane { fill: rgba(196, 156, 44, 0.34); }
+.hus-win--lit  .hus-pane { fill: var(--hus-gold-pane); }
+
+/* Lamplight. A blurred rect behind the opening rather than a hard
+   ring — a lit window spills, it does not outline. */
+.hus-glow {
+  fill: var(--hus-gold);
+  opacity: 0;
+  filter: blur(6px);
+  transition: opacity 620ms ease;
+}
+.hus-win--near .hus-glow { opacity: 0.16; }
+.hus-win--lit  .hus-glow { opacity: 0.55; }
+
+.hus-win--lit .hus-bar { stroke: rgba(94, 70, 12, 0.55); }
+
+/* Only the lit opening is labelled. Nine numbers on a facade is the
+   clutter that makes a drawing read as a diagram. */
+.hus-num {
+  font-family: var(--an-font-mono);
+  font-size: 2.6px;
+  letter-spacing: 0.1em;
+  text-anchor: middle;
+  fill: var(--an-text-muted);
+  opacity: 0;
+  transition: opacity 500ms ease;
+}
+.hus-win--lit .hus-num { opacity: 1; }
+
+/* ---- Signage: the painted plate mid-facade and the shop fascia ---- */
+
+.hus-sign { fill: var(--an-paper); stroke: var(--hus-green); stroke-width: 0.45; }
+.hus-sign-text {
+  font-family: var(--an-font-mono);
+  font-size: 2.4px;
+  letter-spacing: 0.14em;
+  text-anchor: middle;
+  text-transform: uppercase;
+  fill: var(--hus-green);
+}
+.hus-fascia { fill: rgba(168, 203, 240, 0.5); stroke: var(--hus-ink-soft); stroke-width: 0.45; }
+.hus-fascia-text {
+  font-family: var(--an-font-mono);
+  font-size: 3.1px;
+  letter-spacing: 0.12em;
+  text-anchor: middle;
+  text-transform: uppercase;
+  fill: var(--an-ink);
+}
+
+/* ---- The entrance ---- */
+
+.hus-door { cursor: pointer; }
+.hus-door-leaf { fill: var(--hus-door); transition: fill 300ms var(--an-ease); }
+.hus-door:hover .hus-door-leaf,
+.hus-door:focus-visible .hus-door-leaf { fill: var(--hus-door-hover); }
+.hus-door-line { fill: none; stroke: rgba(242, 237, 229, 0.42); stroke-width: 0.4; }
+.hus-fan { fill: var(--hus-gold-pane); }
+.hus-shop-door { fill: var(--hus-green); }
+
+.hus-caption {
+  font-family: var(--an-font-mono);
+  font-size: 2.6px;
+  letter-spacing: 0.16em;
+  text-anchor: middle;
+  text-transform: uppercase;
+  fill: var(--an-text-faint);
+}
+
+/* The dormers: room above, and the reference's own two roof lights. */
+.hus-dormer { fill: var(--hus-render-grey); stroke: var(--hus-ink-line); stroke-width: 0.55; }
+.hus-dormer-roof { fill: var(--hus-tile); stroke: var(--hus-ink-line); stroke-width: 0.55; stroke-linejoin: round; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hus-pane, .hus-glow, .hus-num, .hus-door-leaf { transition: none; }
+}

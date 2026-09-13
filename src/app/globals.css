@@ -1,0 +1,211 @@
+/* ============================================================
+   Huset design tokens for TrustUsConsult
+   ------------------------------------------------------------
+   Colours are sampled from the logo (brick blue, charcoal, gold heart)
+   and the cover of "Huset paa Christianshavn" (orange spine, terracotta,
+   window green, limewash). The house is the mental model: brand constants
+   are named for parts of a building, and the name tells you what the
+   colour is for.
+
+     blue builds · orange marks · gold means
+
+   Rules that matter:
+   - One entry (orange) button per surface.
+   - Gold means people and values, at most once per surface.
+   - Gold and orange take dark type, not white.
+   ============================================================ */
+
+:root {
+  /* ---- Brand constants, identical in both themes ---- */
+  --hds-fundament: #1b1b1d;      /* charcoal foundation */
+  --hds-fundament-soft: #26262a;
+  --hds-fundament-deep: #141416;
+  --hds-murvaerk: #1c589c;       /* brickwork blue, logo */
+  --hds-murvaerk-shadow: #144171;
+  --hds-murvaerk-face: #a8cbf0;  /* light brick, legible on charcoal */
+  --hds-murvaerk-bright: #7fb2e8;
+  --hds-hjerte: #c49c2c;         /* the heart, a lit window */
+  --hds-hjerte-pane: #ebce72;
+  --hds-hjerte-ink: #6d5312;     /* gold as text on light ground */
+  --hds-doer: #de602a;           /* the street door, the one CTA */
+  --hds-doer-hover: #c9531f;
+  --hds-doer-ink: #1b1b1d;       /* type on the door is dark */
+  --hds-tag: #b5573f;            /* pantile terracotta */
+  --hds-vindue: #3f5b39;         /* window green */
+  --hds-puds: #c8c1b7;           /* plaster */
+  --hds-kalk: #f2ede5;           /* limewash */
+  --hds-kalk-deep: #e7e0d3;
+
+  /* ---- Semantic surfaces and text (light) ---- */
+  --hds-bg: var(--hds-kalk);
+  --hds-surface: #f8f4ec;
+  --hds-raised: #ffffff;
+  --hds-sunken: var(--hds-kalk-deep);
+  --hds-text: var(--hds-fundament);
+  --hds-text-body: #4a423c;
+  --hds-text-muted: #6b615a;     /* 5.17:1 on limewash */
+  --hds-text-faint: #8b807a;
+  --hds-text-inverse: var(--hds-kalk);
+  --hds-border: rgba(27, 27, 29, 0.16);
+  --hds-border-strong: rgba(27, 27, 29, 0.34);
+  --hds-accent: var(--hds-murvaerk);        /* 6.16:1 on limewash */
+  --hds-accent-hover: var(--hds-murvaerk-shadow);
+  --hds-accent-wash: rgba(28, 88, 156, 0.08);
+  --hds-on-accent: #ffffff;
+  --hds-entry: var(--hds-doer);
+  --hds-on-entry: var(--hds-doer-ink);
+  --hds-heart: var(--hds-hjerte);
+  --hds-heart-ink: var(--hds-hjerte-ink);
+
+  /* ---- Status ---- */
+  --hds-success: #3f5b39;
+  --hds-warning: #a3721a;
+  --hds-danger: #a63a24;
+  --hds-info: var(--hds-murvaerk);
+
+  /* ---- Type ---- */
+  --hds-font-body: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  --hds-font-display: var(--hds-font-body);
+  --hds-font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --hds-font-serif: var(--font-serif), Georgia, "Times New Roman", serif;
+
+  --hds-text-2xs: 0.68rem;
+  --hds-text-xs: 0.76rem;
+  --hds-text-sm: 0.875rem;
+  --hds-text-md: 1rem;
+  --hds-text-lg: 1.125rem;
+  --hds-text-xl: 1.375rem;
+  --hds-text-2xl: 1.75rem;
+  --hds-text-3xl: clamp(2rem, 3.4vw, 2.75rem);
+  --hds-text-4xl: clamp(2.6rem, 4.6vw, 4rem);
+  --hds-tracking-display: -0.035em;
+  --hds-tracking-label: 0.16em;
+
+  /* ---- Space ---- */
+  --hds-space-3xs: 0.25rem;
+  --hds-space-2xs: 0.5rem;
+  --hds-space-xs: 0.75rem;
+  --hds-space-sm: 1rem;
+  --hds-space-md: 1.5rem;
+  --hds-space-lg: 2.25rem;
+  --hds-space-xl: 3.5rem;
+  --hds-space-2xl: 5rem;
+  --hds-space-3xl: 7rem;
+  --hds-space-4xl: 10rem;
+  --hds-gutter: clamp(1.25rem, 5vw, 4rem);
+  --hds-measure: 66ch;
+
+  /* ---- Radius: Huset is square-cornered; radii are small and rare ---- */
+  --hds-radius-none: 0;
+  --hds-radius-xs: 2px;
+  --hds-radius-sm: 4px;
+  --hds-radius-md: 6px;
+  --hds-radius-lg: 10px;
+  --hds-radius-pill: 999px;
+
+  /* ---- Elevation ---- */
+  --hds-shadow-xs: 0 0 0 1px var(--hds-border);
+  --hds-shadow-sm: 0 0 0 1px var(--hds-border), 0 6px 18px rgba(27, 27, 29, 0.07);
+  --hds-shadow-md: 0 0 0 1px var(--hds-border), 0 16px 40px rgba(27, 27, 29, 0.10);
+  --hds-shadow-lg: 0 22px 60px rgba(27, 27, 29, 0.24);
+  --hds-shadow-xl: 0 32px 90px rgba(27, 27, 29, 0.30);
+
+  --hds-ease: cubic-bezier(0.65, 0, 0.15, 1);
+
+  color-scheme: light;
+}
+
+/* Dark: the same house at night. Charcoal ground, limewash type, light brick. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --hds-bg: var(--hds-fundament);
+    --hds-surface: #232326;
+    --hds-raised: #2b2b2f;
+    --hds-sunken: var(--hds-fundament-deep);
+    --hds-text: var(--hds-kalk);
+    --hds-text-body: #d6cfc4;
+    --hds-text-muted: #a89f95;
+    --hds-text-faint: #7d746c;
+    --hds-text-inverse: var(--hds-fundament);
+    --hds-border: rgba(242, 237, 229, 0.14);
+    --hds-border-strong: rgba(242, 237, 229, 0.32);
+    --hds-accent: var(--hds-murvaerk-face);
+    --hds-accent-hover: #c5dcf5;
+    --hds-accent-wash: rgba(127, 178, 232, 0.10);
+    --hds-on-accent: var(--hds-fundament);
+    --hds-heart: var(--hds-hjerte-pane);
+    --hds-heart-ink: var(--hds-hjerte-pane);
+    --hds-success: #9cc494;
+    --hds-warning: #e0b65a;
+    --hds-danger: #e58a76;
+    --hds-info: var(--hds-murvaerk-face);
+    --hds-shadow-xs: 0 0 0 1px var(--hds-border);
+    --hds-shadow-sm: 0 0 0 1px var(--hds-border), 0 6px 18px rgba(0, 0, 0, 0.35);
+    --hds-shadow-md: 0 0 0 1px var(--hds-border), 0 16px 40px rgba(0, 0, 0, 0.45);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --hds-bg: var(--hds-fundament);
+  --hds-surface: #232326;
+  --hds-raised: #2b2b2f;
+  --hds-sunken: var(--hds-fundament-deep);
+  --hds-text: var(--hds-kalk);
+  --hds-text-body: #d6cfc4;
+  --hds-text-muted: #a89f95;
+  --hds-text-faint: #7d746c;
+  --hds-text-inverse: var(--hds-fundament);
+  --hds-border: rgba(242, 237, 229, 0.14);
+  --hds-border-strong: rgba(242, 237, 229, 0.32);
+  --hds-accent: var(--hds-murvaerk-face);
+  --hds-accent-hover: #c5dcf5;
+  --hds-accent-wash: rgba(127, 178, 232, 0.10);
+  --hds-on-accent: var(--hds-fundament);
+  --hds-heart: var(--hds-hjerte-pane);
+  --hds-heart-ink: var(--hds-hjerte-pane);
+  --hds-success: #9cc494;
+  --hds-warning: #e0b65a;
+  --hds-danger: #e58a76;
+  --hds-info: var(--hds-murvaerk-face);
+  --hds-shadow-xs: 0 0 0 1px var(--hds-border);
+  --hds-shadow-sm: 0 0 0 1px var(--hds-border), 0 6px 18px rgba(0, 0, 0, 0.35);
+  --hds-shadow-md: 0 0 0 1px var(--hds-border), 0 16px 40px rgba(0, 0, 0, 0.45);
+  color-scheme: dark;
+}
+
+/* ---- Base ---- */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--hds-bg);
+  color: var(--hds-text);
+  font-family: var(--hds-font-body);
+  font-size: var(--hds-text-md);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+h1, h2, h3, h4 { margin: 0; font-weight: 500; letter-spacing: -0.02em; text-wrap: balance; }
+p { margin: 0; text-wrap: pretty; }
+a { color: var(--hds-accent); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--hds-accent); outline-offset: 2px; }
+img, svg { display: block; max-width: 100%; }
+button { font: inherit; color: inherit; }
+::selection { background: var(--hds-murvaerk-face); color: var(--hds-fundament); }
+
+/* ---- Shared primitives ---- */
+.hds-eyebrow {
+  font-family: var(--hds-font-mono);
+  font-size: var(--hds-text-2xs);
+  letter-spacing: var(--hds-tracking-label);
+  text-transform: uppercase;
+  color: var(--hds-accent);
+}
+.hds-serif { font-family: var(--hds-font-serif); font-style: italic; font-weight: 400; letter-spacing: -0.02em; }
+.hds-tabular { font-variant-numeric: tabular-nums; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
