@@ -26,6 +26,13 @@ Web app for TrustUsConsult: public site, specialist directory and portal. Next.j
 - **No personal data in seeds or fixtures.** Illustrative people from the design prototype are not to be imported.
 - Secrets only in `.env.local` (ignored) and Vercel env vars. `.env.example` lists every key.
 
+## App structure
+- Every route lives under `src/app/[lang]/` (`da` default, `en`). `src/proxy.ts` (Next 16's middleware) redirects prefix-less paths to the visitor's language. Route params are promises: `const { lang } = await params`.
+- Interface copy: `src/content/*.ts` as `{da, en}` pairs, picked with `t(value, lang, fallback)`. Titles mark the italic highlight as `{em}…{/em}` and render through `RichTitle`.
+- Data loaders: `src/lib/house.ts` (domains, staffing, relationships) via the public client. Pages set `export const revalidate = 60`.
+- Shared page primitives: `src/components/ui/primitives.tsx` (Section, SectionHeading, CapabilityList, FactStrip, Timeline, Callout, Faq, CardGrid, ContactBlock, MotionBand, Button). Site chrome in `src/components/site/`. The house wrapper is `src/components/house/HouseStage.tsx` (client; creates the web component imperatively and drives the three camera levels).
+- Do not run `pnpm build` while `pnpm dev` is running against the same `.next` folder; it corrupts the dev server. Stop dev first.
+
 ## Where the design lives
 Claude Design project "Freelance Portal Map Interface" holds the three reference screens (Landing v2, Freelancere, Portal), the house component source and the brand theme. The go-live plan and phase roadmap are in the team's Claude artifacts.
 

@@ -1,0 +1,105 @@
+import { notFound } from "next/navigation";
+import { href, isLang, t } from "@/lib/i18n";
+import { loadHouse } from "@/lib/house";
+import { landing } from "@/content/landing";
+import { site } from "@/content/site";
+import { SiteHeader } from "@/components/site/SiteHeader";
+import { SiteFooter } from "@/components/site/SiteFooter";
+import { HouseStage } from "@/components/house/HouseStage";
+import {
+  Callout,
+  CapabilityList,
+  ContactBlock,
+  FactStrip,
+  Faq,
+  MotionBand,
+  Section,
+  SectionHeading,
+  TwoColumns,
+} from "@/components/ui/primitives";
+
+export const revalidate = 60;
+
+export default async function LandingPage({ params }: PageProps<"/[lang]">) {
+  const { lang } = await params;
+  if (!isLang(lang)) notFound();
+  const house = await loadHouse();
+  const recruiting = house.domains.filter((d) => d.status === "needs").length;
+  const L = landing;
+
+  const nav = [
+    { href: "#kollektivet", label: L.sections.collective.label },
+    { href: "#saadan", label: { da: "Sådan virker det", en: "How it works" } },
+    { href: "#vaerktoejer", label: L.sections.tools.label },
+    { href: "#spoergsmaal", label: L.sections.faq.label },
+    { href: href(lang, "/freelancere"), label: site.nav.forFreelancers },
+  ];
+
+  return (
+    <>
+      <SiteHeader lang={lang} pathname={href(lang)} items={nav} cta={{ href: "#kontakt", label: site.header.bookMeeting }} />
+      <main id="main">
+        <HouseStage house={house} lang={lang} />
+
+        <MotionBand items={house.domains.map((d) => t(d.name, lang, d.id))} />
+
+        <Section id="kollektivet" tone="paper" number={L.sections.collective.number} label={L.sections.collective.label} lang={lang} headingId="kollektivet-title">
+          <SectionHeading id="kollektivet-title" title={L.collective.title} intro={L.collective.intro} lang={lang} />
+          <TwoColumns>
+            <p>{t(L.collective.p1, lang, "")}</p>
+            <p>{t(L.collective.p2, lang, "")}</p>
+          </TwoColumns>
+          <FactStrip
+            lang={lang}
+            items={[
+              {
+                label: L.collective.facts.domains.label,
+                value: lang === "da" ? `${house.domains.length} domæner` : `${house.domains.length} domains`,
+                detail: L.collective.facts.domains.detail,
+              },
+              {
+                label: L.collective.facts.recruiting.label,
+                value: lang === "da" ? `${recruiting} domæner søger` : `${recruiting} domains recruiting`,
+                detail: L.collective.facts.recruiting.detail,
+              },
+              {
+                label: L.collective.facts.bar.label,
+                value: t(L.collective.facts.bar.value, lang, ""),
+                detail: L.collective.facts.bar.detail,
+              },
+            ]}
+          />
+        </Section>
+
+        <Section id="saadan" tone="ink" number={L.sections.how.number} label={L.sections.how.label} lang={lang} headingId="saadan-title">
+          <SectionHeading id="saadan-title" title={L.how.title} intro={L.how.intro} lang={lang} />
+          <CapabilityList items={L.how.steps} lang={lang} />
+        </Section>
+
+        <Section id="vaerktoejer" tone="paper" number={L.sections.tools.number} label={L.sections.tools.label} lang={lang} headingId="vaerktoejer-title">
+          <SectionHeading id="vaerktoejer-title" title={L.tools.title} intro={L.tools.intro} lang={lang} />
+          <CapabilityList items={L.tools.items} lang={lang} />
+          <Callout label={L.tools.calloutLabel} text={L.tools.calloutText} lang={lang} />
+        </Section>
+
+        <Section id="spoergsmaal" tone="paper" number={L.sections.faq.number} label={L.sections.faq.label} lang={lang} headingId="faq-title">
+          <SectionHeading id="faq-title" title={L.faq.title} intro={L.faq.intro} lang={lang} />
+          <Faq items={L.faq.items} lang={lang} />
+        </Section>
+
+        <ContactBlock
+          id="kontakt"
+          lang={lang}
+          eyebrow={L.contact.eyebrow}
+          title={L.contact.title}
+          intro={L.contact.intro}
+          links={[
+            { href: `mailto:${site.email.contact}`, label: `${site.email.contact} ↗` },
+            { href: href(lang, "/freelancere"), label: t(L.contact.joinLink, lang, "") },
+          ]}
+        />
+      </main>
+      <SiteFooter lang={lang} />
+    </>
+  );
+}
