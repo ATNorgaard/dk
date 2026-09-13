@@ -1,0 +1,85 @@
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.6fr);
+  gap: var(--hds-space-xl);
+  align-items: end;
+  padding: clamp(8rem, 18vh, 12rem) var(--hds-gutter) var(--hds-space-xl);
+  border-bottom: 1px solid var(--hds-border);
+  max-width: calc(1280px + 2 * var(--hds-gutter));
+  margin: 0 auto;
+}
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; }
+}
+.heroInner { display: grid; gap: var(--hds-space-sm); }
+.back {
+  font-size: var(--hds-text-sm);
+  color: var(--hds-text-muted);
+  text-decoration: none;
+  justify-self: start;
+}
+.back:hover { color: var(--hds-accent); }
+.title {
+  font-size: var(--hds-text-4xl);
+  line-height: 1.02;
+  letter-spacing: var(--hds-tracking-display);
+}
+.tagline {
+  font-size: var(--hds-text-2xl);
+  line-height: 1.2;
+  color: var(--hds-accent);
+}
+.lede {
+  max-width: 56ch;
+  font-size: var(--hds-text-lg);
+  color: var(--hds-text-body);
+}
+.skills {
+  list-style: none;
+  margin: var(--hds-space-2xs) 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+}
+.skills li {
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--hds-border-strong);
+  font-family: var(--hds-font-mono);
+  font-size: var(--hds-text-2xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--hds-text-muted);
+}
+.stats {
+  display: grid;
+  gap: 1px;
+  margin: 0;
+  background: var(--hds-border);
+  border: 1px solid var(--hds-border);
+}
+.stats > div {
+  display: grid;
+  gap: 2px;
+  padding: var(--hds-space-sm) var(--hds-space-md);
+  background: var(--hds-bg);
+}
+.stats dt {
+  font-family: var(--hds-font-mono);
+  font-size: var(--hds-text-2xs);
+  letter-spacing: var(--hds-tracking-label);
+  text-transform: uppercase;
+  color: var(--hds-text-faint);
+}
+.stats dd {
+  margin: 0;
+  font-size: var(--hds-text-2xl);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+.recruit {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hds-space-sm);
+  margin-top: var(--hds-space-lg);
+}
