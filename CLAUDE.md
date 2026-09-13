@@ -1,6 +1,6 @@
 # TrustUsConsult · Huset
 
-Web app for TrustUsConsult: public site, specialist directory and portal. Next.js (App Router, TypeScript) on Vercel, Postgres/Auth/Storage on Supabase. Owned by TrustUsConsult (Kim Herløv); built by Andreas Nørgaard and team.
+Web app for TrustUsConsult: public site, specialist directory and portal. **New here? Read `plan-doc.md` first**: current state, traps, verification recipes and the phase 2 plan. Next.js (App Router, TypeScript) on Vercel, Postgres/Auth/Storage on Supabase. Owned by TrustUsConsult (Kim Herløv); built by Andreas Nørgaard and team.
 
 ## Stack and accounts
 - **Supabase project:** `fghgbjfvdtuhxfmqgzgo` ("TUC", eu-central-1 Frankfurt), organisation owned by TrustUsConsult. The CLI is linked to it (`supabase/.temp`). If a Supabase MCP server is attached to this session, check `get_project_url` first: it may point at a different, personal project. Never apply migrations through MCP unless the URL matches.
