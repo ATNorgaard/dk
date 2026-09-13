@@ -29,6 +29,44 @@
   justify-content: center;
   min-width: 0;
 }
+/* The camera subject: sized and transformed by the wrapper; house and light
+   overlay share its coordinate space. */
+.subject {
+  position: relative;
+  flex: none;
+  width: 100%;
+}
+.houseHost { display: block; }
+.lights {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+  /* Own compositing layer: fading a light never repaints the facade. */
+  will-change: opacity;
+  transform: translateZ(0);
+}
+.light {
+  opacity: 0;
+  transition: opacity 380ms ease;
+}
+.light[data-state="near"] { opacity: 0.25; }
+.light[data-state="active"] { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .light { transition: none; }
+}
+/* Soft bottom edge, formerly a mask on the drawing. */
+.stageFade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: clamp(3rem, 8vh, 5rem);
+  pointer-events: none;
+  background: linear-gradient(to top, var(--hds-bg) 30%, transparent);
+}
 
 /* Pane: what the camera is looking at. Paper outside, ink once inside. */
 .pane {

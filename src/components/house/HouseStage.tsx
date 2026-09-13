@@ -27,6 +27,10 @@ type Level = 0 | 1 | 2;
 const VIEW_W = 1086;
 const VIEW_H = 1448;
 
+/* One window light, copied out of the artwork so it can fade in its own
+   compositing layer instead of repainting the whole facade. */
+type Light = { domain: string; x: number; y: number; w: number; h: number; rx: number | null; fill: string };
+
 export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
   const D = house.domains;
   const copy = landing.hero;
@@ -37,7 +41,12 @@ export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
      subscriptions depend on this, not on the script load, because the
      element is created a tick later than the script. */
   const [bound, setBound] = useState(false);
+  const [lights, setLights] = useState<Light[]>([]);
   const hostRef = useRef<HTMLDivElement>(null);
+  /* The subject carries size and camera transform; the house and the light
+     overlay sit inside it and move together. */
+  const subjectRef = useRef<HTMLDivElement>(null);
+  const houseHostRef = useRef<HTMLDivElement>(null);
   const houseRef = useRef<HouseElement | null>(null);
   const rects = useRef<Record<string, { x: number; y: number; w: number; h: number }>>({});
   const tourHold = useRef<number | null>(null);
@@ -89,20 +98,19 @@ export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
   /* ---- camera: level 0 whole facade, 1 whole facade with a lit window,
           2 zoomed so the window fills ~44% of the stage height ---- */
   const updateCamera = useCallback(() => {
-    const el = houseRef.current;
+    const subject = subjectRef.current;
     const box = hostRef.current;
-    if (!el || !box) return;
+    if (!houseRef.current || !subject || !box) return;
     const W = box.clientWidth;
     const H = box.clientHeight;
     if (!W || !H) return;
     const elW = Math.max(160, Math.min(W - 48, (H - 24) * (VIEW_W / VIEW_H)) * 0.86);
-    el.style.width = `${elW}px`;
-    el.style.maxWidth = "none";
+    subject.style.width = `${elW}px`;
     const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    el.style.transition = still ? "none" : "transform 1100ms cubic-bezier(.65,0,.15,1)";
-    el.style.transformOrigin = "0 0";
+    subject.style.transition = still ? "none" : "transform 1100ms cubic-bezier(.65,0,.15,1)";
+    subject.style.transformOrigin = "0 0";
     if (level < 2) {
-      el.style.transform = "none";
+      subject.style.transform = "none";
       return;
     }
     const r = rects.current[D[i].id];
@@ -112,22 +120,23 @@ export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
     const wy = (r.y + r.h / 2) * k0;
     const wh = r.h * k0;
     const k = Math.min(7, Math.max(2, (H * 0.44) / wh));
-    const dx = W * 0.5 - el.offsetLeft - k * wx;
-    const dy = H * 0.5 - el.offsetTop - k * wy;
-    el.style.transform = `translate(${dx}px,${dy}px) scale(${k})`;
+    const dx = W * 0.5 - subject.offsetLeft - k * wx;
+    const dy = H * 0.5 - subject.offsetTop - k * wy;
+    subject.style.transform = `translate(${dx}px,${dy}px) scale(${k})`;
   }, [D, i, level]);
 
   /* ---- create and bind the element once the script has loaded ---- */
   useEffect(() => {
-    if (!scriptReady || houseRef.current || !hostRef.current) return;
-    const host = hostRef.current;
+    if (!scriptReady || houseRef.current || !houseHostRef.current) return;
+    const host = houseHostRef.current;
     let cancelled = false;
     (async () => {
       await customElements.whenDefined("trustus-house");
       if (cancelled) return;
       const el = document.createElement("trustus-house") as HouseElement;
-      el.style.cssText =
-        "display:block;width:100%;flex:none;-webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 90%,rgba(0,0,0,.6) 95%,transparent 99.5%);mask-image:linear-gradient(to bottom,#000 0%,#000 90%,rgba(0,0,0,.6) 95%,transparent 99.5%)";
+      /* No mask here: a mask forces an expensive composited layer on a
+         5,600-node drawing. The soft bottom edge is a gradient on the stage. */
+      el.style.cssText = "display:block;width:100%;max-width:none";
       const skin: Record<string, string> = {
         "--tuc-card": "var(--hds-fundament)",
         "--tuc-text": "var(--hds-kalk)",
@@ -142,19 +151,35 @@ export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
       if (cancelled) return;
       /* The pane beside the stage carries the copy; hide the component's own card. */
       const style = document.createElement("style");
+      /* The pane beside the stage carries the copy, so the component's own
+         card is hidden; the lights are hidden too and drawn by the overlay. */
       style.textContent =
-        ".layout{grid-template-columns:minmax(0,1fr)!important;gap:0!important}.rail,.card-slot,.card,.invitation{display:none!important}.art{grid-column:1!important;max-width:none!important}";
+        ".layout{grid-template-columns:minmax(0,1fr)!important;gap:0!important}.rail,.card-slot,.card,.invitation{display:none!important}.art{grid-column:1!important;max-width:none!important}.tuc-light{display:none!important}";
       el.shadowRoot?.appendChild(style);
+      const found: Light[] = [];
       el.shadowRoot?.querySelectorAll<SVGGElement>(".tuc-window[data-domain]").forEach((g) => {
+        const domain = g.dataset.domain!;
         const rc = g.querySelector("rect");
         if (rc)
-          rects.current[g.dataset.domain!] = {
+          rects.current[domain] = {
             x: +rc.getAttribute("x")!,
             y: +rc.getAttribute("y")!,
             w: +rc.getAttribute("width")!,
             h: +rc.getAttribute("height")!,
           };
+        g.querySelectorAll<SVGRectElement>("rect.tuc-light").forEach((l) => {
+          found.push({
+            domain,
+            x: +l.getAttribute("x")!,
+            y: +l.getAttribute("y")!,
+            w: +l.getAttribute("width")!,
+            h: +l.getAttribute("height")!,
+            rx: l.hasAttribute("rx") ? +l.getAttribute("rx")! : null,
+            fill: l.getAttribute("fill") ?? "#edbd60",
+          });
+        });
       });
+      setLights(found);
       pushConfig();
       updateCamera();
       setBound(true);
@@ -260,6 +285,11 @@ export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
   const total = active.activeSeats + active.openSeats;
   const c = (v: Parameters<typeof t>[0]) => t(v as never, lang, "") as string;
 
+  /* Which lights are on: the active window at full, its neighbours at a quarter. */
+  const relatedIds = useMemo(() => new Set(related.map((m) => m.id)), [related]);
+  const lightState = (domain: string) =>
+    level === 0 ? "off" : domain === active.id ? "active" : relatedIds.has(domain) ? "near" : "off";
+
   return (
     <section id="top" className={s.hero} data-level={level}>
       <Script src="/house/trustus-house.js" strategy="afterInteractive" onReady={() => setScriptReady(true)} />
@@ -271,7 +301,27 @@ export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
           if (level > 0) setLevel((l) => (l - 1) as Level);
         }}
       >
-        <div ref={hostRef} className={s.host} />
+        <div ref={hostRef} className={s.host}>
+          <div ref={subjectRef} className={s.subject}>
+            <div ref={houseHostRef} className={s.houseHost} />
+            <svg className={s.lights} viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} aria-hidden="true" focusable="false">
+              {lights.map((l, n) => (
+                <rect
+                  key={`${l.domain}-${n}`}
+                  className={s.light}
+                  data-state={lightState(l.domain)}
+                  x={l.x}
+                  y={l.y}
+                  width={l.w}
+                  height={l.h}
+                  rx={l.rx ?? undefined}
+                  fill={l.fill}
+                />
+              ))}
+            </svg>
+          </div>
+        </div>
+        <div className={s.stageFade} aria-hidden="true" />
       </div>
 
       <aside className={s.pane}>
