@@ -48,14 +48,17 @@
   will-change: opacity;
   transform: translateZ(0);
 }
-.light {
+/* The artwork's own light rules, applied to the cloned windows. */
+.lights :global(.tuc-light) {
   opacity: 0;
   transition: opacity 380ms ease;
 }
-.light[data-state="near"] { opacity: 0.25; }
-.light[data-state="active"] { opacity: 1; }
+.lights :global(.is-neighbour .tuc-light) { opacity: 0.25; }
+.lights :global(.is-active .tuc-light) { opacity: 1; }
+.lights :global(.tuc-focus) { opacity: 0; }
+.lights :global(.tuc-window[data-focus="true"] .tuc-focus) { opacity: 1; }
 @media (prefers-reduced-motion: reduce) {
-  .light { transition: none; }
+  .lights :global(.tuc-light) { transition: none; }
 }
 /* Soft bottom edge, formerly a mask on the drawing. */
 .stageFade {

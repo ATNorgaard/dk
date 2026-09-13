@@ -27,9 +27,42 @@ type Level = 0 | 1 | 2;
 const VIEW_W = 1086;
 const VIEW_H = 1448;
 
-/* One window light, copied out of the artwork so it can fade in its own
-   compositing layer instead of repainting the whole facade. */
-type Light = { domain: string; x: number; y: number; w: number; h: number; rx: number | null; fill: string };
+/**
+ * Builds the light overlay: a copy of every window group (glass, clipped
+ * panes with the light, frame, focus ring) plus the clip paths they reference,
+ * in a separate SVG that lives in its own compositing layer. The facade
+ * underneath never repaints when a light fades. Hit areas and titles are left
+ * out; pointer events stay with the real windows in the shadow root.
+ */
+function buildOverlay(el: HouseElement, overlay: SVGSVGElement) {
+  const root = el.shadowRoot;
+  if (!root) return;
+  const ns = "http://www.w3.org/2000/svg";
+  const defs = document.createElementNS(ns, "defs");
+  const seen = new Set<string>();
+  const wins = document.createElementNS(ns, "g");
+  root.querySelectorAll<SVGGElement>(".tuc-window[data-domain]").forEach((g) => {
+    const clone = g.cloneNode(true) as SVGGElement;
+    clone.querySelectorAll(".tuc-hit, title").forEach((n) => n.remove());
+    clone.removeAttribute("tabindex");
+    clone.removeAttribute("role");
+    clone.removeAttribute("aria-label");
+    clone.removeAttribute("aria-pressed");
+    clone.removeAttribute("aria-describedby");
+    clone.classList.remove("is-active", "is-neighbour");
+    for (const m of clone.outerHTML.matchAll(/url\(#([^)]+)\)/g)) {
+      const id = m[1];
+      if (seen.has(id)) continue;
+      const def = root.getElementById(id);
+      if (def) {
+        defs.appendChild(def.cloneNode(true));
+        seen.add(id);
+      }
+    }
+    wins.appendChild(clone);
+  });
+  overlay.replaceChildren(defs, wins);
+}
 
 export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
   const D = house.domains;
@@ -41,8 +74,8 @@ export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
      subscriptions depend on this, not on the script load, because the
      element is created a tick later than the script. */
   const [bound, setBound] = useState(false);
-  const [lights, setLights] = useState<Light[]>([]);
   const hostRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<SVGSVGElement>(null);
   /* The subject carries size and camera transform; the house and the light
      overlay sit inside it and move together. */
   const subjectRef = useRef<HTMLDivElement>(null);
@@ -152,34 +185,34 @@ export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
       /* The pane beside the stage carries the copy; hide the component's own card. */
       const style = document.createElement("style");
       /* The pane beside the stage carries the copy, so the component's own
-         card is hidden; the lights are hidden too and drawn by the overlay. */
+         card is hidden. The windows' visuals are hidden too (kept for hit
+         testing and focus) and drawn by the overlay instead. */
       style.textContent =
-        ".layout{grid-template-columns:minmax(0,1fr)!important;gap:0!important}.rail,.card-slot,.card,.invitation{display:none!important}.art{grid-column:1!important;max-width:none!important}.tuc-light{display:none!important}";
+        ".layout{grid-template-columns:minmax(0,1fr)!important;gap:0!important}.rail,.card-slot,.card,.invitation{display:none!important}.art{grid-column:1!important;max-width:none!important}.tuc-window>:not(.tuc-hit){opacity:0!important}";
       el.shadowRoot?.appendChild(style);
-      const found: Light[] = [];
       el.shadowRoot?.querySelectorAll<SVGGElement>(".tuc-window[data-domain]").forEach((g) => {
-        const domain = g.dataset.domain!;
         const rc = g.querySelector("rect");
         if (rc)
-          rects.current[domain] = {
+          rects.current[g.dataset.domain!] = {
             x: +rc.getAttribute("x")!,
             y: +rc.getAttribute("y")!,
             w: +rc.getAttribute("width")!,
             h: +rc.getAttribute("height")!,
           };
-        g.querySelectorAll<SVGRectElement>("rect.tuc-light").forEach((l) => {
-          found.push({
-            domain,
-            x: +l.getAttribute("x")!,
-            y: +l.getAttribute("y")!,
-            w: +l.getAttribute("width")!,
-            h: +l.getAttribute("height")!,
-            rx: l.hasAttribute("rx") ? +l.getAttribute("rx")! : null,
-            fill: l.getAttribute("fill") ?? "#edbd60",
-          });
-        });
       });
-      setLights(found);
+      if (overlayRef.current) buildOverlay(el, overlayRef.current);
+      /* Mirror keyboard focus onto the overlay's focus ring. */
+      const syncFocus = () => {
+        const focused = (el.shadowRoot?.activeElement as HTMLElement | null)?.closest?.(".tuc-window") as
+          | HTMLElement
+          | null
+          | undefined;
+        overlayRef.current?.querySelectorAll<SVGGElement>(".tuc-window").forEach((w) => {
+          w.dataset.focus = String(!!focused && focused.dataset.domain === w.dataset.domain);
+        });
+      };
+      el.addEventListener("focusin", syncFocus);
+      el.addEventListener("focusout", () => setTimeout(syncFocus, 0));
       pushConfig();
       updateCamera();
       setBound(true);
@@ -285,10 +318,16 @@ export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
   const total = active.activeSeats + active.openSeats;
   const c = (v: Parameters<typeof t>[0]) => t(v as never, lang, "") as string;
 
-  /* Which lights are on: the active window at full, its neighbours at a quarter. */
+  /* Which lights are on: the active window at full, its neighbours at a quarter.
+     Applied as the artwork's own classes on the overlay clones. */
   const relatedIds = useMemo(() => new Set(related.map((m) => m.id)), [related]);
-  const lightState = (domain: string) =>
-    level === 0 ? "off" : domain === active.id ? "active" : relatedIds.has(domain) ? "near" : "off";
+  useEffect(() => {
+    overlayRef.current?.querySelectorAll<SVGGElement>(".tuc-window").forEach((w) => {
+      const id = w.dataset.domain;
+      w.classList.toggle("is-active", level > 0 && id === active.id);
+      w.classList.toggle("is-neighbour", level > 0 && id !== active.id && relatedIds.has(id ?? ""));
+    });
+  }, [active.id, level, relatedIds, bound]);
 
   return (
     <section id="top" className={s.hero} data-level={level}>
@@ -304,21 +343,7 @@ export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
         <div ref={hostRef} className={s.host}>
           <div ref={subjectRef} className={s.subject}>
             <div ref={houseHostRef} className={s.houseHost} />
-            <svg className={s.lights} viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} aria-hidden="true" focusable="false">
-              {lights.map((l, n) => (
-                <rect
-                  key={`${l.domain}-${n}`}
-                  className={s.light}
-                  data-state={lightState(l.domain)}
-                  x={l.x}
-                  y={l.y}
-                  width={l.w}
-                  height={l.h}
-                  rx={l.rx ?? undefined}
-                  fill={l.fill}
-                />
-              ))}
-            </svg>
+            <svg ref={overlayRef} className={s.lights} viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} aria-hidden="true" focusable="false" />
           </div>
         </div>
         <div className={s.stageFade} aria-hidden="true" />
