@@ -12,7 +12,8 @@ Web app for TrustUsConsult: public site, specialist directory and portal. Next.j
 - `pnpm db:push` applies `supabase/migrations/*` to the linked project. `pnpm db:push:seed` also runs `supabase/seed.sql` (idempotent upserts).
 - `pnpm db:diff` shows drift between migrations and the linked database.
 - `pnpm db:types` regenerates `src/lib/supabase/database.types.ts`.
-- `pnpm house:build` rebuilds the house web component from `vendor/trustus-house/src` into `public/house/trustus-house.js`.
+- `pnpm house:build` rebuilds the house web component from `vendor/trustus-house/src` into `public/house/trustus-house.js`. Never edit the built bundle by hand; edit `src/` and rebuild. The build strips the C2PA `<metadata>` block from `house.svg`.
+- Reference designs (the three Claude Design screens and the original Huset theme) are in `design/reference/`. They are documentation, not served.
 
 ## Conventions
 - **Schema changes are migration files only.** Never edit the database from the dashboard without a matching migration. Migration names: `YYYYMMDDHHMMSS_topic.sql`.
