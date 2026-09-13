@@ -310,6 +310,11 @@
   text-decoration: none;
 }
 .contact .links a:hover { color: var(--hds-murvaerk-shadow); }
+.contact[data-form="true"] .inner {
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  align-items: start;
+}
+.contactLinksBelow { margin-top: var(--hds-space-lg); max-width: 40ch; }
 @media (max-width: 860px) {
   .contact .inner { grid-template-columns: 1fr; }
 }

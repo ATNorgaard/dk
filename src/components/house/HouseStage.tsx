@@ -10,6 +10,7 @@ import { href, t } from "@/lib/i18n";
 import { landing } from "@/content/landing";
 import { site } from "@/content/site";
 import { RichTitle, fill } from "@/components/ui/RichTitle";
+import { track } from "@/components/analytics/TrackView";
 import s from "./HouseStage.module.css";
 
 /* The house web component. Created imperatively into a box this component
@@ -208,9 +209,11 @@ export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
     } catch {
       /* ignore */
     }
+    if (level === 1) track("house_window", lang, D[i].id);
+    if (level === 2) track("house_inside", lang, D[i].id);
     const raf = requestAnimationFrame(updateCamera);
     return () => cancelAnimationFrame(raf);
-  }, [D, i, level, updateCamera]);
+  }, [D, i, lang, level, updateCamera]);
 
   useEffect(() => {
     const onResize = () => updateCamera();

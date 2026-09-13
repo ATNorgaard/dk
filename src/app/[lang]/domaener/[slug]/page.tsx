@@ -8,6 +8,8 @@ import { landing } from "@/content/landing";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { Button, Card, CardGrid, ContactBlock, Section, SectionHeading } from "@/components/ui/primitives";
+import { ContactForm } from "@/components/forms/ContactForm";
+import { TrackView } from "@/components/analytics/TrackView";
 import s from "./page.module.css";
 
 export const revalidate = 60;
@@ -132,13 +134,13 @@ export default async function DomainPage({ params }: PageProps<"/[lang]/domaener
           eyebrow={landing.contact.eyebrow}
           title={landing.contact.title}
           intro={landing.contact.intro}
-          links={[
-            { href: `mailto:${site.email.contact}?subject=${encodeURIComponent(t(d.name, lang, d.id))}`, label: `${site.email.contact} ↗` },
-            { href: href(lang, "/freelancere"), label: t(landing.contact.joinLink, lang, "") },
-          ]}
-        />
+          links={[{ href: href(lang, "/freelancere"), label: t(landing.contact.joinLink, lang, "") }]}
+        >
+          <ContactForm lang={lang} domainId={d.id} path={href(lang, `/domaener/${d.slug}`)} />
+        </ContactBlock>
       </main>
       <SiteFooter lang={lang} />
+      <TrackView type="domain_view" lang={lang} domainId={d.id} />
     </>
   );
 }

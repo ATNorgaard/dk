@@ -6,6 +6,8 @@ import { site } from "@/content/site";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { HouseStage } from "@/components/house/HouseStage";
+import { ContactForm } from "@/components/forms/ContactForm";
+import { TrackView } from "@/components/analytics/TrackView";
 import {
   Callout,
   CapabilityList,
@@ -93,13 +95,13 @@ export default async function LandingPage({ params }: PageProps<"/[lang]">) {
           eyebrow={L.contact.eyebrow}
           title={L.contact.title}
           intro={L.contact.intro}
-          links={[
-            { href: `mailto:${site.email.contact}`, label: `${site.email.contact} ↗` },
-            { href: href(lang, "/freelancere"), label: t(L.contact.joinLink, lang, "") },
-          ]}
-        />
+          links={[{ href: href(lang, "/freelancere"), label: t(L.contact.joinLink, lang, "") }]}
+        >
+          <ContactForm lang={lang} path={href(lang)} />
+        </ContactBlock>
       </main>
       <SiteFooter lang={lang} />
+      <TrackView type="page_view" lang={lang} />
     </>
   );
 }

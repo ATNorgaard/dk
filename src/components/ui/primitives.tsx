@@ -178,16 +178,28 @@ export function ContactBlock({
   intro,
   links,
   lang,
+  children,
 }: {
   id: string;
   eyebrow: I18nText;
   title: I18nText;
   intro: I18nText;
-  links: { href: string; label: string }[];
+  links?: { href: string; label: string }[];
   lang: Lang;
+  /** A form; when given it takes the right-hand column and the links move below the intro. */
+  children?: ReactNode;
 }) {
+  const linkList = links?.length ? (
+    <ul className={s.links}>
+      {links.map((l) => (
+        <li key={l.href}>
+          <a href={l.href}>{l.label}</a>
+        </li>
+      ))}
+    </ul>
+  ) : null;
   return (
-    <section id={id} className={s.contact} aria-labelledby={`${id}-title`}>
+    <section id={id} className={s.contact} aria-labelledby={`${id}-title`} data-form={!!children}>
       <div className={s.inner}>
         <div>
           <span className={s.eyebrow}>{t(eyebrow, lang, "")}</span>
@@ -195,14 +207,9 @@ export function ContactBlock({
             <RichTitle text={t(title, lang, "")} />
           </h2>
           <p className={s.intro}>{t(intro, lang, "")}</p>
+          {children ? <div className={s.contactLinksBelow}>{linkList}</div> : null}
         </div>
-        <ul className={s.links}>
-          {links.map((l) => (
-            <li key={l.href}>
-              <a href={l.href}>{l.label}</a>
-            </li>
-          ))}
-        </ul>
+        {children ?? linkList}
       </div>
     </section>
   );

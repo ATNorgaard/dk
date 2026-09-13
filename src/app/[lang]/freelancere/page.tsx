@@ -7,6 +7,8 @@ import { site } from "@/content/site";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { RichTitle, fill } from "@/components/ui/RichTitle";
+import { ApplicationForm } from "@/components/forms/ApplicationForm";
+import { TrackView } from "@/components/analytics/TrackView";
 import {
   Button,
   Callout,
@@ -111,13 +113,16 @@ export default async function FreelancerePage({ params }: PageProps<"/[lang]/fre
           eyebrow={F.contact.eyebrow}
           title={F.contact.title}
           intro={F.contact.intro}
-          links={[
-            { href: `mailto:${site.email.admission}`, label: `${site.email.admission} ↗` },
-            { href: href(lang), label: t(F.contact.frontPage, lang, "") },
-          ]}
-        />
+          links={[{ href: href(lang), label: t(F.contact.frontPage, lang, "") }]}
+        >
+          <ApplicationForm
+            lang={lang}
+            domains={house.domains.map((d) => ({ id: d.id, name: d.name, sortOrder: d.sortOrder, open: d.status === "needs" }))}
+          />
+        </ContactBlock>
       </main>
       <SiteFooter lang={lang} />
+      <TrackView type="page_view" lang={lang} />
     </>
   );
 }
