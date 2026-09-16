@@ -199,7 +199,7 @@ export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
       if (cancelled) return;
       const el = document.createElement("trustus-house") as HouseElement;
       /* No mask here: a mask forces an expensive composited layer on a
-         5,600-node drawing. The soft bottom edge is a gradient on the stage. */
+         5,600-node drawing. The soft foot is a gradient inside the subject. */
       el.style.cssText = "display:block;width:100%;max-width:none";
       const skin: Record<string, string> = {
         "--tuc-card": "var(--hds-fundament)",
@@ -216,10 +216,12 @@ export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
       /* The pane beside the stage carries the copy; hide the component's own card. */
       const style = document.createElement("style");
       /* The pane beside the stage carries the copy, so the component's own
-         card is hidden. The windows' visuals are hidden too (kept for hit
-         testing and focus) and drawn by the overlay instead. */
+         card is hidden. The domain windows' visuals are hidden too (kept for
+         hit testing and focus) and drawn by the overlay instead. The five
+         decorative windows have no domain and no overlay clone, so they must
+         stay visible in the drawing. */
       style.textContent =
-        ".layout{grid-template-columns:minmax(0,1fr)!important;gap:0!important}.rail,.card-slot,.card,.invitation{display:none!important}.art{grid-column:1!important;max-width:none!important}.tuc-window>:not(.tuc-hit){opacity:0!important}";
+        ".layout{grid-template-columns:minmax(0,1fr)!important;gap:0!important}.rail,.card-slot,.card,.invitation{display:none!important}.art{grid-column:1!important;max-width:none!important}.tuc-window[data-domain]>:not(.tuc-hit){opacity:0!important}";
       el.shadowRoot?.appendChild(style);
       el.shadowRoot?.querySelectorAll<SVGGElement>(".tuc-window[data-domain]").forEach((g) => {
         const rc = g.querySelector("rect");
@@ -376,9 +378,9 @@ export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
             <div ref={houseHostRef} className={s.houseHost} />
             <svg ref={overlayRef} className={s.windows} viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} aria-hidden="true" focusable="false" />
             <div ref={lampsRef} className={s.lamps} aria-hidden="true" />
+            <div className={s.houseFade} aria-hidden="true" />
           </div>
         </div>
-        <div className={s.stageFade} aria-hidden="true" />
       </div>
 
       <aside className={s.pane}>

@@ -37,7 +37,8 @@
   --hds-kalk-deep: #e7e0d3;
 
   /* ---- Semantic surfaces and text (light) ---- */
-  --hds-bg: var(--hds-kalk);
+  /* The page ground is white; limewash stays for sunken bands and tints. */
+  --hds-bg: #ffffff;
   --hds-surface: #f8f4ec;
   --hds-raised: #ffffff;
   --hds-sunken: var(--hds-kalk-deep);
@@ -115,36 +116,8 @@
   color-scheme: light;
 }
 
-/* Dark: the same house at night. Charcoal ground, limewash type, light brick. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --hds-bg: var(--hds-fundament);
-    --hds-surface: #232326;
-    --hds-raised: #2b2b2f;
-    --hds-sunken: var(--hds-fundament-deep);
-    --hds-text: var(--hds-kalk);
-    --hds-text-body: #d6cfc4;
-    --hds-text-muted: #a89f95;
-    --hds-text-faint: #7d746c;
-    --hds-text-inverse: var(--hds-fundament);
-    --hds-border: rgba(242, 237, 229, 0.14);
-    --hds-border-strong: rgba(242, 237, 229, 0.32);
-    --hds-accent: var(--hds-murvaerk-face);
-    --hds-accent-hover: #c5dcf5;
-    --hds-accent-wash: rgba(127, 178, 232, 0.10);
-    --hds-on-accent: var(--hds-fundament);
-    --hds-heart: var(--hds-hjerte-pane);
-    --hds-heart-ink: var(--hds-hjerte-pane);
-    --hds-success: #9cc494;
-    --hds-warning: #e0b65a;
-    --hds-danger: #e58a76;
-    --hds-info: var(--hds-murvaerk-face);
-    --hds-shadow-xs: 0 0 0 1px var(--hds-border);
-    --hds-shadow-sm: 0 0 0 1px var(--hds-border), 0 6px 18px rgba(0, 0, 0, 0.35);
-    --hds-shadow-md: 0 0 0 1px var(--hds-border), 0 16px 40px rgba(0, 0, 0, 0.45);
-    color-scheme: dark;
-  }
-}
+/* Dark: the same house at night. Opt-in only via data-theme="dark" on the
+   root; the site does not follow the OS colour scheme, the ground stays white. */
 :root[data-theme="dark"] {
   --hds-bg: var(--hds-fundament);
   --hds-surface: #232326;

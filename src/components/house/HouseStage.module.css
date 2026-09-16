@@ -71,15 +71,17 @@
 @media (prefers-reduced-motion: reduce) {
   .lamps > svg { transition: none; }
 }
-/* Soft bottom edge, formerly a mask on the drawing. */
-.stageFade {
+/* The house's foot fades into the page: a gradient over the bottom 5% of
+   the subject, so it follows the camera. Not a mask on the drawing (a mask
+   would force a composited layer on 5,600 nodes). */
+.houseFade {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  height: clamp(3rem, 8vh, 5rem);
+  height: 5%;
   pointer-events: none;
-  background: linear-gradient(to top, var(--hds-bg) 30%, transparent);
+  background: linear-gradient(to top, var(--hds-bg), transparent);
 }
 
 /* Pane: what the camera is looking at. Paper outside, ink once inside. */
