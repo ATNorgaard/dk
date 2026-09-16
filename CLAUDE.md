@@ -1,6 +1,6 @@
 # TrustUsConsult · Huset
 
-Web app for TrustUsConsult: public site, specialist directory and portal. **New here? Read `plan-doc.md` first**: current state, traps, verification recipes and the phase 2 plan. Next.js (App Router, TypeScript) on Vercel, Postgres/Auth/Storage on Supabase. Owned by TrustUsConsult (Kim Herløv); built by Andreas Nørgaard and team.
+Web app for TrustUsConsult: public site, specialist directory and portal. **New here? Read `docs/README.md` first**: it indexes architecture notes, runbooks, decisions and status. Next.js (App Router, TypeScript) on Vercel, Postgres/Auth/Storage on Supabase. Owned by TrustUsConsult (Kim Herløv); built by Andreas Nørgaard and team.
 
 ## Stack and accounts
 - **Supabase project:** `fghgbjfvdtuhxfmqgzgo` ("TUC", eu-central-1 Frankfurt), organisation owned by TrustUsConsult. The CLI is linked to it (`supabase/.temp`). If a Supabase MCP server is attached to this session, check `get_project_url` first: it may point at a different, personal project. Never apply migrations through MCP unless the URL matches.
@@ -26,6 +26,8 @@ Web app for TrustUsConsult: public site, specialist directory and portal. **New 
 - **Supabase clients:** `lib/supabase/public.ts` for cookie-less public reads on static pages, `lib/supabase/server.ts` for per-request user sessions, `lib/supabase/client.ts` in client components.
 - **No personal data in seeds or fixtures.** Illustrative people from the design prototype are not to be imported.
 - Secrets only in `.env.local` (ignored) and Vercel env vars. `.env.example` lists every key.
+- Commit messages: imperative subject, body explains *why*, end with `Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>`.
+- Before handing a preview to Kim: build log shows Next.js detected, `/` redirects, one hover on the house in a visible browser.
 
 ## App structure
 - Every route lives under `src/app/[lang]/` (`da` default, `en`). `src/proxy.ts` (Next 16's middleware) redirects prefix-less paths to the visitor's language. Route params are promises: `const { lang } = await params`.
