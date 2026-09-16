@@ -5,6 +5,7 @@ import { GeistMono } from "geist/font/mono";
 import { Instrument_Serif } from "next/font/google";
 import { LANGS, htmlLang, isLang } from "@/lib/i18n";
 import { SiteMotion } from "@/components/motion/SiteMotion";
+import { Analytics } from "@vercel/analytics/next";
 import "../globals.css";
 
 const serif = Instrument_Serif({
@@ -41,6 +42,7 @@ export default async function LangLayout({ children, params }: LayoutProps<"/[la
       <body>
         {children}
         <SiteMotion />
+        <Analytics />
       </body>
     </html>
   );
