@@ -91,7 +91,7 @@ function requireDomain(id) {
 
 function requireWrite(ctx) {
   if (!ctx.canWrite) {
-    fail("writes need SUPABASE_SECRET_KEY in .env.local (Supabase dashboard > Project settings > API keys > secret). Never commit it.");
+    fail("writes need SUPABASE_SECRET_KEY in .env.local. It is the project's secret key, shared by everyone with access to the TUC project: copy it (or a named sb_secret_ key made for you) from Supabase dashboard > Project settings > API keys. Never commit it.");
   }
 }
 

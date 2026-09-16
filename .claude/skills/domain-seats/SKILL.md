@@ -34,9 +34,11 @@ staffing after every write so you can show the result instead of claiming it.
    it to the id (`Bestyrelse` → `bestyrelse`, `AI & IT` → `ai`, `Salg & Marketing` → `salg`,
    `Juridisk Rådgiver` → `juridisk`, and so on; the full list is in `references/schema.md`).
 3. **Write.** Writes need `SUPABASE_SECRET_KEY` in `.env.local`. If it is missing the
-   script says so and exits before touching anything. Tell the user where the key lives
-   (Supabase dashboard → Project settings → API keys → secret) and that it must never be
-   committed or pasted into chat; the user adds it themselves.
+   script says so and exits before touching anything. Secret keys are per project, not
+   per person: any developer with access to the shared Supabase org copies one from
+   project TUC → Project settings → API keys (ideally a named `sb_secret_...` key created
+   for them, so it can be revoked alone). Tell the user that; never ask them to paste it
+   into chat, and never commit it. The user adds it to `.env.local` themselves.
 4. **Report** the staffing table the script printed. If the change should be visible on
    the site, mention that pages revalidate within a minute.
 
