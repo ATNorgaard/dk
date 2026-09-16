@@ -6,6 +6,7 @@ import { Instrument_Serif } from "next/font/google";
 import { LANGS, htmlLang, isLang } from "@/lib/i18n";
 import { SiteMotion } from "@/components/motion/SiteMotion";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "../globals.css";
 
 const serif = Instrument_Serif({
@@ -43,6 +44,7 @@ export default async function LangLayout({ children, params }: LayoutProps<"/[la
         {children}
         <SiteMotion />
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
