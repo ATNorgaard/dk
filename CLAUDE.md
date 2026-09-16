@@ -14,6 +14,7 @@ Web app for TrustUsConsult: public site, specialist directory and portal. **New 
 - `pnpm db:types` regenerates `src/lib/supabase/database.types.ts`.
 - `pnpm house:build` rebuilds the house web component from `vendor/trustus-house/src` into `public/house/trustus-house.js`. Never edit the built bundle by hand; edit `src/` and rebuild. The build strips the C2PA `<metadata>` block from `house.svg` and prepends `src/house.css` (the artwork's light rules: lights hidden until `is-active`, dimmed on `is-neighbour`). The exported SVG lost its own `<style>` block, so that file is the only place those rules live; the build fails if it is missing.
 - Reference designs (the three Claude Design screens and the original Huset theme) are in `design/reference/`. They are documentation, not served.
+- Seats per domain are managed with the `domain-seats` skill (`.claude/skills/domain-seats/`): `node --env-file=.env.local .claude/skills/domain-seats/scripts/seats.mjs list|add|set|remove|target|override`. Writes need `SUPABASE_SECRET_KEY` in `.env.local`.
 
 ## Conventions
 - **Schema changes are migration files only.** Never edit the database from the dashboard without a matching migration. Migration names: `YYYYMMDDHHMMSS_topic.sql`.

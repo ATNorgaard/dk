@@ -1,0 +1,23 @@
+{
+  "skill_name": "domain-seats",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Kim wants AI & IT to have five seats instead of three. Add the seats and show me how the domain looks afterwards.",
+      "expected_output": "Runs list ai first, then `add ai --count 2` via the bundled script from the repo root with --env-file=.env.local, reports the staffing table. If SUPABASE_SECRET_KEY is missing, explains where to get it and does not try another write path.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Which domains still need people, and how many open seats does each one have?",
+      "expected_output": "Runs `list` with the script, answers from the domain_staffing counts (status needs, open_seats), does not query the Supabase MCP without checking the project url.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "The first seat in Bestyrelse has been taken by a new board specialist who paid the buy-in yesterday. Update Supabase.",
+      "expected_output": "Maps Bestyrelse to id bestyrelse, runs `set bestyrelse 1 --status active --paid <yesterday iso>`, does not invent a holder uuid, reports the updated staffing.",
+      "files": []
+    }
+  ]
+}
