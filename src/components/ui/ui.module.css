@@ -226,17 +226,23 @@
 .cards {
   list-style: none;
   margin: var(--hds-space-xl) 0 0;
-  padding: 0;
+  padding: 1px;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 1px;
-  background: var(--hds-border);
-  border: 1px solid var(--hds-border);
+}
+/* Each card draws its own hairline so a short last row leaves no empty,
+   border-coloured cells, and the item is a grid so the link fills the
+   full row height instead of stopping at its own content. */
+.cards > li {
+  display: grid;
+  outline: 1px solid var(--hds-border);
 }
 .card {
   display: grid;
   gap: var(--hds-space-2xs);
   align-content: start;
+  min-height: 100%;
   padding: var(--hds-space-md);
   background: var(--hds-bg);
   color: inherit;
