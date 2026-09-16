@@ -6,7 +6,8 @@
 - [ ] Canonical names for domains 04 (`Investering & Projekt` vs `Investment & Finance`) and 10 (`Disruption & Innovation` vs `Innovation & New Ventures`) once Kim decides; one-line change in `seed.sql`, re-run `pnpm db:push:seed`.
 - [ ] Keyboard focus ring on the lamp overlay was implemented (`data-focus` mirror in HouseStage) but could not be verified in a hidden pane; tab through windows in a real browser.
 - [ ] `daily_domain_metrics` and `domain_staffing` are security-definer views (fine: counts only) — confirm the Supabase security advisor is happy once MCP points at the right project.
-- [ ] Node: local is 20, Vercel builds on 24; supabase-js warns on 20. Upgrade local Node to 22+.
+- [ ] Node: local is 20, Vercel builds on 24; supabase-js warns on 20 and fails without a native WebSocket in plain scripts (the seats script avoids it by using fetch). Upgrade local Node to 22+.
+- [ ] Per-developer `sb_secret_...` keys for the seats script: create one per admin in the dashboard, hand out through the password channel, leave the legacy `service_role` key unused.
 
 ## Blocked on Kim / Andreas (decisions from the go-live plan)
 
