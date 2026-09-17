@@ -4,7 +4,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { href, isLang, t } from "@/lib/i18n";
 import { loadHouse, pad2 } from "@/lib/house";
-import { availabilityLine, loadTeaserBySlug, loadTeaserSlugs, loadFullProfile, portraitUrl } from "@/lib/specialists";
+import { availabilityLine, loadTeaserBySlug, loadFullProfile, portraitUrl } from "@/lib/specialists";
 import { getViewer, hasRole } from "@/lib/auth";
 import { site } from "@/content/site";
 import { landing } from "@/content/landing";
@@ -18,12 +18,11 @@ import { BookingForm } from "@/components/booking/BookingForm";
 import { bookings } from "@/content/bookings";
 import s from "./page.module.css";
 
-export const revalidate = 60;
-
-export async function generateStaticParams() {
-  const slugs = await loadTeaserSlugs();
-  return (["da", "en"] as const).flatMap((lang) => slugs.map(({ slug }) => ({ lang, slug })));
-}
+// Rendered per request: the page reads the session (getViewer) to decide
+// whether the full CV is shown, and a route with `revalidate` is static in
+// production, where a cookie read throws DYNAMIC_SERVER_USAGE (it only
+// looked fine in dev, which renders everything on demand).
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/specialister/[slug]">): Promise<Metadata> {
   const { lang, slug } = await params;
