@@ -31,7 +31,7 @@ const Proposal = z.object({
   years_in_craft: z.number().int().min(0).max(60).describe("Years of professional experience in the craft, estimated from the CV"),
   summary: I18n.describe("About text, 3 to 6 sentences, third person, factual, no superlatives"),
   skills: z.object({ da: z.array(z.string()), en: z.array(z.string()) }).describe("6 to 15 skills, short noun phrases, same items in both languages"),
-  languages: z.array(z.string()).describe("Languages they work in as ISO 639-1 codes, e.g. da, en, de"),
+  languages: z.array(z.string()).describe("Languages they work in as two-letter ISO 639-1 codes only: 'da' not 'dansk', 'en' not 'English', 'de' not 'tysk'"),
   experience: z
     .array(
       z.object({
@@ -63,6 +63,18 @@ Dates: ISO YYYY-MM-DD. Skills: short noun phrases, the same list in both languag
 Answer with the JSON object only.`;
 
 type Part = { type: "text"; text: string } | { type: "file"; file: { filename: string; file_data: string } };
+
+/** Models tend to answer "dansk" where the profile stores "da". */
+const LANGUAGE_CODES: Record<string, string> = {
+  dansk: "da", danish: "da", engelsk: "en", english: "en", tysk: "de", german: "de", deutsch: "de",
+  svensk: "sv", swedish: "sv", norsk: "no", norwegian: "no", fransk: "fr", french: "fr", spansk: "es", spanish: "es",
+  italiensk: "it", italian: "it", hollandsk: "nl", dutch: "nl", polsk: "pl", polish: "pl", finsk: "fi", finnish: "fi",
+};
+function languageCode(value: string): string {
+  const v = value.trim().toLowerCase();
+  if (/^[a-z]{2}$/.test(v)) return v;
+  return LANGUAGE_CODES[v] ?? v.slice(0, 2);
+}
 
 export async function POST(request: NextRequest) {
   const viewer = await getViewer();
@@ -101,6 +113,9 @@ export async function POST(request: NextRequest) {
     },
     // OpenRouter extracts the PDF's text for models without file input.
     ...(hasPdf ? { plugins: [{ id: "file-parser", pdf: { engine: process.env.OPENROUTER_PDF_ENGINE || DEFAULT_PDF_ENGINE } }] } : {}),
+    // Extraction needs no deliberation. With reasoning on, DeepSeek spent the
+    // whole output budget thinking and returned empty content or timed out.
+    reasoning: { enabled: false },
     max_tokens: 8000,
   };
 
@@ -121,15 +136,19 @@ export async function POST(request: NextRequest) {
       console.error("cv-import: openrouter", res.status, (await res.text()).slice(0, 300));
       return NextResponse.json({ error: "api_error" }, { status: 502 });
     }
-    const data = (await res.json()) as { choices?: { message?: { content?: string | null } }[] };
+    const data = (await res.json()) as { choices?: { finish_reason?: string; message?: { content?: string | null } }[]; usage?: unknown };
     const content = data.choices?.[0]?.message?.content;
-    if (!content) return NextResponse.json({ error: "no_proposal" }, { status: 502 });
+    if (!content) {
+      console.error("cv-import: empty content", data.choices?.[0]?.finish_reason, JSON.stringify(data.usage ?? {}));
+      return NextResponse.json({ error: "no_proposal" }, { status: 502 });
+    }
     const parsed = Proposal.safeParse(JSON.parse(content));
     if (!parsed.success) {
       console.error("cv-import: proposal did not match the schema", parsed.error.issues.slice(0, 3));
       return NextResponse.json({ error: "no_proposal" }, { status: 502 });
     }
-    return NextResponse.json({ proposal: parsed.data });
+    const proposal = { ...parsed.data, languages: [...new Set(parsed.data.languages.map(languageCode))] };
+    return NextResponse.json({ proposal });
   } catch (e) {
     console.error("cv-import failed", e instanceof Error ? e.message : e);
     return NextResponse.json({ error: "failed" }, { status: 500 });
