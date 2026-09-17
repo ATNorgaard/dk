@@ -21,6 +21,7 @@ Web app for TrustUsConsult: public site, specialist directory and portal. **New 
 - **Bilingual copy** is stored as jsonb `{"da": "...", "en": "..."}` using the `i18n_text` domain. Danish is the default language. Interface strings live in code; content Kim edits lives in the database.
 - **Domain IDs are fixed** (`mentor, salg, bestyrelse, invest, consulting, ai, hr, advisory, supply, disruption, digital, projekt, management, juridisk, automation`). They match the window IDs in the house artwork and must never change. Names and slugs may.
 - **Row-level security on every table.** Public data is exposed through explicit `select` policies or views; anything about people is private by default. Run the Supabase security advisors after schema changes.
+- **Every migration grants explicitly** (`grant select on ... to anon, authenticated`, etc.). Supabase preview branches do not carry the main project's default privileges, so a table without grants is "permission denied" on every preview and the Vercel build fails at static generation.
 - **Design tokens** live in `src/app/globals.css` as `--hds-*` (Huset design system). No Tailwind. Style with CSS modules and tokens; never hardcode brand colours in components.
   - One orange `entry` action per surface. Gold means people and values, at most once per surface. Gold and orange carry dark type.
 - **Supabase clients:** `lib/supabase/public.ts` for cookie-less public reads on static pages, `lib/supabase/server.ts` for per-request user sessions, `lib/supabase/client.ts` in client components.
