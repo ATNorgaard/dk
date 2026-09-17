@@ -1,0 +1,75 @@
+/* Min side editor: one form, compact rows, a sticky save bar. */
+
+.editor {
+  display: grid;
+  gap: var(--hds-space-md);
+}
+
+/* A line of fields. The column recipe is picked per line so a row reads
+   left to right like the printed CV: who, when, then what. */
+.line {
+  display: grid;
+  gap: var(--hds-space-2xs) var(--hds-space-xs);
+  align-items: end;
+}
+.line[data-cols="pair"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.line[data-cols="three"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.line[data-cols="four"] { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.line[data-cols="org"] { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr) auto; }
+.line[data-cols="edu"] { grid-template-columns: minmax(0, 2fr) minmax(0, 0.6fr) minmax(0, 0.6fr) auto; }
+.line[data-cols="cert"] { grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr) minmax(0, 0.6fr) auto; }
+.line textarea { min-height: 56px; }
+
+@media (max-width: 720px) {
+  .line[data-cols] { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .line[data-cols="pair"],
+  .line[data-cols="three"] { grid-template-columns: minmax(0, 1fr); }
+  .line[data-cols="org"],
+  .line[data-cols="edu"],
+  .line[data-cols="cert"] { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; }
+  .line[data-cols="org"] > :first-child,
+  .line[data-cols="edu"] > :first-child,
+  .line[data-cols="cert"] > :first-child { grid-column: 1 / -1; }
+}
+
+.rows {
+  display: grid;
+}
+.row {
+  display: grid;
+  gap: var(--hds-space-2xs);
+  padding: var(--hds-space-xs) 0 var(--hds-space-sm);
+  border-top: 1px solid var(--hds-border);
+}
+.row:last-child { border-bottom: 1px solid var(--hds-border); margin-bottom: var(--hds-space-2xs); }
+
+.remove {
+  padding: 9px 4px;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: var(--hds-text-xs);
+  color: var(--hds-text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.remove:hover { color: var(--hds-danger); }
+
+/* Stays at the foot of the viewport while the form scrolls, so the one
+   save is never far away. */
+.bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--hds-space-xs);
+  padding: var(--hds-space-xs) 0;
+  border-top: 1px solid var(--hds-border-strong);
+  background: var(--hds-bg);
+}
+.unsaved {
+  font-size: var(--hds-text-sm);
+  color: var(--hds-warning);
+}
