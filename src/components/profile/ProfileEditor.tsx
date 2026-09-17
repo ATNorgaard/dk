@@ -9,6 +9,8 @@ import { specialists } from "@/content/specialists";
 import a from "@/components/admin/admin.module.css";
 import p from "@/components/portal/portal.module.css";
 import s from "./profile.module.css";
+import { LinkedInImport, type FillResult } from "./LinkedInImport";
+import type { LinkedInProfile } from "@/lib/linkedin";
 
 /**
  * The whole profile in one form with one save. Experience, education and
@@ -114,10 +116,58 @@ export function ProfileEditor({
     </div>
   );
 
+  /**
+   * Put a LinkedIn export into the form: empty fields get the value, filled
+   * fields are left alone, and rows are appended unless the same organisation
+   * and title (institution and degree, certification name) is already there.
+   * Nothing is saved until the specialist does.
+   */
+  function fill(li: LinkedInProfile): FillResult {
+    const form = formRef.current;
+    if (!form) return { experience: 0, education: 0, certifications: 0 };
+    const field = (name: string) => form.elements.namedItem(name) as HTMLInputElement | HTMLTextAreaElement | null;
+    const setIfEmpty = (name: string, value: string | null | undefined) => {
+      const el = field(name);
+      if (el && value && !el.value.trim()) el.value = value;
+    };
+    setIfEmpty("title_da", li.experience[0]?.title);
+    setIfEmpty("tagline_da", li.headline.slice(0, 160));
+    setIfEmpty("city", li.location.split(",")[0]?.trim());
+    setIfEmpty("summary_da", li.summary);
+    setIfEmpty("skills_da", li.skills.join("\n"));
+    setIfEmpty("languages", li.languages.join(", "));
+    setIfEmpty("linkedin_url", li.linkedin_url);
+    setIfEmpty("website_url", li.website_url);
+
+    const current = (prefix: string, count: number, fields: string[]) =>
+      new Set(Array.from({ length: count }, (_, i) => fields.map((f) => field(`${prefix}.${i}.${f}`)?.value.trim().toLowerCase() ?? "").join("|")));
+    const haveExp = current("experience", exp.length, ["organisation", "title_da"]);
+    const newExp = li.experience
+      .filter((r) => !haveExp.has(`${r.organisation}|${r.title}`.toLowerCase()))
+      .map((r) => ({ organisation: r.organisation, title: { da: r.title, en: "" }, description: r.description ? { da: r.description, en: "" } : null, start_date: r.start_date, end_date: r.end_date }));
+    const haveEdu = current("education", edu.length, ["institution", "degree_da"]);
+    const newEdu = li.education
+      .filter((r) => !haveEdu.has(`${r.institution}|${r.degree}`.toLowerCase()))
+      .map((r) => ({ institution: r.institution, degree: { da: r.degree, en: "" }, start_year: r.start_year, end_year: r.end_year }));
+    const haveCert = current("certifications", cert.length, ["name"]);
+    const newCert = li.certifications.filter((r) => !haveCert.has(r.name.toLowerCase())).map((r) => ({ name: r.name, issuer: null, year: null }));
+    if (newExp.length) setExp((rows) => [...rows, ...newExp.map((r) => ({ ...r, key: newKey() }))]);
+    if (newEdu.length) setEdu((rows) => [...rows, ...newEdu.map((r) => ({ ...r, key: newKey() }))]);
+    if (newCert.length) setCert((rows) => [...rows, ...newCert.map((r) => ({ ...r, key: newKey() }))]);
+    markDirty();
+    return { experience: newExp.length, education: newEdu.length, certifications: newCert.length };
+  }
+
   const pr = profile;
 
   return (
-    <form ref={formRef} action={formAction} className={s.editor} onChange={markDirty}>
+    <>
+      <section className={p.section}>
+        <h2>{L(c.sections.import)}</h2>
+        <LinkedInImport lang={lang} onLoaded={fill} />
+      </section>
+
+      <form ref={formRef} action={formAction} className={s.editor} onChange={markDirty}>
       <input type="hidden" name="lang" value={lang} />
       <input type="hidden" name="path" value={path} />
 
@@ -276,5 +326,6 @@ export function ProfileEditor({
         )}
       </div>
     </form>
+    </>
   );
 }
