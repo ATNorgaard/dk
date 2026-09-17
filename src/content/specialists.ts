@@ -135,8 +135,8 @@ export const specialists = {
     importApply: { da: "Brug forslaget", en: "Use the proposal" } as I18nText,
     importApplied: { da: "Forslaget er lagt ind. Gennemgå og gem felterne ovenfor.", en: "The proposal is in. Review and save the fields above." } as I18nText,
     importUnavailable: {
-      da: "CV-import er ikke slået til på serveren endnu (ANTHROPIC_API_KEY mangler).",
-      en: "CV import is not enabled on the server yet (ANTHROPIC_API_KEY is missing).",
+      da: "CV-import er ikke slået til på serveren endnu (OPENROUTER_API_KEY mangler).",
+      en: "CV import is not enabled on the server yet (OPENROUTER_API_KEY is missing).",
     } as I18nText,
     importFailed: { da: "Kunne ikke læse CV'et. Prøv med teksten i stedet.", en: "Could not read the CV. Try the text instead." } as I18nText,
   },
