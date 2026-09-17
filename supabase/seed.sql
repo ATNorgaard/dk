@@ -1,3 +1,4 @@
+-- Seed data for the house. Idempotent: safe to run on every branch and after every migration.
 -- Seed: the fifteen domains, their relationships and three open seats each.
 -- Danish names follow the landing page; English names follow the house
 -- bundle. Domains 04 and 10 carry two candidate names in the prototype;
