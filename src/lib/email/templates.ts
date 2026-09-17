@@ -212,6 +212,139 @@ export function newAccessRequestNotice(
   );
 }
 
+/* Bookings */
+
+function fmtWhen(iso: string, lang: Lang) {
+  return new Intl.DateTimeFormat(lang === "da" ? "da-DK" : "en-GB", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Europe/Copenhagen",
+  }).format(new Date(iso));
+}
+
+/** To the specialist: a new meeting request, with the proposed times and a link to Min side. */
+export function bookingRequested(
+  lang: Lang,
+  to: string,
+  b: { clientName: string; company: string | null; brief: string; minutes: number; times: string[]; minSideUrl: string },
+): Mail {
+  const da = lang === "da";
+  return make(
+    to,
+    da ? `Mødeforespørgsel fra ${b.clientName}` : `Meeting request from ${b.clientName}`,
+    da ? `${b.clientName} vil gerne mødes.` : `${b.clientName} would like to meet.`,
+    [
+      da
+        ? `${b.clientName}${b.company ? `, ${b.company}` : ""} beder om ${b.minutes} minutter og foreslår: ${b.times.map((t) => fmtWhen(t, lang)).join(" · ")}.`
+        : `${b.clientName}${b.company ? `, ${b.company}` : ""} asks for ${b.minutes} minutes and proposes: ${b.times.map((t) => fmtWhen(t, lang)).join(" · ")}.`,
+      da ? `Om: ${b.brief}` : `About: ${b.brief}`,
+      da
+        ? `Svar på Min side: ${b.minSideUrl}. Tiden til dit første svar er husets vigtigste tal, så gerne i dag.`
+        : `Reply on My page: ${b.minSideUrl}. The time to your first reply is the house's headline number, so today if you can.`,
+    ],
+    footer[lang],
+  );
+}
+
+/** To the requester: we have it, the specialist replies soon, here is your page. */
+export function bookingReceived(lang: Lang, to: string, clientName: string, specialistName: string, pageUrl: string): Mail {
+  const da = lang === "da";
+  return make(
+    to,
+    da ? `Din forespørgsel til ${specialistName}` : `Your request to ${specialistName}`,
+    da ? `Tak, ${clientName}.` : `Thank you, ${clientName}.`,
+    da
+      ? [
+          `${specialistName} har fået din forespørgsel og svarer hurtigst muligt, typisk samme dag.`,
+          `Du kan følge den her: ${pageUrl}. Når tiden er bekræftet, får du en kalenderinvitation på mail.`,
+        ]
+      : [
+          `${specialistName} has your request and replies as soon as possible, usually the same day.`,
+          `You can follow it here: ${pageUrl}. When the time is confirmed, you get a calendar invitation by mail.`,
+        ],
+    footer[lang],
+    site.email.contact,
+  );
+}
+
+/** To both parties: the time is agreed. Carries the calendar file. */
+export function bookingAccepted(
+  lang: Lang,
+  to: string,
+  b: { recipientName: string; otherName: string; startsAt: string; minutes: number; ics: string; pageUrl?: string },
+): Mail {
+  const da = lang === "da";
+  const mail = make(
+    to,
+    da ? `Aftalt: møde med ${b.otherName} ${fmtWhen(b.startsAt, lang)}` : `Agreed: meeting with ${b.otherName} ${fmtWhen(b.startsAt, lang)}`,
+    da ? `Tiden er på plads, ${b.recipientName}.` : `The time is set, ${b.recipientName}.`,
+    [
+      da
+        ? `${fmtWhen(b.startsAt, lang)}, ${b.minutes} minutter, med ${b.otherName}. Kalenderinvitationen er vedhæftet.`
+        : `${fmtWhen(b.startsAt, lang)}, ${b.minutes} minutes, with ${b.otherName}. The calendar invitation is attached.`,
+      da ? "I aftaler selv, om det er telefon, video eller et fysisk møde; svar på denne mail, så når I hinanden." : "You agree between you whether it is a call, video or in person; reply to this mail to reach each other.",
+      ...(b.pageUrl ? [da ? `Forespørgslen: ${b.pageUrl}` : `The request: ${b.pageUrl}`] : []),
+    ],
+    footer[lang],
+  );
+  mail.attachments = [{ filename: "moede.ics", content: b.ics, contentType: "text/calendar" }];
+  return mail;
+}
+
+/** To the requester: the specialist proposes another time; accept from your page. */
+export function bookingProposed(lang: Lang, to: string, b: { clientName: string; specialistName: string; startsAt: string; pageUrl: string }): Mail {
+  const da = lang === "da";
+  return make(
+    to,
+    da ? `${b.specialistName} foreslår en anden tid` : `${b.specialistName} proposes another time`,
+    da ? `Hej ${b.clientName}.` : `Hello ${b.clientName}.`,
+    da
+      ? [
+          `${b.specialistName} kan ikke de foreslåede tidspunkter, men foreslår ${fmtWhen(b.startsAt, lang)}.`,
+          `Passer det, så bekræft her: ${b.pageUrl}. Så får I begge en kalenderinvitation.`,
+        ]
+      : [
+          `${b.specialistName} cannot make the proposed times, but suggests ${fmtWhen(b.startsAt, lang)}.`,
+          `If that works, confirm here: ${b.pageUrl}. You both get a calendar invitation then.`,
+        ],
+    footer[lang],
+  );
+}
+
+/** To the requester: declined, with the house as the next door. */
+export function bookingDeclined(lang: Lang, to: string, b: { clientName: string; specialistName: string; note: string | null }): Mail {
+  const da = lang === "da";
+  return make(
+    to,
+    da ? `${b.specialistName} kan ikke denne gang` : `${b.specialistName} cannot this time`,
+    da ? `Hej ${b.clientName}.` : `Hello ${b.clientName}.`,
+    [
+      da ? `${b.specialistName} har måttet sige nej til mødet.` : `${b.specialistName} has had to decline the meeting.`,
+      ...(b.note ? [b.note] : []),
+      da
+        ? `Skriv til ${site.email.contact} med et par linjer om opgaven, så finder vi en anden i domænet.`
+        : `Write to ${site.email.contact} with a few lines about the brief and we find someone else in the domain.`,
+    ],
+    footer[lang],
+    site.email.contact,
+  );
+}
+
+/** To the specialist: the requester cancelled. */
+export function bookingCancelled(lang: Lang, to: string, clientName: string): Mail {
+  const da = lang === "da";
+  return make(
+    to,
+    da ? `${clientName} har annulleret forespørgslen` : `${clientName} cancelled the request`,
+    da ? "Forespørgslen er trukket tilbage." : "The request is withdrawn.",
+    [da ? `${clientName} har annulleret mødeforespørgslen. Der er ikke mere at gøre.` : `${clientName} cancelled the meeting request. Nothing more to do.`],
+    footer[lang],
+  );
+}
+
 /** To the house: a new application landed. Danish only; internal. */
 export function newApplicationNotice(
   to: string,

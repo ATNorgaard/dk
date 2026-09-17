@@ -14,6 +14,8 @@ export type Mail = {
   html: string;
   text: string;
   replyTo?: string;
+  /** e.g. a calendar file; content is the raw text, encoded by the provider adapter */
+  attachments?: { filename: string; content: string; contentType?: string }[];
 };
 
 export type SendResult = { ok: true; id: string | null; provider: string } | { ok: false; provider: string; error: string };
@@ -66,6 +68,11 @@ function resend(apiKey: string): EmailProvider {
           html: mail.html,
           text: mail.text,
           reply_to: mail.replyTo,
+          attachments: mail.attachments?.map((a) => ({
+            filename: a.filename,
+            content: Buffer.from(a.content, "utf8").toString("base64"),
+            content_type: a.contentType,
+          })),
         }),
       });
       const body = (await res.json().catch(() => ({}))) as { id?: string; message?: string; name?: string };

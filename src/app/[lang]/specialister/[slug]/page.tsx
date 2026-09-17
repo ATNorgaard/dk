@@ -14,6 +14,8 @@ import { SiteFooter } from "@/components/site/SiteFooter";
 import { ContactBlock } from "@/components/ui/primitives";
 import { ContactForm } from "@/components/forms/ContactForm";
 import { AccessRequestForm } from "@/components/forms/AccessRequestForm";
+import { BookingForm } from "@/components/booking/BookingForm";
+import { bookings } from "@/content/bookings";
 import s from "./page.module.css";
 
 export const revalidate = 60;
@@ -167,7 +169,6 @@ export default async function SpecialistPage({ params }: PageProps<"/[lang]/spec
                   </>
                 ) : null}
               </dl>
-              <p className={s.dim}>{L(c.bookSoon)}</p>
             </div>
           </section>
         ) : (
@@ -181,6 +182,20 @@ export default async function SpecialistPage({ params }: PageProps<"/[lang]/spec
             </div>
           </section>
         )}
+
+        <section className={s.booking} id="book">
+          <div className={s.bodyInner}>
+            <span className="hds-eyebrow">{L(bookings.form.eyebrow)}</span>
+            <h2 className={s.bookingTitle}>{L(bookings.form.title).replace("{name}", te.display_name.split(" ")[0])}</h2>
+            <p className={s.pre}>{L(bookings.form.intro).replace("{name}", te.display_name.split(" ")[0])}</p>
+            <BookingForm
+              lang={lang}
+              profileId={te.id}
+              specialistName={te.display_name}
+              prefill={viewer?.person ? { name: viewer.person.displayName, email: viewer.email ?? "" } : null}
+            />
+          </div>
+        </section>
 
         <ContactBlock id="kontakt" lang={lang} eyebrow={landing.contact.eyebrow} title={landing.contact.title} intro={landing.contact.intro}>
           <ContactForm lang={lang} domainId={te.domain_id} path={href(lang, `/specialister/${slug}`)} />

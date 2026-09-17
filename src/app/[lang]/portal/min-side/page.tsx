@@ -24,6 +24,8 @@ import { RichTitle } from "@/components/ui/RichTitle";
 import { ActionForm } from "@/components/admin/ActionForm";
 import { PortraitUpload } from "@/components/profile/PortraitUpload";
 import { CvImport } from "@/components/profile/CvImport";
+import { BookingInbox } from "@/components/booking/BookingInbox";
+import { listMyBookings } from "@/lib/bookings";
 import p from "@/components/portal/portal.module.css";
 import a from "@/components/admin/admin.module.css";
 
@@ -51,7 +53,7 @@ export default async function MinSidePage({ params }: PageProps<"/[lang]/portal/
   }
 
   const { profile: pr } = full;
-  const [live, house] = await Promise.all([isLive(pr.id), loadHouse()]);
+  const [live, house, myBookings] = await Promise.all([isLive(pr.id), loadHouse(), listMyBookings(pr.id)]);
   const domain = house.domains.find((d) => d.id === pr.domain_id);
   const pct = completeness(full);
   const statusKey = live ? "live" : pr.is_published ? "publishedNoSeat" : "draft";
@@ -84,6 +86,8 @@ export default async function MinSidePage({ params }: PageProps<"/[lang]/portal/
           {L(c.status[statusKey])} {L(c.completeness).replace("{pct}", String(pct))}
           {live ? <> · <Link href={href(lang, `/specialister/${pr.slug}`)}>{L(c.viewPublic)} →</Link></> : null}
         </p>
+
+        <BookingInbox lang={lang} path={path} items={myBookings} />
 
         <section className={p.section}>
           <h2>{L(c.sections.basics)}</h2>

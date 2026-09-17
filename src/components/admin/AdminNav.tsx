@@ -8,6 +8,7 @@ const ITEMS = [
   { path: "/ansoegninger", label: admin.nav.applications },
   { path: "/henvendelser", label: admin.nav.contacts },
   { path: "/adgang", label: admin.nav.access },
+  { path: "/bookinger", label: admin.nav.bookings },
   { path: "/domaener", label: admin.nav.domains },
   { path: "/pladser", label: admin.nav.seats },
   { path: "/personer", label: admin.nav.people },

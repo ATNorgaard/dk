@@ -125,6 +125,13 @@
 .gateActions { display: flex; flex-wrap: wrap; gap: var(--hds-space-xs); }
 .gateSub { margin-top: var(--hds-space-sm); font-size: var(--hds-text-xl); letter-spacing: -0.02em; }
 
+.booking {
+  padding: var(--hds-space-xl) var(--hds-gutter) var(--hds-space-2xl);
+  background: var(--hds-bg);
+  border-top: 1px solid var(--hds-border);
+}
+.bookingTitle { font-size: var(--hds-text-2xl); letter-spacing: -0.02em; }
+
 @media (max-width: 600px) {
   .head { grid-template-columns: 1fr; }
   .portrait, .initials { width: 96px; height: 96px; font-size: var(--hds-text-2xl); }
