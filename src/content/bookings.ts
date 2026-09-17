@@ -64,6 +64,8 @@ export const bookings = {
     accepted: { da: "Aftalt. Begge parter har fået en kalenderinvitation.", en: "Agreed. Both parties got a calendar invitation." } as I18nText,
     proposed: { da: "Forslaget er sendt til kunden.", en: "The proposal is sent to the client." } as I18nText,
     declined: { da: "Afslået. Kunden har fået besked.", en: "Declined. The client has been told." } as I18nText,
+    alreadyCancelled: { da: "Kunden har trukket forespørgslen tilbage i mellemtiden. Der er ikke mere at gøre.", en: "The requester has withdrawn the request in the meantime. Nothing more to do." } as I18nText,
+    alreadyAccepted: { da: "Tiden er allerede aftalt.", en: "The time is already agreed." } as I18nText,
     replyTime: { da: "Første svar efter {hours} t", en: "First reply after {hours} h" } as I18nText,
     agreedAt: { da: "Aftalt tid", en: "Agreed time" } as I18nText,
   },
