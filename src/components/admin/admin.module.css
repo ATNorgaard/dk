@@ -289,3 +289,12 @@
   color: var(--hds-text-muted);
   max-width: var(--hds-measure);
 }
+/* A caution the reader must see before acting, e.g. that a proposal was machine-written. */
+.notice {
+  font-size: var(--hds-text-sm);
+  color: var(--hds-text);
+  max-width: var(--hds-measure);
+  padding: var(--hds-space-xs) var(--hds-space-sm);
+  border-left: 3px solid var(--hds-warning);
+  background: var(--hds-sunken);
+}

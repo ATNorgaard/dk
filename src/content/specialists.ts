@@ -125,6 +125,10 @@ export const specialists = {
     uploading: { da: "Uploader…", en: "Uploading…" } as I18nText,
     portraitHint: { da: "JPG, PNG eller WebP, højst 5 MB. Kvadratisk virker bedst.", en: "JPG, PNG or WebP, up to 5 MB. Square works best." } as I18nText,
     portraitFailed: { da: "Upload mislykkedes. Prøv et mindre billede.", en: "Upload failed. Try a smaller image." } as I18nText,
+    importDisclaimer: {
+      da: "Forslaget skrives af en sprogmodel ud fra dit CV. Læs det igennem, og ret det, der ikke passer, før du bruger det. Du kan altid rette felterne bagefter.",
+      en: "The proposal is written by a language model from your CV. Read it through and correct what does not fit before you use it. You can always edit the fields afterwards.",
+    } as I18nText,
     importIntro: {
       da: "Upload dit CV som PDF eller indsæt teksten fra din LinkedIn-profil. Huset foreslår felterne; du retter og godkender, før noget gemmes.",
       en: "Upload your CV as a PDF or paste the text from your LinkedIn profile. The house proposes the fields; you correct and approve before anything is saved.",
