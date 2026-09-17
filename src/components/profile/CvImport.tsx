@@ -44,6 +44,7 @@ export function CvImport({ lang, path }: { lang: Lang; path: string }) {
 
   return (
     <div className={a.form}>
+      <p className={a.notice}>{L(c.importDisclaimer)}</p>
       <p className={a.hint}>{L(c.importIntro)}</p>
       <form onSubmit={run} className={a.form}>
         <div className={a.grid2}>
