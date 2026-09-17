@@ -1,6 +1,6 @@
 # Managing seats as an admin
 
-Setup for each admin.
+**Since 17 September the board edits seats at `/da/admin/pladser`** (see [admin.md](admin.md)); the script below is the fallback for recovery and for preview branches. Setup for each admin who needs the script:
 
 Seats per domain are edited with the `domain-seats` skill in `.claude/skills/domain-seats/`, which ships with the repo: pull `main` and Claude Code picks it up. It drives one dependency-free script that you can also run directly:
 

@@ -15,7 +15,7 @@ How people get into the portal, how roles are granted, and how to test it withou
 
 ## Granting roles
 
-Until the admin editor (roadmap 2.2), roles are granted with a script. It needs `SUPABASE_SECRET_KEY` in `.env.local` (the service role; see [admin-seats.md](admin-seats.md) for how keys are handled).
+**Since 17 September, admin grants and revokes roles at `/da/admin/personer`** (see [admin.md](admin.md)). The script below is the fallback, for instance when nobody holds `admin` or on a preview branch. It needs `SUPABASE_SECRET_KEY` in `.env.local` (the service role; see [admin-seats.md](admin-seats.md) for how keys are handled).
 
 ```bash
 pnpm roles list

@@ -17,6 +17,9 @@ Each slice ends in something Kim can click on a preview. Keep RLS-first: every n
 
 ### 2.1 Auth and roles — done, see above
 
+### 2.2 Admin — landed 17 September
+Pages under `/[lang]/admin`: overview, applications queue with notes and decisions, enquiries inbox, domain copy editor (revalidates the public pages), seats editor with the script's guards in RLS, people-and-roles editor (admin writes), numbers, audit log. Migrations `20260917100000_admin.sql` and `20260917110000_audit_actor_fk.sql`. See [runbooks/admin.md](../runbooks/admin.md). The scripts stay as fallbacks. Left: revoke the per-developer secret keys once the board is used to the pages; the six-month retention job for declined applications (pg_cron, later).
+
 ### 2.2 Admin (closes the phase 1 gap)
 - `/[lang]/admin`: applications queue (status enum already exists; add notes + decided_at), contact inbox (mark handled), domain copy editor (writes `domains.name/tagline/blurb/house_description/skills`; public pages revalidate via `revalidatePath`), seats (open/reserve/activate/close), read-only events summary from `daily_domain_metrics`.
 - RLS: board/admin select+update on applications, contact_messages, domains, seats; audit table `audit_log` with a trigger on those tables.
