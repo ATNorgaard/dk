@@ -1,4 +1,5 @@
 import { cache } from "react";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { href, isLang, type Lang } from "@/lib/i18n";
@@ -23,11 +24,35 @@ export type Viewer = {
 type PersonRow = { id: string; display_name: string; lang: string };
 
 /**
+ * "Se som": an admin can look at the site as another role. The choice sits
+ * in a cookie set by /api/view-as; getViewer applies it, getRealViewer does
+ * not. It changes what the pages think the viewer is, not what the database
+ * lets the session read: row-level security still sees the admin.
+ */
+export const VIEW_AS_COOKIE = "tuc-view-as";
+export const VIEW_AS_OPTIONS = ["board", "specialist", "client", "visitor"] as const;
+export type ViewAs = (typeof VIEW_AS_OPTIONS)[number];
+export function isViewAs(v: string | undefined | null): v is ViewAs {
+  return !!v && (VIEW_AS_OPTIONS as readonly string[]).includes(v);
+}
+function applyViewAs(viewer: Viewer | null, view: string | undefined): Viewer | null {
+  if (!viewer || !viewer.roles.includes("admin") || !isViewAs(view)) return viewer;
+  if (view === "visitor") return null;
+  return { ...viewer, roles: [view], memberships: viewer.memberships.filter((m) => m.role === view) };
+}
+
+/**
  * The signed-in person, verified against the auth server, plus their active
  * memberships. Memoised per request so layouts, pages and actions can all
- * call it. Null when nobody is signed in.
+ * call it. Null when nobody is signed in. Honours "Se som" (see above).
  */
 export const getViewer = cache(async (): Promise<Viewer | null> => {
+  const [viewer, cookieStore] = await Promise.all([getRealViewer(), cookies()]);
+  return applyViewAs(viewer, cookieStore.get(VIEW_AS_COOKIE)?.value);
+});
+
+/** The signed-in person as they really are, ignoring "Se som". */
+export const getRealViewer = cache(async (): Promise<Viewer | null> => {
   const supabase = await createClient();
   const {
     data: { user },

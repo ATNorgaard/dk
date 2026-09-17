@@ -321,3 +321,36 @@
   text-transform: uppercase;
   color: var(--hds-text-muted);
 }
+
+/* Level two: the other live specialists in the window, under the main one. */
+.others {
+  display: grid;
+  gap: var(--hds-space-3xs);
+  margin-top: var(--hds-space-xs);
+}
+.othersLabel {
+  font-family: var(--hds-font-mono);
+  font-size: var(--hds-text-2xs);
+  letter-spacing: var(--hds-tracking-label);
+  text-transform: uppercase;
+  color: var(--hds-text-faint);
+}
+.others ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--hds-border);
+}
+.others li a {
+  display: flex;
+  align-items: baseline;
+  gap: var(--hds-space-sm);
+  padding: var(--hds-space-xs) 0;
+  border-bottom: 1px solid var(--hds-border);
+  color: var(--hds-text-body);
+  font-size: var(--hds-text-sm);
+  text-decoration: none;
+}
+.others li a b { color: var(--hds-text); font-weight: 600; }
+.others li a span:last-child { margin-left: auto; }
+.others li a:hover b { text-decoration: underline; text-underline-offset: 3px; }

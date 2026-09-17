@@ -39,7 +39,7 @@ export default async function LandingPage({ params }: PageProps<"/[lang]">) {
       tagline: t(first.tagline, lang, "") || null,
       city: first.city,
       years: first.years_in_craft,
-      more: list.length - 1,
+      others: list.slice(1).map((te) => ({ slug: te.slug, name: te.display_name, title: t(te.title, lang, "") || null })),
     };
   }
   const L = landing;

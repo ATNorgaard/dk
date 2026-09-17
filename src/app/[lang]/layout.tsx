@@ -5,6 +5,7 @@ import { GeistMono } from "geist/font/mono";
 import { Instrument_Serif } from "next/font/google";
 import { LANGS, htmlLang, isLang } from "@/lib/i18n";
 import { SiteMotion } from "@/components/motion/SiteMotion";
+import { ViewAs } from "@/components/site/ViewAs";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "../globals.css";
@@ -42,6 +43,7 @@ export default async function LangLayout({ children, params }: LayoutProps<"/[la
     <html lang={htmlLang[lang]} className={`${GeistSans.variable} ${GeistMono.variable} ${serif.variable}`}>
       <body>
         {children}
+        <ViewAs lang={lang} />
         <SiteMotion />
         <Analytics />
         <SpeedInsights />

@@ -102,7 +102,8 @@ export type WindowTeaser = {
   tagline: string | null;
   city: string | null;
   years: number | null;
-  more: number;
+  /** The other live specialists in the window, in seat order. */
+  others: { slug: string; name: string; title: string | null }[];
 };
 
 export function HouseStage({ house, lang, teasers = {} }: { house: HouseData; lang: Lang; teasers?: Record<string, WindowTeaser> }) {
@@ -490,12 +491,23 @@ export function HouseStage({ house, lang, teasers = {} }: { house: HouseData; la
                     <Link href={href(lang, `/specialister/${teasers[active.id].slug}`)} className={s.buttonLight}>
                       {lang === "da" ? `Mød ${teasers[active.id].name.split(" ")[0]}` : `Meet ${teasers[active.id].name.split(" ")[0]}`} <span aria-hidden="true">→</span>
                     </Link>
-                    {teasers[active.id].more > 0 ? (
-                      <Link href={href(lang, `/domaener/${active.slug}#specialister`)} className={s.linkQuiet}>
-                        {lang === "da" ? `+ ${teasers[active.id].more} til i domænet` : `+ ${teasers[active.id].more} more in the domain`} →
-                      </Link>
-                    ) : null}
                   </div>
+                  {teasers[active.id].others.length ? (
+                    <div className={s.others}>
+                      <span className={s.othersLabel}>{lang === "da" ? "Også i vinduet" : "Also in the window"}</span>
+                      <ul>
+                        {teasers[active.id].others.map((o) => (
+                          <li key={o.slug}>
+                            <Link href={href(lang, `/specialister/${o.slug}`)}>
+                              <b>{o.name}</b>
+                              {o.title ? <span>{o.title}</span> : null}
+                              <span aria-hidden="true">→</span>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
                 </>
               ) : (
                 <>

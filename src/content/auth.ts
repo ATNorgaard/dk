@@ -3,6 +3,17 @@ import type { Role } from "@/lib/auth";
 
 /** Interface copy for sign-in, the portal shell and the admin shell. */
 export const auth = {
+  /** "Se som": the admin-only role switcher next to the header logo. */
+  viewAs: {
+    label: { da: "Ser som", en: "Viewing as" } as I18nText,
+    options: {
+      admin: { da: "Admin (mig)", en: "Admin (me)" } as I18nText,
+      board: { da: "Bestyrelse", en: "Board" } as I18nText,
+      specialist: { da: "Specialist", en: "Specialist" } as I18nText,
+      client: { da: "Kunde", en: "Client" } as I18nText,
+      visitor: { da: "Besøgende", en: "Visitor" } as I18nText,
+    },
+  },
   login: {
     eyebrow: { da: "Log ind", en: "Sign in" } as I18nText,
     title: { da: "Ind i {em}huset{/em}", en: "Into the {em}house{/em}" } as I18nText,
