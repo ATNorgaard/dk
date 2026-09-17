@@ -17,15 +17,19 @@ function str(fd: FormData, key: string, max = 300) {
 
 /**
  * The origin the visitor is talking to, so the magic link comes back to the
- * same host. Proxies may send comma-separated lists; the first entry is the
- * one the visitor used. A default port is dropped: Supabase matches the
- * redirect against its allow-list as text, and "host:443" is not "host".
+ * same host. Proxies may send comma-separated host lists; the first entry is
+ * the one the visitor used. The scheme is decided by the host, not by a
+ * forwarded header: everything that is not localhost is https, because
+ * Supabase matches the address against its allow-list as text and an
+ * "http://www…" address is rejected and replaced by the bare site URL.
+ * A default port is dropped for the same reason ("host:443" is not "host").
  */
 async function requestOrigin() {
   const h = await headers();
   const first = (v: string | null) => v?.split(",")[0]?.trim() || null;
   let host = first(h.get("x-forwarded-host")) ?? first(h.get("host")) ?? "localhost:3000";
-  const proto = first(h.get("x-forwarded-proto")) ?? (host.startsWith("localhost") || host.startsWith("127.") ? "http" : "https");
+  const local = host.startsWith("localhost") || host.startsWith("127.");
+  const proto = local ? "http" : "https";
   if ((proto === "https" && host.endsWith(":443")) || (proto === "http" && host.endsWith(":80"))) {
     host = host.replace(/:\d+$/, "");
   }

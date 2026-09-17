@@ -45,7 +45,9 @@ Roles: `client` (reads full CVs, 2.4), `specialist` (own profile and requests, 2
 2. Run `npx supabase config diff` and read the JSON. Only the properties you meant to change may appear as `update`; `remote_only` rows are fine.
 3. Then `npx supabase config push`.
 
-The redirect allow-list covers production (`www.trustusconsult.dk`, `trustusconsult.dk`), the Vercel aliases and preview URLs, and `localhost:3000`. A new preview host pattern goes in the list before magic links work there.
+The redirect allow-list covers production (`www.trustusconsult.dk`, `trustusconsult.dk`), the Vercel aliases and preview URLs, and `localhost` on ports 3000 to 3002. A new preview host pattern goes in the list before magic links work there.
+
+**What happens when the address is not on the list.** Supabase silently replaces it with the site URL, so the mail's link ends on the production landing page with `?code=…` attached. Seen on 17 September when a dev server ran on port 3001. Two guards now soften it: the proxy forwards a stray `code` on any page to the callback (a cross-host code still fails, but on the login page with an error), and the return address is always `https://` for anything that is not localhost, whatever the forwarded headers say, because `http://www…` is rejected too. If it happens again, check the port of the dev server and the list above.
 
 **Email sender.** Auth mails go out through Supabase's built-in sender until the email provider exists (roadmap 2.6, blocked on Kim). That sender allows only a couple of mails per hour across the whole project (`over_email_send_rate_limit`, shown on the form as "wait a minute") and has a generic from-address. Enough for the board to sign in, not for testing in a loop and not for launch.
 

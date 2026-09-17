@@ -125,6 +125,14 @@
   color: var(--hds-text);
   outline: 1px solid var(--hds-border);
 }
+.tileLink {
+  display: grid;
+  gap: var(--hds-space-3xs);
+  color: inherit;
+  text-decoration: none;
+}
+.tileLink:hover span { text-decoration: underline; text-underline-offset: 3px; }
+.tiles .tileLink small { color: var(--hds-text-body); font-family: inherit; letter-spacing: 0; text-transform: none; font-size: var(--hds-text-sm); }
 .tiles small {
   font-family: var(--hds-font-mono);
   font-size: var(--hds-text-2xs);

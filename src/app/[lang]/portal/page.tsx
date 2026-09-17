@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { href, isLang, t } from "@/lib/i18n";
-import { requireViewer } from "@/lib/auth";
+import Link from "next/link";
+import { href, isLang, t, type I18nText } from "@/lib/i18n";
+import { hasRole, requireViewer } from "@/lib/auth";
 import { loadHouse } from "@/lib/house";
 import { auth } from "@/content/auth";
 import { PortalShell } from "@/components/portal/PortalShell";
@@ -22,6 +23,15 @@ export default async function PortalPage({ params, searchParams }: PageProps<"/[
   };
   const c = auth.portal;
   const name = viewer.person?.displayName ?? viewer.email ?? "";
+  // Where this person can go from here, by role.
+  const doors: { href: string; title: I18nText; text: I18nText }[] = [];
+  if (hasRole(viewer, "specialist")) doors.push({ href: href(lang, "/portal/min-side"), title: c.doors.minSide, text: c.doors.minSideText });
+  if (hasRole(viewer, "board", "admin")) {
+    doors.push({ href: href(lang, "/admin/ansoegninger"), title: c.doors.applications, text: c.doors.applicationsText });
+    doors.push({ href: href(lang, "/admin/henvendelser"), title: c.doors.contacts, text: c.doors.contactsText });
+    doors.push({ href: href(lang, "/admin"), title: c.doors.admin, text: c.doors.adminText });
+  }
+  doors.push({ href: href(lang), title: c.doors.site, text: c.doors.siteText });
 
   return (
     <PortalShell lang={lang} pathname={path} viewer={viewer}>
@@ -53,6 +63,22 @@ export default async function PortalPage({ params, searchParams }: PageProps<"/[
             </dd>
           </div>
         </dl>
+
+        {doors.length ? (
+          <section className={p.section}>
+            <h2>{t(c.doorsTitle, lang, "")}</h2>
+            <ul className={p.tiles}>
+              {doors.map((d) => (
+                <li key={d.href}>
+                  <Link href={d.href} className={p.tileLink}>
+                    <span>{t(d.title, lang, "")}</span>
+                    <small>{t(d.text, lang, "")}</small>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
 
         <section className={p.section}>
           <h2>{t(c.comingTitle, lang, "")}</h2>
