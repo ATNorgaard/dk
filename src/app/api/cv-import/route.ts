@@ -9,13 +9,18 @@ import { getViewer, hasRole } from "@/lib/auth";
  * shows the proposal and the specialist approves it with applyImport.
  *
  * Talks to OpenRouter (OpenAI-style chat completions) with plain fetch, so
- * the model behind it is one env var: OPENROUTER_MODEL, default Claude Opus 5.
- * Needs OPENROUTER_API_KEY on the server; without it the route says so.
+ * the model behind it is one env var: OPENROUTER_MODEL, default DeepSeek
+ * V4.1 Flash. PDFs are turned into text by OpenRouter's file parser before
+ * the model sees them (OPENROUTER_PDF_ENGINE, default "pdf-text", the free
+ * one; "mistral-ocr" for scanned PDFs; "native" for models that read PDFs
+ * themselves). Needs OPENROUTER_API_KEY on the server; without it the
+ * route says so.
  */
 export const runtime = "nodejs";
 export const maxDuration = 120;
 
-const DEFAULT_MODEL = "anthropic/claude-opus-5";
+const DEFAULT_MODEL = "deepseek/deepseek-v4.1-flash";
+const DEFAULT_PDF_ENGINE = "pdf-text";
 
 const I18n = z.object({ da: z.string(), en: z.string() });
 
@@ -94,8 +99,8 @@ export async function POST(request: NextRequest) {
       type: "json_schema",
       json_schema: { name: "profile_proposal", strict: true, schema: z.toJSONSchema(Proposal) },
     },
-    // Let the model read the PDF itself (Claude handles PDFs natively).
-    ...(hasPdf ? { plugins: [{ id: "file-parser", pdf: { engine: "native" } }] } : {}),
+    // OpenRouter extracts the PDF's text for models without file input.
+    ...(hasPdf ? { plugins: [{ id: "file-parser", pdf: { engine: process.env.OPENROUTER_PDF_ENGINE || DEFAULT_PDF_ENGINE } }] } : {}),
     max_tokens: 8000,
   };
 
