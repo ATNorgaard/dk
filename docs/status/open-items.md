@@ -11,6 +11,7 @@
 
 ## From phase 2.3
 
+- [ ] **Remove the test specialist before launch.** "Mette Testesen" (delivered@resend.dev, seat 02 in AI & IT, profile "mette-testesen") is a fictional profile added 17 September so the domain page and a profile could be seen with two people. Delete the person (profile, memberships and rows cascade), set seat 02 back to open with no holder, delete the auth user.
 - [ ] Domain copy: the description and typical briefs on every domain page were drafted by Andreas with Claude on 17 September as placeholders. Kim reads them through under Admin → Domæner and edits in place. Note that `pnpm db:push:seed` overwrites all domain copy with `seed.sql`; once Kim has edited, either stop running the seed against the live project or copy his text back into the seed first.
 
 - [x] CV import: the model-based import (Anthropic, then OpenRouter with DeepSeek and Gemini) was replaced on 17 September by a deterministic reader of LinkedIn's own PDF export. `OPENROUTER_API_KEY` is removed from Vercel and no longer needed.
