@@ -9,11 +9,18 @@
 - [ ] Node: local is 20, Vercel builds on 24; supabase-js warns on 20 and fails without a native WebSocket in plain scripts (the seats script avoids it by using fetch). Upgrade local Node to 22+.
 - [ ] Per-developer `sb_secret_...` keys for the seats script: create one per admin in the dashboard, hand out through the password channel, leave the legacy `service_role` key unused.
 
+## From phase 2.1
+
+- [ ] Run the Supabase security advisors on `people`, `memberships`, `organisations` and the four security-definer role functions (dashboard → Advisors; the MCP in Claude sessions points at a personal project).
+- [x] Kim holds `board` (granted 16 September); he signs in with a magic link whenever he likes.
+- [x] Magic-link mail goes through Resend since 17 September (custom SMTP pushed from `config.toml`). The first version of the template failed to render; see the runbook for the rule.
+- [ ] Vercel preview URLs of the form `trustusconsult-<hash>-trust-us-consult.vercel.app` are in the auth redirect list as a wildcard; confirm a magic link requested from a preview lands back on that preview.
+
 ## Blocked on Kim / Andreas (decisions from the go-live plan)
 
-1. **Email provider** (Resend recommended), sending domain verified under Kim's account, API key into Vercel env + `.env.local` as `RESEND_API_KEY` (never in chat/commits).
+1. **Email provider: Resend, decided 16 September.** The code is in (`src/lib/email/`, intake confirmations and notices). Account created 17 September, domain verified (EU region), key in `.env.local`; the contact form delivered both mails from `huset@trustusconsult.dk`, and `kontakt@` accepts mail. Key and From are in Vercel (Production and Preview) and Supabase Auth sends through Resend's SMTP with a limit of 60 mails per hour; the first magic link from `/da/log-ind` went out from `huset@trustusconsult.dk` on 17 September. Left: confirm the `optagelse@` mailbox exists (or set `EMAIL_NOTIFY_APPLICATIONS`). **Hand-over reminder for Andreas: upgrade Resend to Pro, add Kim as owner, then leave the account.** Do not leave first.
 2. **Vercel GitHub app** on the TrustUsConsult org → then `vercel git connect` and set Framework Preset to Next.js in the dashboard for tidiness.
 3. **Who may read full CVs:** approved clients only (recommended) or any signed-up work email.
-4. **Login emails** for the first board (Kim) and admin (Andreas) accounts.
+4. ~~Login emails~~ Both board (Kim) and admin (Andreas) accounts exist.
 5. **Legal text** for privacy/terms, or a go-ahead for reviewed placeholders.
 6. **Seats per domain** (three is seeded) and the buy-in payment route (manual bank transfer at launch is assumed).

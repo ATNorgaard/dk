@@ -1,10 +1,16 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { DEFAULT_LANG, LANGS, isLang } from "@/lib/i18n";
+import { refreshSession } from "@/lib/supabase/proxy";
 
 /**
- * Language in the path: /da (default) and /en. A request without a language
- * prefix is redirected to the visitor's preferred language, read from the
- * Accept-Language header. Static assets and API routes are excluded.
+ * Two jobs before a request reaches a page:
+ *  1. Language in the path: /da (default) and /en. A request without a
+ *     language prefix is redirected to the visitor's preferred language, read
+ *     from the Accept-Language header.
+ *  2. Session: refresh the Supabase auth cookies and keep signed-out visitors
+ *     out of /[lang]/portal and /[lang]/admin. This is only the optimistic
+ *     check; pages verify the user and their roles again (lib/auth.ts).
+ * Static assets, API routes and /auth/* (the magic-link callback) are excluded.
  */
 function preferredLang(request: NextRequest) {
   const header = request.headers.get("accept-language") ?? "";
@@ -15,21 +21,47 @@ function preferredLang(request: NextRequest) {
   return DEFAULT_LANG;
 }
 
-export function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  const hasLang = LANGS.some(
-    (l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`),
-  );
-  if (hasLang) return NextResponse.next();
+const GUARDED = ["portal", "admin"];
 
-  const url = request.nextUrl.clone();
-  url.pathname = `/${preferredLang(request)}${pathname === "/" ? "" : pathname}`;
-  return NextResponse.redirect(url);
+export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const [, first, second] = pathname.split("/");
+
+  if (!isLang(first)) {
+    const url = request.nextUrl.clone();
+    url.pathname = `/${preferredLang(request)}${pathname === "/" ? "" : pathname}`;
+    return NextResponse.redirect(url);
+  }
+
+  const { response, userId } = await refreshSession(request);
+  const guarded = GUARDED.includes(second ?? "");
+  const atLogin = second === "log-ind";
+
+  if (guarded && !userId) {
+    const url = request.nextUrl.clone();
+    url.pathname = `/${first}/log-ind`;
+    url.search = `?next=${encodeURIComponent(pathname + request.nextUrl.search)}`;
+    return withCookies(NextResponse.redirect(url), response);
+  }
+  if (atLogin && userId) {
+    const next = request.nextUrl.searchParams.get("next");
+    const url = request.nextUrl.clone();
+    url.pathname = next && LANGS.some((l) => next.startsWith(`/${l}/`)) ? next.split("?")[0] : `/${first}/portal`;
+    url.search = "";
+    return withCookies(NextResponse.redirect(url), response);
+  }
+  return response;
+}
+
+/** A redirect must carry any refreshed session cookies along. */
+function withCookies(target: NextResponse, source: NextResponse) {
+  source.cookies.getAll().forEach((c) => target.cookies.set(c));
+  return target;
 }
 
 export const config = {
   matcher: [
-    // Everything except Next internals, API routes and files with an extension.
-    "/((?!_next|api|.*\\..*).*)",
+    // Everything except Next internals, API routes, the auth callback and files with an extension.
+    "/((?!_next|api|auth|.*\\..*).*)",
   ],
 };

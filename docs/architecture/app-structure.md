@@ -3,17 +3,21 @@
 What is built, file by file. For how the house renders see [house-rendering.md](house-rendering.md); for the database see [data-model.md](data-model.md).
 
 ## App (Next.js 16, App Router, TypeScript, pnpm, no Tailwind)
-- `src/proxy.ts` — language redirect (`/` → `/da` or `/en` from Accept-Language). Next 16 calls middleware "proxy".
+- `src/proxy.ts` — language redirect (`/` → `/da` or `/en` from Accept-Language), then session refresh via `src/lib/supabase/proxy.ts` and the signed-in check for `/[lang]/portal/**` and `/[lang]/admin/**`. Next 16 calls middleware "proxy". `/auth/*` is excluded from the matcher.
 - `src/app/[lang]/` — `page.tsx` landing, `freelancere/page.tsx`, `domaener/[slug]/page.tsx`, `not-found.tsx`, `layout.tsx` (root layout lives here; fonts Geist + Geist Mono via `geist`, Instrument Serif italic via next/font). 38 pages prerender; `revalidate = 60`.
+- Signed-in routes (phase 2.1), rendered per request: `[lang]/log-ind/page.tsx` (magic-link form), `[lang]/portal/page.tsx` (shell: who you are, your roles, what lands next), `[lang]/admin/page.tsx` (board and admin: people and roles table, tiles for 2.2). `src/app/auth/callback/route.ts` is where the magic link lands. See [runbooks/auth.md](../runbooks/auth.md).
+- `src/lib/auth.ts` — `getViewer()` (memoised per request: user, person, active memberships, roles), `requireViewer(lang, path)`, `requireRole(lang, path, ...roles)`, `hasRole`.
 - `src/app/api/events/route.ts` — beacon for view events only.
-- `src/app/actions/intake.ts` — server actions for the two forms (validation, honeypot, consent timestamp, event record).
+- `src/app/actions/intake.ts` — server actions for the two forms (validation, honeypot, consent timestamp, event record). `actions/auth.ts` — `requestMagicLink`, `signOut`.
+- `src/components/portal/PortalShell.tsx` — chrome for signed-in pages (portal nav, admin link by role, language switch, sign-out form) with `portal.module.css`. `src/components/forms/LoginForm.tsx`.
+- `scripts/roles.mjs` (`pnpm roles`) — grant, revoke and list roles with the service key until the admin editor exists.
 - `src/components/house/HouseStage.tsx` — the house. See [house-rendering.md](house-rendering.md).
 - `src/components/motion/SiteMotion.tsx` — scroll progress line, `data-scrolled` on root, reveal-on-scroll (`[data-reveal]`, `--i` stagger) with a manual sweep fallback.
 - `src/components/ui/primitives.tsx` — Section, SectionHeading, CapabilityList, FactStrip, TwoColumns, Callout, Timeline, Faq, CardGrid/Card, ContactBlock (takes a form as children), MotionBand, Button.
 - `src/components/site/` — SiteHeader (logo, nav, language switch, one CTA), SiteFooter (utilities: contact, press, privacy, terms).
 - `src/components/forms/` — ApplicationForm, ContactForm (client components on `useActionState`).
 - `src/components/analytics/TrackView.tsx` — `track()` helper + `<TrackView>`.
-- `src/content/*.ts` — interface copy as `{da, en}` pairs; `src/lib/i18n.ts` helpers; `src/lib/house.ts` loaders; `src/lib/supabase/{public,server,client}.ts`.
+- `src/content/*.ts` — interface copy as `{da, en}` pairs (`auth.ts` holds sign-in, portal and admin copy); `src/lib/i18n.ts` helpers (`safeInternalPath` for return targets); `src/lib/house.ts` loaders; `src/lib/supabase/{public,server,client,proxy}.ts`.
 - Design tokens `--hds-*` in `src/app/globals.css` (Huset: white ground, limewash for sunken bands and tints, charcoal, brick blue, gold heart, one orange door per surface). **Since 16 September 2026 the page ground (`--hds-bg`) is white, not limewash, and the site no longer follows the OS colour scheme**: the `prefers-color-scheme: dark` media query was removed at Andreas's request after the charcoal theme showed up for dark-mode visitors. The charcoal theme still exists but only switches on with `data-theme="dark"` on the root, which nothing sets today. Do not reintroduce the media query.
 
 ## The house component (`vendor/trustus-house/`)

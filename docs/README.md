@@ -10,6 +10,8 @@ Start here. `CLAUDE.md` at the repo root holds the rules agents load every sessi
   - [infrastructure.md](runbooks/infrastructure.md) accounts, deploy, traps for agents.
   - [verify.md](runbooks/verify.md) verification recipes that worked.
   - [admin-seats.md](runbooks/admin-seats.md) managing seats per domain as an admin.
+  - [auth.md](runbooks/auth.md) how sign-in works, granting roles, auth settings, testing without an inbox.
+  - [email.md](runbooks/email.md) the email layer (Resend today), one-time setup, switching provider.
 - **decisions/** why something is the way it is. One short dated file per decision; never edited, only superseded.
 - **status/** what is left. The only files with checkboxes.
   - [open-items.md](status/open-items.md) phase 1 leftovers and what is blocked on Kim.

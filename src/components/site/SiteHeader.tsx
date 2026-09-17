@@ -46,6 +46,9 @@ export function SiteHeader({
           >
             {other.toUpperCase()}
           </Link>
+          <Link href={href(lang, "/log-ind")} className={s.login}>
+            {t(site.header.login, lang, "")}
+          </Link>
           <a href={cta.href} className={s.cta}>
             {t(cta.label, lang, "")}
           </a>

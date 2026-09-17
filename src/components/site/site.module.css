@@ -61,6 +61,18 @@
   border-bottom: 1px solid transparent;
 }
 .langSwitch:hover { color: var(--hds-kalk); border-bottom-color: var(--hds-murvaerk-face); text-decoration: none; }
+.login {
+  font-size: var(--hds-text-sm);
+  color: rgba(242, 237, 229, 0.85);
+  text-decoration: none;
+  padding-bottom: 2px;
+  border-bottom: 1px solid transparent;
+  white-space: nowrap;
+}
+.login:hover { color: var(--hds-kalk); border-bottom-color: var(--hds-murvaerk-face); text-decoration: none; }
+@media (max-width: 520px) {
+  .login { display: none; }
+}
 .cta {
   display: inline-flex;
   align-items: center;
