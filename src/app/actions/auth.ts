@@ -15,11 +15,20 @@ function str(fd: FormData, key: string, max = 300) {
   return typeof v === "string" ? v.trim().slice(0, max) : "";
 }
 
-/** The origin the visitor is talking to, so the magic link comes back to the same host. */
+/**
+ * The origin the visitor is talking to, so the magic link comes back to the
+ * same host. Proxies may send comma-separated lists; the first entry is the
+ * one the visitor used. A default port is dropped: Supabase matches the
+ * redirect against its allow-list as text, and "host:443" is not "host".
+ */
 async function requestOrigin() {
   const h = await headers();
-  const host = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3000";
-  const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") || host.startsWith("127.") ? "http" : "https");
+  const first = (v: string | null) => v?.split(",")[0]?.trim() || null;
+  let host = first(h.get("x-forwarded-host")) ?? first(h.get("host")) ?? "localhost:3000";
+  const proto = first(h.get("x-forwarded-proto")) ?? (host.startsWith("localhost") || host.startsWith("127.") ? "http" : "https");
+  if ((proto === "https" && host.endsWith(":443")) || (proto === "http" && host.endsWith(":80"))) {
+    host = host.replace(/:\d+$/, "");
+  }
   return `${proto}://${host}`;
 }
 
@@ -34,13 +43,20 @@ export async function requestMagicLink(_prev: LoginState, fd: FormData): Promise
 
   const next = safeInternalPath(str(fd, "next", 300), href(lang, "/portal"));
   const origin = await requestOrigin();
+  // The destination rides in the URL path, not the query, so the redirect
+  // address is a clean URL that the allow-list glob (host + /**) matches;
+  // a query string here made Supabase reject it and fall back to the site
+  // URL. The mail links through Supabase's own /auth/v1/verify endpoint
+  // ({{ .ConfirmationURL }}), which then redirects here with ?code=.
+  const emailRedirectTo = `${origin}/auth/callback${next}`;
+  console.info("magic link requested, return address", emailRedirectTo);
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: {
       // Accounts are created by the house (roles script, later the admin), never by the form.
       shouldCreateUser: false,
-      emailRedirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}`,
+      emailRedirectTo,
     },
   });
 
