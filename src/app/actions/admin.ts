@@ -10,7 +10,7 @@ import { specialists } from "@/content/specialists";
 import { APPLICATION_STATUSES, SEAT_STATUSES, type ApplicationStatus, type SeatStatus } from "@/lib/admin";
 import { slugify } from "@/lib/specialists";
 import { sendEmail } from "@/lib/email";
-import { specialistInvited } from "@/lib/email/templates";
+import { accessApproved, accessDeclined, specialistInvited } from "@/lib/email/templates";
 
 /**
  * Writes behind the admin pages. Every action re-checks the role (the
@@ -206,6 +206,96 @@ export async function inviteSpecialist(_prev: AdminState, fd: FormData): Promise
   revalidatePath(href(c.lang, "/admin/personer"));
   revalidatePublic();
   return { status: "ok", message: specialists.admin.invited[c.lang].replace("{position}", String(seat.position).padStart(2, "0")) };
+}
+
+/**
+ * Decide an access request. Approving makes the person a client: person and
+ * account (no mail from Supabase), an organisation from the company name
+ * when there is one, the client role, and a mail with the sign-in address.
+ * Declining sends a polite mail. Both stamp who decided.
+ */
+export async function decideAccess(_prev: AdminState, fd: FormData): Promise<AdminState> {
+  const c = await context(fd);
+  const id = str(fd, "id", 40);
+  const decision = str(fd, "decision", 10);
+  if (!id || (decision !== "approve" && decision !== "decline")) return c.fail();
+  const supabase = await createClient();
+  type R = { id: string; full_name: string; email: string; lang: string; company: string | null; source_slug: string | null; status: string };
+  const { data: rows } = await supabase.from("access_requests").select("id, full_name, email, lang, company, source_slug, status").eq("id", id).limit(1).returns<R[]>();
+  const r = rows?.[0];
+  if (!r) return c.fail();
+  const lang = r.lang === "en" ? "en" : "da";
+  const email = r.email.toLowerCase();
+  const h = await headers();
+  const host = h.get("x-forwarded-host")?.split(",")[0]?.trim() ?? h.get("host") ?? "www.trustusconsult.dk";
+  const origin = `${host.startsWith("localhost") ? "http" : "https"}://${host}`;
+  const note = opt(fd, "internal_note", 4000);
+
+  if (decision === "decline") {
+    const { error } = await supabase
+      .from("access_requests")
+      .update({ status: "declined", decided_at: new Date().toISOString(), decided_by: c.viewer.person?.id ?? null, ...(fd.has("internal_note") ? { internal_note: note } : {}) })
+      .eq("id", id);
+    if (error) return c.fail();
+    await sendEmail(accessDeclined(lang, email, r.full_name));
+    revalidatePath(c.path);
+    return { status: "ok", message: admin.access.declined[c.lang] };
+  }
+
+  // Person
+  type P = { id: string; display_name: string; lang: string; user_id: string | null };
+  const { data: found } = await supabase.from("people").select("id, display_name, lang, user_id").eq("email", email).limit(1).returns<P[]>();
+  let person = found?.[0] ?? null;
+  if (!person) {
+    const { data, error } = await supabase.from("people").insert({ email, display_name: r.full_name, lang }).select("id, display_name, lang, user_id").returns<P[]>();
+    if (error || !data?.[0]) {
+      console.error("access: person", error?.message);
+      return c.fail();
+    }
+    person = data[0];
+  }
+  try {
+    const userId = await ensureAuthUser(email, { display_name: person.display_name, lang: person.lang });
+    if (!person.user_id) await supabase.from("people").update({ user_id: userId }).eq("id", person.id).is("user_id", null);
+  } catch (e) {
+    console.error("access: auth user", e);
+    return c.fail();
+  }
+
+  // Organisation from the company name, reused by name
+  let organisation_id: string | null = null;
+  if (r.company) {
+    type O = { id: string };
+    const { data: orgs } = await supabase.from("organisations").select("id").ilike("name", r.company).limit(1).returns<O[]>();
+    if (orgs?.[0]) organisation_id = orgs[0].id;
+    else {
+      const { data: made } = await supabase.from("organisations").insert({ name: r.company }).select("id").returns<O[]>();
+      organisation_id = made?.[0]?.id ?? null;
+    }
+  }
+
+  // Role
+  type M = { id: string };
+  const { data: mem } = await supabase.from("memberships").select("id").eq("person_id", person.id).eq("role", "client").is("domain_id", null).limit(1).returns<M[]>();
+  const memErr = mem?.[0]
+    ? (await supabase.from("memberships").update({ status: "active", organisation_id }).eq("id", mem[0].id)).error
+    : (await supabase.from("memberships").insert({ person_id: person.id, role: "client", organisation_id, status: "active", granted_by: c.viewer.person?.id ?? null })).error;
+  if (memErr) {
+    console.error("access: membership", memErr.message);
+    return c.fail();
+  }
+
+  const { error } = await supabase
+    .from("access_requests")
+    .update({ status: "approved", decided_at: new Date().toISOString(), decided_by: c.viewer.person?.id ?? null, ...(fd.has("internal_note") ? { internal_note: note } : {}) })
+    .eq("id", id);
+  if (error) return c.fail();
+
+  const backTo = r.source_slug ? `${origin}/${lang}/specialister/${r.source_slug}` : null;
+  await sendEmail(accessApproved(lang, email, person.display_name, `${origin}/${lang}/log-ind`, backTo));
+  revalidatePath(c.path);
+  revalidatePath(href(c.lang, "/admin/personer"));
+  return { status: "ok", message: admin.access.approved[c.lang] };
 }
 
 /* Enquiries */

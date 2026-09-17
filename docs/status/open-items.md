@@ -13,7 +13,7 @@
 
 - [ ] `ANTHROPIC_API_KEY` into `.env.local` and Vercel (Production, Preview) so CV import works. Until then Min side says the import is not enabled.
 - [ ] Upload a real portrait through Min side in a browser once (the storage policies are verified through the API; the file input itself was not driven).
-- [ ] Retention: declined applications after six months, departed specialists' full profiles after notice plus grace. A pg_cron job, later.
+- [ ] Retention: declined applications after six months, declined and stale access requests after ninety days, departed specialists' full profiles after notice plus grace. A pg_cron job, later.
 
 ## From phase 2.1
 
@@ -26,7 +26,7 @@
 
 1. **Email provider: Resend, decided 16 September.** The code is in (`src/lib/email/`, intake confirmations and notices). Account created 17 September, domain verified (EU region), key in `.env.local`; the contact form delivered both mails from `huset@trustusconsult.dk`, and `kontakt@` accepts mail. Key and From are in Vercel (Production and Preview) and Supabase Auth sends through Resend's SMTP with a limit of 60 mails per hour; the first magic link from `/da/log-ind` went out from `huset@trustusconsult.dk` on 17 September. Left: confirm the `optagelse@` mailbox exists (or set `EMAIL_NOTIFY_APPLICATIONS`). **Hand-over reminder for Andreas: upgrade Resend to Pro, add Kim as owner, then leave the account.** Do not leave first.
 2. **Vercel GitHub app** on the TrustUsConsult org → then `vercel git connect` and set Framework Preset to Next.js in the dashboard for tidiness.
-3. **Who may read full CVs:** approved clients only (recommended) or any signed-up work email.
+3. ~~Who may read full CVs~~ Built as approved clients only (2.4); the board approves each request under Adgang. Opening it to any work email later is a policy change, not a rebuild.
 4. ~~Login emails~~ Both board (Kim) and admin (Andreas) accounts exist.
 5. **Legal text** for privacy/terms, or a go-ahead for reviewed placeholders.
 6. **Seats per domain** (three is seeded) and the buy-in payment route (manual bank transfer at launch is assumed).

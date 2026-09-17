@@ -11,8 +11,9 @@ import { landing } from "@/content/landing";
 import { specialists } from "@/content/specialists";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
-import { Button, ContactBlock } from "@/components/ui/primitives";
+import { ContactBlock } from "@/components/ui/primitives";
 import { ContactForm } from "@/components/forms/ContactForm";
+import { AccessRequestForm } from "@/components/forms/AccessRequestForm";
 import s from "./page.module.css";
 
 export const revalidate = 60;
@@ -151,29 +152,32 @@ export default async function SpecialistPage({ params }: PageProps<"/[lang]/spec
                 {full.profile.languages.length ? (<><dt>{L(c.languages)}</dt><dd>{full.profile.languages.map((x) => x.toUpperCase()).join(", ")}</dd></>) : null}
                 {full.profile.rate_text ? (<><dt>{L(c.rate)}</dt><dd>{full.profile.rate_text}</dd></>) : null}
                 {full.profile.weekly_hours !== null ? (<><dt>{L(c.availability)}</dt><dd>{L(c.hoursPerWeek).replace("{n}", String(full.profile.weekly_hours))} · {availabilityLine(te, lang)}</dd></>) : null}
-                <dt>{L(c.contact)}</dt>
-                <dd>
-                  <a href={`mailto:${full.email}`}>{full.email}</a>
-                  {full.profile.linkedin_url ? <> · <a href={full.profile.linkedin_url} target="_blank" rel="noreferrer">LinkedIn</a></> : null}
-                  {full.profile.website_url ? <> · <a href={full.profile.website_url} target="_blank" rel="noreferrer">{L(c.website)}</a></> : null}
-                </dd>
+                {full.email || full.profile.linkedin_url || full.profile.website_url ? (
+                  <>
+                    <dt>{L(c.contact)}</dt>
+                    <dd>
+                      {[
+                        full.email ? <a key="mail" href={`mailto:${full.email}`}>{full.email}</a> : null,
+                        full.profile.linkedin_url ? <a key="li" href={full.profile.linkedin_url} target="_blank" rel="noreferrer">LinkedIn</a> : null,
+                        full.profile.website_url ? <a key="web" href={full.profile.website_url} target="_blank" rel="noreferrer">{L(c.website)}</a> : null,
+                      ]
+                        .filter(Boolean)
+                        .map((el, i) => (i ? <span key={i}> · {el}</span> : el))}
+                    </dd>
+                  </>
+                ) : null}
               </dl>
               <p className={s.dim}>{L(c.bookSoon)}</p>
             </div>
           </section>
         ) : (
-          <section className={s.gate}>
+          <section className={s.gate} id="adgang">
             <div className={s.bodyInner}>
               <h2>{L(c.gateTitle)}</h2>
               <p>{L(c.gateText)}</p>
-              <div className={s.gateActions}>
-                <Button href={`${href(lang, "/log-ind")}?next=${encodeURIComponent(href(lang, `/specialister/${slug}`))}`} variant="entry">
-                  {L(c.gateLogin)}
-                </Button>
-                <Button href="#kontakt" variant="outline" trailing="→">
-                  {L(c.gateWrite)}
-                </Button>
-              </div>
+              <h3 className={s.gateSub}>{L(c.gateAsk)}</h3>
+              <p>{L(c.gateAskIntro)}</p>
+              <AccessRequestForm lang={lang} sourceSlug={slug} />
             </div>
           </section>
         )}

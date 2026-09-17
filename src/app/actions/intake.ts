@@ -3,8 +3,16 @@
 import { createPublicClient } from "@/lib/supabase/public";
 import { isLang, type Lang } from "@/lib/i18n";
 import { recordEvent } from "@/lib/events";
+import { headers } from "next/headers";
 import { notify, sendEmail } from "@/lib/email";
-import { applicationReceived, contactReceived, newApplicationNotice, newContactNotice } from "@/lib/email/templates";
+import {
+  accessRequestReceived,
+  applicationReceived,
+  contactReceived,
+  newAccessRequestNotice,
+  newApplicationNotice,
+  newContactNotice,
+} from "@/lib/email/templates";
 
 export type FormState =
   | { status: "idle" }
@@ -96,6 +104,48 @@ export async function submitApplication(_prev: FormState, fd: FormData): Promise
         years: years ? Number(years) : null,
       }),
     ),
+  ]);
+  return { status: "ok" };
+}
+
+/** The form behind the CV gate on a specialist page: ask the board for client access. */
+export async function submitAccessRequest(_prev: FormState, fd: FormData): Promise<FormState> {
+  const lang = langOf(fd);
+  const c = copy[lang];
+  if (isBot(fd)) return { status: "ok" };
+
+  const fields: Record<string, string> = {};
+  const full_name = str(fd, "full_name", 120);
+  const email = str(fd, "email", 200).toLowerCase();
+  const message = str(fd, "message", 2000);
+  const consent = fd.get("consent") === "on";
+
+  if (full_name.length < 2) fields.full_name = c.required;
+  if (!EMAIL.test(email)) fields.email = c.email;
+  if (message.length < 5) fields.message = c.tooShort;
+  if (!consent) fields.consent = c.consent;
+  if (Object.keys(fields).length) return { status: "error", message: "", fields };
+
+  const company = str(fd, "company", 160) || null;
+  const source_slug = str(fd, "source_slug", 80) || null;
+  const supabase = createPublicClient();
+  const { error } = await supabase.from("access_requests").insert({
+    lang,
+    full_name,
+    email,
+    company,
+    message,
+    source_slug,
+    consent_at: new Date().toISOString(),
+  });
+  if (error) return { status: "error", message: c.failed };
+
+  const h = await headers();
+  const host = h.get("x-forwarded-host")?.split(",")[0]?.trim() ?? h.get("host") ?? "www.trustusconsult.dk";
+  const adminUrl = `${host.startsWith("localhost") ? "http" : "https"}://${host}/da/admin/adgang`;
+  await Promise.all([
+    sendEmail(accessRequestReceived(lang, email, full_name)),
+    sendEmail(newAccessRequestNotice(notify.contact, { name: full_name, email, company, message, sourceSlug: source_slug, adminUrl })),
   ]);
   return { status: "ok" };
 }

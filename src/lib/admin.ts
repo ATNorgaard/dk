@@ -149,6 +149,32 @@ export async function listContacts(handled: boolean) {
   return rows<ContactRow>("contacts")(await q.returns<ContactRow[]>());
 }
 
+export type AccessStatus = "received" | "approved" | "declined";
+export type AccessRow = {
+  id: string;
+  created_at: string;
+  lang: string;
+  full_name: string;
+  email: string;
+  company: string | null;
+  message: string | null;
+  source_slug: string | null;
+  status: AccessStatus;
+  decided_at: string | null;
+  internal_note: string | null;
+  decided_by: { display_name: string } | null;
+};
+
+export async function listAccessRequests(decided: boolean) {
+  const supabase = await createClient();
+  let q = supabase
+    .from("access_requests")
+    .select("id, created_at, lang, full_name, email, company, message, source_slug, status, decided_at, internal_note, decided_by:people!decided_by(display_name)")
+    .order("created_at", { ascending: false });
+  q = decided ? q.neq("status", "received") : q.eq("status", "received");
+  return rows<AccessRow>("access requests")(await q.returns<AccessRow[]>());
+}
+
 export async function listDomainsForAdmin() {
   const supabase = await createClient();
   const { data } = await supabase
@@ -220,10 +246,11 @@ export async function listAuditLog(limit = 200) {
 
 export async function overviewCounts() {
   const supabase = await createClient();
-  const [apps, contacts, people] = await Promise.all([
+  const [apps, contacts, access, people] = await Promise.all([
     supabase.from("applications").select("id", { count: "exact", head: true }).eq("status", "received"),
     supabase.from("contact_messages").select("id", { count: "exact", head: true }).is("handled_at", null),
+    supabase.from("access_requests").select("id", { count: "exact", head: true }).eq("status", "received"),
     supabase.from("people").select("id", { count: "exact", head: true }),
   ]);
-  return { newApplications: apps.count ?? 0, openContacts: contacts.count ?? 0, people: people.count ?? 0 };
+  return { newApplications: apps.count ?? 0, openContacts: contacts.count ?? 0, openAccess: access.count ?? 0, people: people.count ?? 0 };
 }
