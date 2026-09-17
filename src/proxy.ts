@@ -24,8 +24,26 @@ function preferredLang(request: NextRequest) {
 const GUARDED = ["portal", "admin"];
 
 export async function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  const { pathname, searchParams } = request.nextUrl;
   const [, first, second] = pathname.split("/");
+
+  // A sign-in code that landed anywhere but the callback: Supabase fell
+  // back to the site URL because the return address the form asked for was
+  // not on its allow-list (typically a dev server on an unlisted port).
+  // Forward it to the callback so the visitor is never left on the landing
+  // page with a code in the address bar. The exchange still needs the
+  // verifier cookie of the browser that asked, so a cross-host request ends
+  // on the login page with a clear error rather than a silent nothing.
+  if (searchParams.has("code") || searchParams.has("token_hash")) {
+    const url = request.nextUrl.clone();
+    url.pathname = `/auth/callback/${isLang(first) ? first : DEFAULT_LANG}/portal`;
+    url.search = "";
+    for (const key of ["code", "token_hash", "type"]) {
+      const v = searchParams.get(key);
+      if (v) url.searchParams.set(key, v);
+    }
+    return NextResponse.redirect(url);
+  }
 
   if (!isLang(first)) {
     const url = request.nextUrl.clone();
