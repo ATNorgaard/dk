@@ -125,7 +125,24 @@ async function specialistContext(fd: FormData) {
     return { status: "ok", message };
   };
   const fail = (): AdminState => ({ status: "error", message: adminCopy.common.failed[lang] });
-  return { lang, path, viewer, supabase, booking, ok, fail };
+  /**
+   * The request moved on since Min side was loaded (the requester cancelled,
+   * or a time is already agreed): say so, and refresh the page so the inbox
+   * shows the new state instead of the stale buttons.
+   */
+  const stale = (): AdminState | null => {
+    if (!booking) return null;
+    if (booking.status === "cancelled") {
+      revalidatePath(path);
+      return { status: "error", message: copy.minSide.alreadyCancelled[lang] };
+    }
+    if (booking.status === "accepted") {
+      revalidatePath(path);
+      return { status: "error", message: copy.minSide.alreadyAccepted[lang] };
+    }
+    return null;
+  };
+  return { lang, path, viewer, supabase, booking, ok, fail, stale };
 }
 
 async function stampFirstReply(supabase: Awaited<ReturnType<typeof createClient>>, booking: { id: string; first_reply_at: string | null }, patch: Record<string, unknown>) {
@@ -156,7 +173,9 @@ async function sendAgreed(b: { id: string; lang: string; full_name: string; emai
 export async function acceptTime(_prev: AdminState, fd: FormData): Promise<AdminState> {
   const c = await specialistContext(fd);
   const time_id = str(fd, "time_id", 40);
-  if (!c.booking || !time_id || c.booking.status === "accepted" || c.booking.status === "cancelled") return c.fail();
+  if (!c.booking || !time_id) return c.fail();
+  const moved = c.stale();
+  if (moved) return moved;
   const { data: t } = await c.supabase.from("proposed_times").select("id, starts_at").eq("id", time_id).eq("request_id", c.booking.id).limit(1).returns<{ id: string; starts_at: string }[]>();
   if (!t?.[0]) return c.fail();
   const { error } = await stampFirstReply(c.supabase, c.booking, { status: "accepted", accepted_time_id: time_id });
@@ -170,7 +189,9 @@ export async function acceptTime(_prev: AdminState, fd: FormData): Promise<Admin
 export async function proposeTime(_prev: AdminState, fd: FormData): Promise<AdminState> {
   const c = await specialistContext(fd);
   const starts_at = localToIso(str(fd, "starts_at", 20));
-  if (!c.booking || !starts_at || new Date(starts_at).getTime() < Date.now() || c.booking.status === "cancelled") return c.fail();
+  if (!c.booking || !starts_at || new Date(starts_at).getTime() < Date.now()) return c.fail();
+  const moved = c.stale();
+  if (moved) return moved;
   const { data: t, error: tErr } = await c.supabase.from("proposed_times").insert({ request_id: c.booking.id, starts_at, proposed_by: "specialist" }).select("id").returns<{ id: string }[]>();
   if (tErr || !t?.[0]) return c.fail();
   const { error } = await stampFirstReply(c.supabase, c.booking, { status: "proposed" });
@@ -184,7 +205,9 @@ export async function proposeTime(_prev: AdminState, fd: FormData): Promise<Admi
 
 export async function declineBooking(_prev: AdminState, fd: FormData): Promise<AdminState> {
   const c = await specialistContext(fd);
-  if (!c.booking || c.booking.status === "cancelled") return c.fail();
+  if (!c.booking) return c.fail();
+  const moved = c.stale();
+  if (moved) return moved;
   const note = str(fd, "note", 2000) || null;
   const { error } = await stampFirstReply(c.supabase, c.booking, { status: "declined" });
   if (error) return c.fail();
@@ -204,6 +227,9 @@ async function clientContext(fd: FormData) {
   const path = href(lang, `/booking/${id}`);
   const ok = (message: string): AdminState => {
     revalidatePath(path);
+    // The specialist's inbox and the board's list show this request too.
+    revalidatePath("/[lang]/portal/min-side", "page");
+    revalidatePath("/[lang]/admin/bookinger", "page");
     return { status: "ok", message };
   };
   const fail = (): AdminState => ({ status: "error", message: adminCopy.common.failed[lang] });
