@@ -107,7 +107,7 @@ export function portraitUrl(path: string | null) {
   return `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/portraits/${path}`;
 }
 
-type ProfileRow = Profile & { people: { display_name: string; email: string } };
+type ProfileRow = Profile & { people: { display_name: string; email: string } | null };
 
 /** The full profile the signed-in viewer is allowed to see, by slug or person. Null when not allowed or absent. */
 export async function loadFullProfile(where: { slug: string } | { personId: string }): Promise<FullProfile | null> {
@@ -119,6 +119,15 @@ export async function loadFullProfile(where: { slug: string } | { personId: stri
   const row = rows?.[0];
   if (!row) return null;
   const { people, ...profile } = row;
+  // The embed is null when the viewer may read the profile but not the
+  // person (a policy gap); fall back to the public teaser name rather than
+  // crash the page, and show no email.
+  let displayName = people?.display_name ?? "";
+  if (!displayName) {
+    const { data: te } = await createPublicClient().from("specialist_teasers").select("display_name").eq("id", profile.id).limit(1).returns<{ display_name: string }[]>();
+    displayName = te?.[0]?.display_name ?? "";
+    if (!people) console.warn("profile: people row not readable for viewer; showing teaser name only", profile.id);
+  }
   const [ex, ed, ce] = await Promise.all([
     supabase.from("experience").select("*").eq("profile_id", profile.id).order("sort_order").order("start_date", { ascending: false, nullsFirst: false }).returns<Experience[]>(),
     supabase.from("education").select("*").eq("profile_id", profile.id).order("sort_order").order("end_year", { ascending: false, nullsFirst: false }).returns<Education[]>(),
@@ -126,8 +135,8 @@ export async function loadFullProfile(where: { slug: string } | { personId: stri
   ]);
   return {
     profile,
-    displayName: people.display_name,
-    email: people.email,
+    displayName,
+    email: people?.email ?? "",
     experience: ex.data ?? [],
     education: ed.data ?? [],
     certifications: ce.data ?? [],

@@ -123,6 +123,7 @@
 .gate h2 { font-size: var(--hds-text-2xl); letter-spacing: -0.02em; }
 .gate p { color: var(--hds-text-body); max-width: var(--hds-measure); }
 .gateActions { display: flex; flex-wrap: wrap; gap: var(--hds-space-xs); }
+.gateSub { margin-top: var(--hds-space-sm); font-size: var(--hds-text-xl); letter-spacing: -0.02em; }
 
 @media (max-width: 600px) {
   .head { grid-template-columns: 1fr; }

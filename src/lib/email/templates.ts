@@ -116,6 +116,102 @@ export function specialistInvited(lang: Lang, to: string, name: string, domain: 
   );
 }
 
+/** To the visitor who asked to read the full CVs. */
+export function accessRequestReceived(lang: Lang, to: string, name: string): Mail {
+  return lang === "da"
+    ? make(
+        to,
+        "Vi har din anmodning om adgang",
+        `Tak, ${name}.`,
+        [
+          "Vi har modtaget din anmodning om at læse husets fulde CV'er.",
+          "Bestyrelsen ser på den inden for en hverdag. Får du adgang, kommer der en mail med et link, og du logger ind uden adgangskode.",
+        ],
+        footer.da,
+        site.email.contact,
+      )
+    : make(
+        to,
+        "We have your access request",
+        `Thank you, ${name}.`,
+        [
+          "We have received your request to read the house's full CVs.",
+          "The board looks at it within one working day. If you get access, a mail with a link follows, and you sign in without a password.",
+        ],
+        footer.en,
+        site.email.contact,
+      );
+}
+
+/** To the new client: access granted, here is the door. */
+export function accessApproved(lang: Lang, to: string, name: string, loginUrl: string, backTo: string | null): Mail {
+  const da = lang === "da";
+  return make(
+    to,
+    da ? "Du har adgang til husets CV'er" : "You have access to the house's CVs",
+    da ? `Velkommen, ${name}.` : `Welcome, ${name}.`,
+    da
+      ? [
+          "Bestyrelsen har givet dig adgang til de fulde CV'er, takster og kontaktoplysninger.",
+          `Log ind på ${loginUrl} med denne e-mailadresse; du får et link tilsendt, ingen adgangskode.${backTo ? ` Derefter kan du gå direkte til ${backTo}.` : ""}`,
+          "Skriv til huset, hvis du vil have hjælp til at finde den rigtige specialist.",
+        ]
+      : [
+          "The board has given you access to the full CVs, rates and contact details.",
+          `Sign in at ${loginUrl} with this email address; you get a link, no password.${backTo ? ` Then go straight to ${backTo}.` : ""}`,
+          "Write to the house if you want help finding the right specialist.",
+        ],
+    footer[lang],
+    site.email.contact,
+  );
+}
+
+/** To the visitor: the board did not open the door this time. */
+export function accessDeclined(lang: Lang, to: string, name: string): Mail {
+  return lang === "da"
+    ? make(
+        to,
+        "Om din anmodning om adgang",
+        `Hej ${name}.`,
+        [
+          "Vi åbner ikke for de fulde CV'er denne gang. Det handler typisk om, at vi ikke kunne se en konkret opgave bag anmodningen.",
+          `Har du en opgave, du vil have løst, så skriv til ${site.email.contact} med et par linjer om den, så finder vi domænet og tager det derfra.`,
+        ],
+        footer.da,
+        site.email.contact,
+      )
+    : make(
+        to,
+        "About your access request",
+        `Hello ${name}.`,
+        [
+          "We are not opening the full CVs this time. Usually that means we could not see a concrete brief behind the request.",
+          `If you have a brief you want solved, write to ${site.email.contact} with a few lines about it and we find the domain from there.`,
+        ],
+        footer.en,
+        site.email.contact,
+      );
+}
+
+/** To the house: someone asked for access. Danish only; internal. */
+export function newAccessRequestNotice(
+  to: string,
+  r: { name: string; email: string; company: string | null; message: string | null; sourceSlug: string | null; adminUrl: string },
+): Mail {
+  return make(
+    to,
+    `Ny anmodning om adgang: ${r.name}${r.company ? ` (${r.company})` : ""}`,
+    "Nogen vil læse CV'erne",
+    [
+      `${r.name} <${r.email}>${r.company ? `, ${r.company}` : ""}${r.sourceSlug ? `, kom fra /specialister/${r.sourceSlug}` : ""}.`,
+      r.message ? `Leder efter: ${r.message}` : "Ingen beskrivelse af opgaven.",
+      `Godkend eller afslå her: ${r.adminUrl}`,
+    ],
+    footer.da,
+    r.email,
+  );
+}
+
 /** To the house: a new application landed. Danish only; internal. */
 export function newApplicationNotice(
   to: string,
