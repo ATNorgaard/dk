@@ -12,7 +12,8 @@
     "db:push:seed": "supabase db push --include-seed",
     "db:diff": "supabase db diff --linked",
     "db:types": "supabase gen types typescript --linked --schema public > src/lib/supabase/database.types.ts",
-    "house:build": "node vendor/trustus-house/build.mjs"
+    "house:build": "node vendor/trustus-house/build.mjs",
+    "roles": "node --env-file=.env.local scripts/roles.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

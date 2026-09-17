@@ -3,10 +3,10 @@
 | Thing | Where | Notes |
 |---|---|---|
 | Code | github.com/TrustUsConsult/dk | `main` is the integration branch. Work in `phase-N-*` branches, PR to main. |
-| Supabase | project `fghgbjfvdtuhxfmqgzgo` ("TUC"), org owned by TrustUsConsult, region eu-central-1 Frankfurt | CLI is linked (`supabase/.temp`). `pnpm db:push` applies migrations. |
+| Supabase | project `fghgbjfvdtuhxfmqgzgo` ("TUC"), org owned by TrustUsConsult, region eu-central-1 Frankfurt | CLI is linked (`supabase/.temp`). `pnpm db:push` applies migrations. Auth settings we manage (site URL, redirect list, magic-link mail) are declared in `supabase/config.toml` and pushed with `supabase config push` after a `config diff`; see [auth.md](auth.md). |
 | Vercel | team `trust-us-consult`, project `trustusconsult-dk` | `vercel.json` pins framework `nextjs` and region `fra1`. Env vars set for prod/preview/dev. Deploys are done from the CLI: `vercel deploy --scope trust-us-consult --yes`. Deployment protection is on (team login). |
-| Domain | trustusconsult.dk, in Kim's registrar | Not yet pointed at Vercel. |
-| Email | none yet | Kim is deciding (Resend recommended). Forms save to the DB; nobody is notified. |
+| Domain | trustusconsult.dk, in Kim's registrar | Live on Vercel since 16 September 2026: `www.trustusconsult.dk` serves the site, the apex redirects to it. It is also the Supabase auth site URL. |
+| Email | Resend, domain `trustusconsult.dk` verified (EU region), account created by Andreas 17 September, to be handed to Kim | App mail from `src/lib/email/`; Supabase Auth uses Resend's SMTP relay (`[auth.email.smtp]` in `config.toml`, password from `RESEND_API_KEY` in the shell at push time). Key and `EMAIL_FROM` in `.env.local` and Vercel. Setup and hand-over in [email.md](email.md). |
 
 **Traps for agents**
 - A Supabase MCP server in Andreas's sessions points at his *personal* project `etpxfpgtxbjhfakgutwc`. Always check `get_project_url` before using MCP; prefer the linked CLI.

@@ -1,0 +1,160 @@
+.page {
+  padding: var(--hds-space-2xl) var(--hds-gutter) var(--hds-space-3xl);
+  background: var(--hds-bg);
+}
+.narrow,
+.wide {
+  margin: 0 auto;
+  display: grid;
+  gap: var(--hds-space-md);
+}
+.narrow { max-width: 560px; }
+.wide { max-width: 1100px; }
+
+.title {
+  font-size: var(--hds-text-3xl);
+  letter-spacing: var(--hds-tracking-display);
+  line-height: 1.05;
+}
+.intro {
+  color: var(--hds-text-body);
+  max-width: var(--hds-measure);
+}
+
+.aside {
+  display: grid;
+  gap: var(--hds-space-3xs);
+  margin-top: var(--hds-space-md);
+  padding-top: var(--hds-space-sm);
+  border-top: 1px solid var(--hds-border);
+  color: var(--hds-text-body);
+  font-size: var(--hds-text-sm);
+}
+.aside h2 { font-size: var(--hds-text-md); color: var(--hds-text); }
+.aside a { color: var(--hds-fundament); text-decoration: underline; text-underline-offset: 3px; }
+
+.signOut {
+  font: inherit;
+  font-size: var(--hds-text-sm);
+  background: transparent;
+  cursor: pointer;
+}
+
+.notice {
+  padding: var(--hds-space-xs) var(--hds-space-sm);
+  border-left: 2px solid var(--hds-warning);
+  color: var(--hds-text);
+  font-size: var(--hds-text-sm);
+}
+
+.meta {
+  display: grid;
+  gap: var(--hds-space-2xs);
+  color: var(--hds-text-body);
+  font-size: var(--hds-text-sm);
+}
+.meta dt {
+  font-family: var(--hds-font-mono);
+  font-size: var(--hds-text-2xs);
+  letter-spacing: var(--hds-tracking-label);
+  text-transform: uppercase;
+  color: var(--hds-text-muted);
+}
+.meta dd { margin: 0; }
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.tag {
+  display: inline-block;
+  padding: 3px 8px;
+  border: 1px solid var(--hds-border-strong);
+  font-family: var(--hds-font-mono);
+  font-size: var(--hds-text-2xs);
+  letter-spacing: var(--hds-tracking-label);
+  text-transform: uppercase;
+  color: var(--hds-text);
+}
+/* Board and admin tags are filled charcoal, not gold: gold is for people and
+   values and appears at most once per surface, and a table may hold many. */
+.tag[data-heart="true"] {
+  background: var(--hds-fundament);
+  border-color: var(--hds-fundament);
+  color: var(--hds-kalk);
+}
+
+.section {
+  display: grid;
+  gap: var(--hds-space-xs);
+  padding-top: var(--hds-space-md);
+  border-top: 1px solid var(--hds-border);
+}
+.section h2 {
+  font-size: var(--hds-text-xl);
+  letter-spacing: -0.02em;
+}
+.section p { color: var(--hds-text-body); max-width: var(--hds-measure); }
+
+.list {
+  display: grid;
+  gap: var(--hds-space-3xs);
+  padding-left: 1.2em;
+  color: var(--hds-text-body);
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1px;
+  padding: 1px;
+  list-style: none;
+  margin: 0;
+}
+/* Hairlines drawn as outlines into the 1px gap, so an incomplete last row
+   shows no background strip. */
+.tiles li {
+  display: grid;
+  gap: var(--hds-space-3xs);
+  padding: var(--hds-space-sm);
+  background: var(--hds-surface);
+  color: var(--hds-text);
+  outline: 1px solid var(--hds-border);
+}
+.tiles small {
+  font-family: var(--hds-font-mono);
+  font-size: var(--hds-text-2xs);
+  letter-spacing: var(--hds-tracking-label);
+  text-transform: uppercase;
+  color: var(--hds-text-muted);
+}
+
+.tableWrap { overflow-x: auto; }
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--hds-text-sm);
+}
+.table th,
+.table td {
+  padding: 10px 12px 10px 0;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--hds-border);
+}
+.table th {
+  font-family: var(--hds-font-mono);
+  font-size: var(--hds-text-2xs);
+  letter-spacing: var(--hds-tracking-label);
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--hds-text-muted);
+  border-bottom-color: var(--hds-border-strong);
+}
+.table td:first-child { color: var(--hds-text); font-weight: 500; }
+.table td { color: var(--hds-text-body); }
+.muted { color: var(--hds-text-muted); }

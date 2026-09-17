@@ -16,6 +16,7 @@ export const site = {
     bookMeeting: { da: "Book et møde", en: "Book a meeting" } as I18nText,
     apply: { da: "Søg optagelse", en: "Apply" } as I18nText,
     switchTo: { da: "English", en: "Dansk" } as I18nText,
+    login: { da: "Log ind", en: "Sign in" } as I18nText,
     skip: { da: "Spring til indhold", en: "Skip to content" } as I18nText,
   },
   footer: {

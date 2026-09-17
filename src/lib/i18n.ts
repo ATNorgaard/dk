@@ -40,3 +40,14 @@ export function switchLangPath(pathname: string, to: Lang) {
 }
 
 export const htmlLang: Record<Lang, string> = { da: "da-DK", en: "en-GB" };
+
+/**
+ * A return path that may be trusted after sign-in: on this site, under a
+ * language prefix, never protocol-relative. Anything else becomes `fallback`.
+ */
+export function safeInternalPath(value: string | null | undefined, fallback: string) {
+  if (value && value.startsWith("/") && !value.startsWith("//") && LANGS.some((l) => value.startsWith(`/${l}/`))) {
+    return value;
+  }
+  return fallback;
+}

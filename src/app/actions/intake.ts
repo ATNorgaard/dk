@@ -3,6 +3,8 @@
 import { createPublicClient } from "@/lib/supabase/public";
 import { isLang, type Lang } from "@/lib/i18n";
 import { recordEvent } from "@/lib/events";
+import { notify, sendEmail } from "@/lib/email";
+import { applicationReceived, contactReceived, newApplicationNotice, newContactNotice } from "@/lib/email/templates";
 
 export type FormState =
   | { status: "idle" }
@@ -82,7 +84,19 @@ export async function submitApplication(_prev: FormState, fd: FormData): Promise
   });
   if (error) return { status: "error", message: c.failed };
 
-  await recordEvent({ type: "application", path: `/${lang}/freelancere`, lang, domain_id });
+  await Promise.all([
+    recordEvent({ type: "application", path: `/${lang}/freelancere`, lang, domain_id }),
+    sendEmail(applicationReceived(lang, email, full_name)),
+    sendEmail(
+      newApplicationNotice(notify.applications, {
+        name: full_name,
+        email,
+        domain: domain_id,
+        craft,
+        years: years ? Number(years) : null,
+      }),
+    ),
+  ]);
   return { status: "ok" };
 }
 
@@ -116,6 +130,11 @@ export async function submitContact(_prev: FormState, fd: FormData): Promise<For
   });
   if (error) return { status: "error", message: c.failed };
 
-  await recordEvent({ type: "contact", path: str(fd, "path", 300) || `/${lang}`, lang, domain_id });
+  const company = str(fd, "company", 160) || null;
+  await Promise.all([
+    recordEvent({ type: "contact", path: str(fd, "path", 300) || `/${lang}`, lang, domain_id }),
+    sendEmail(contactReceived(lang, email, full_name)),
+    sendEmail(newContactNotice(notify.contact, { name: full_name, email, company, domain: domain_id, message })),
+  ]);
   return { status: "ok" };
 }
