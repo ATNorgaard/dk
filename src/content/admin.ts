@@ -126,7 +126,7 @@ export const admin = {
       name: { da: "Navn", en: "Name" } as I18nText,
       slug: { da: "Slug (i adressen)", en: "Slug (in the address)" } as I18nText,
       tagline: { da: "Tagline", en: "Tagline" } as I18nText,
-      blurb: { da: "Beskrivelse (domænesiden)", en: "Blurb (domain page)" } as I18nText,
+      blurb: { da: "Kort beskrivelse (én linje under titlen)", en: "Short blurb (one line under the title)" } as I18nText,
       houseDescription: { da: "Tekst i vinduet (huset)", en: "Text in the window (house)" } as I18nText,
       skills: { da: "Kompetencer, én per linje", en: "Skills, one per line" } as I18nText,
       description: { da: "Beskrivelse (domænesiden, afsnit adskilt af en tom linje)", en: "Description (domain page, paragraphs separated by a blank line)" } as I18nText,
