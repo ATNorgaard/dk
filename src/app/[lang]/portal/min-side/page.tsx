@@ -90,6 +90,11 @@ export default async function MinSidePage({ params }: PageProps<"/[lang]/portal/
         <BookingInbox lang={lang} path={path} items={myBookings} />
 
         <section className={p.section}>
+          <h2>{L(c.sections.import)}</h2>
+          <CvImport lang={lang} path={path} />
+        </section>
+
+        <section className={p.section}>
           <h2>{L(c.sections.basics)}</h2>
           <ActionForm action={saveBasics} lang={lang} path={path} submit={L(c.save)} pending={L(c.saving)}>
             {pair("title", L(c.fields.title), "input", pr.title)}
@@ -314,11 +319,6 @@ export default async function MinSidePage({ params }: PageProps<"/[lang]/portal/
               <input name="year" type="number" min={1950} max={2100} className={a.narrow} />
             </label>
           </ActionForm>
-        </section>
-
-        <section className={p.section}>
-          <h2>{L(c.sections.import)}</h2>
-          <CvImport lang={lang} path={path} />
         </section>
 
         <section className={p.section}>

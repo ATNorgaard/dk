@@ -137,7 +137,7 @@ export const specialists = {
     importRun: { da: "Foreslå felter", en: "Propose fields" } as I18nText,
     importRunning: { da: "Læser…", en: "Reading…" } as I18nText,
     importApply: { da: "Brug forslaget", en: "Use the proposal" } as I18nText,
-    importApplied: { da: "Forslaget er lagt ind. Gennemgå og gem felterne ovenfor.", en: "The proposal is in. Review and save the fields above." } as I18nText,
+    importApplied: { da: "Forslaget er lagt ind. Gennemgå og gem felterne nedenfor.", en: "The proposal is in. Review and save the fields below." } as I18nText,
     importUnavailable: {
       da: "CV-import er ikke slået til på serveren endnu (OPENROUTER_API_KEY mangler).",
       en: "CV import is not enabled on the server yet (OPENROUTER_API_KEY is missing).",
