@@ -38,6 +38,19 @@ function int(fd: FormData, key: string, min: number, max: number) {
   const n = Number(v);
   return Number.isInteger(n) && n >= min && n <= max ? n : null;
 }
+function url(value: string | null) {
+  if (!value) return null;
+  return /^https?:\/\//i.test(value) ? value : `https://${value}`;
+}
+/** Indices present for a list posted as `<prefix>.<i>.<field>`, in order. */
+function indices(fd: FormData, prefix: string, cap: number) {
+  const found = new Set<number>();
+  for (const key of fd.keys()) {
+    const m = key.match(new RegExp(`^${prefix}\\.(\\d+)\\.`));
+    if (m) found.add(Number(m[1]));
+  }
+  return [...found].sort((x, y) => x - y).slice(0, cap);
+}
 
 async function context(fd: FormData) {
   const l = str(fd, "lang", 2);
@@ -63,9 +76,21 @@ async function context(fd: FormData) {
   return { lang, path, viewer, supabase, profile, done, fail };
 }
 
-export async function saveBasics(_p: State, fd: FormData): Promise<State> {
+/**
+ * The whole editor in one save: every profile column, then the three CV
+ * lists replaced by what was posted (`experience.<i>.<field>` and so on).
+ * Rows without the one thing that names them (organisation, institution,
+ * certification name) are dropped rather than failing the save, so an
+ * added-but-empty row just disappears.
+ */
+export async function saveProfile(_p: State, fd: FormData): Promise<State> {
   const c = await context(fd);
   if (!c.profile) return c.fail();
+  const pid = c.profile.id;
+
+  const slug = str(fd, "slug", 80).toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-+|-+$/g, "");
+  if (slug.length < 3) return c.fail(specialists.minSide.slugInvalid[c.lang]);
+
   const { error } = await c.supabase
     .from("specialist_profiles")
     .update({
@@ -73,56 +98,68 @@ export async function saveBasics(_p: State, fd: FormData): Promise<State> {
       tagline: i18n(fd, "tagline", 160),
       city: opt(fd, "city", 80),
       years_in_craft: int(fd, "years_in_craft", 0, 60),
-    })
-    .eq("id", c.profile.id);
-  return error ? c.fail() : c.done();
-}
-
-export async function saveAbout(_p: State, fd: FormData): Promise<State> {
-  const c = await context(fd);
-  if (!c.profile) return c.fail();
-  const { error } = await c.supabase
-    .from("specialist_profiles")
-    .update({
       summary: i18n(fd, "summary", 4000),
       skills: { da: lines(fd, "skills_da"), en: lines(fd, "skills_en") },
       languages: str(fd, "languages", 200).toLowerCase().split(/[,\s]+/).filter((x) => /^[a-z]{2}$/.test(x)).slice(0, 10),
-    })
-    .eq("id", c.profile.id);
-  return error ? c.fail() : c.done();
-}
-
-export async function saveAvailability(_p: State, fd: FormData): Promise<State> {
-  const c = await context(fd);
-  if (!c.profile) return c.fail();
-  const { error } = await c.supabase
-    .from("specialist_profiles")
-    .update({
       rate_text: opt(fd, "rate_text", 120),
       weekly_hours: int(fd, "weekly_hours", 0, 60),
       available_from: opt(fd, "available_from", 10),
       booked_until: opt(fd, "booked_until", 10),
-    })
-    .eq("id", c.profile.id);
-  return error ? c.fail() : c.done();
-}
-
-export async function saveLinks(_p: State, fd: FormData): Promise<State> {
-  const c = await context(fd);
-  if (!c.profile) return c.fail();
-  const website = opt(fd, "website_url", 300);
-  const linkedin = opt(fd, "linkedin_url", 300);
-  const slug = str(fd, "slug", 80).toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-+|-+$/g, "");
-  if (!slug || slug.length < 3) return c.fail();
-  const { error } = await c.supabase
-    .from("specialist_profiles")
-    .update({
-      website_url: website && /^https?:\/\//i.test(website) ? website : website ? `https://${website}` : null,
-      linkedin_url: linkedin && /^https?:\/\//i.test(linkedin) ? linkedin : linkedin ? `https://${linkedin}` : null,
+      website_url: url(opt(fd, "website_url", 300)),
+      linkedin_url: url(opt(fd, "linkedin_url", 300)),
       slug,
     })
-    .eq("id", c.profile.id);
-  return error ? c.fail() : c.done();
+    .eq("id", pid);
+  if (error) return c.fail(error.code === "23505" ? specialists.minSide.slugTaken[c.lang] : undefined);
+
+  const experience = indices(fd, "experience", 20)
+    .map((i, n) => ({
+      profile_id: pid,
+      organisation: str(fd, `experience.${i}.organisation`, 160),
+      title: i18n(fd, `experience.${i}.title`, 160),
+      description: i18n(fd, `experience.${i}.description`, 2000),
+      start_date: opt(fd, `experience.${i}.start_date`, 10),
+      end_date: opt(fd, `experience.${i}.end_date`, 10),
+      sort_order: n,
+    }))
+    .filter((r) => r.organisation && r.title)
+    .map((r) => ({ ...r, title: r.title! }));
+  const education = indices(fd, "education", 10)
+    .map((i, n) => ({
+      profile_id: pid,
+      institution: str(fd, `education.${i}.institution`, 160),
+      degree: i18n(fd, `education.${i}.degree`, 160),
+      start_year: int(fd, `education.${i}.start_year`, 1950, 2100),
+      end_year: int(fd, `education.${i}.end_year`, 1950, 2100),
+      sort_order: n,
+    }))
+    .filter((r) => r.institution && r.degree)
+    .map((r) => ({ ...r, degree: r.degree! }));
+  const certifications = indices(fd, "certifications", 20)
+    .map((i, n) => ({
+      profile_id: pid,
+      name: str(fd, `certifications.${i}.name`, 160),
+      issuer: opt(fd, `certifications.${i}.issuer`, 160),
+      year: int(fd, `certifications.${i}.year`, 1950, 2100),
+      sort_order: n,
+    }))
+    .filter((r) => r.name);
+
+  // Replace each list. The ids are referenced nowhere else, so new ids on
+  // every save cost nothing, and it keeps the order exactly as posted.
+  const steps = [
+    () => c.supabase.from("experience").delete().eq("profile_id", pid),
+    () => (experience.length ? c.supabase.from("experience").insert(experience) : null),
+    () => c.supabase.from("education").delete().eq("profile_id", pid),
+    () => (education.length ? c.supabase.from("education").insert(education) : null),
+    () => c.supabase.from("certifications").delete().eq("profile_id", pid),
+    () => (certifications.length ? c.supabase.from("certifications").insert(certifications) : null),
+  ];
+  for (const step of steps) {
+    const r = await step();
+    if (r?.error) return c.fail();
+  }
+  return c.done();
 }
 
 export async function setPublished(_p: State, fd: FormData): Promise<State> {
@@ -142,84 +179,6 @@ export async function setPortrait(_p: State, fd: FormData): Promise<State> {
   const path = opt(fd, "portrait_path", 300);
   if (path && !path.startsWith(`${c.viewer.person?.id}/`)) return c.fail();
   const { error } = await c.supabase.from("specialist_profiles").update({ portrait_path: path }).eq("id", c.profile.id);
-  return error ? c.fail() : c.done();
-}
-
-/* Experience */
-
-export async function saveExperience(_p: State, fd: FormData): Promise<State> {
-  const c = await context(fd);
-  if (!c.profile) return c.fail();
-  const id = opt(fd, "id", 40);
-  const organisation = str(fd, "organisation", 160);
-  const title = i18n(fd, "title", 160);
-  if (!organisation || !title) return c.fail();
-  const row = {
-    profile_id: c.profile.id,
-    organisation,
-    title,
-    description: i18n(fd, "description", 2000),
-    start_date: opt(fd, "start_date", 10),
-    end_date: opt(fd, "end_date", 10),
-  };
-  const { error } = id
-    ? await c.supabase.from("experience").update(row).eq("id", id)
-    : await c.supabase.from("experience").insert(row);
-  return error ? c.fail() : c.done();
-}
-
-export async function removeExperience(_p: State, fd: FormData): Promise<State> {
-  const c = await context(fd);
-  const id = str(fd, "id", 40);
-  if (!c.profile || !id) return c.fail();
-  const { error } = await c.supabase.from("experience").delete().eq("id", id);
-  return error ? c.fail() : c.done();
-}
-
-/* Education */
-
-export async function saveEducation(_p: State, fd: FormData): Promise<State> {
-  const c = await context(fd);
-  if (!c.profile) return c.fail();
-  const id = opt(fd, "id", 40);
-  const institution = str(fd, "institution", 160);
-  const degree = i18n(fd, "degree", 160);
-  if (!institution || !degree) return c.fail();
-  const row = { profile_id: c.profile.id, institution, degree, start_year: int(fd, "start_year", 1950, 2100), end_year: int(fd, "end_year", 1950, 2100) };
-  const { error } = id
-    ? await c.supabase.from("education").update(row).eq("id", id)
-    : await c.supabase.from("education").insert(row);
-  return error ? c.fail() : c.done();
-}
-
-export async function removeEducation(_p: State, fd: FormData): Promise<State> {
-  const c = await context(fd);
-  const id = str(fd, "id", 40);
-  if (!c.profile || !id) return c.fail();
-  const { error } = await c.supabase.from("education").delete().eq("id", id);
-  return error ? c.fail() : c.done();
-}
-
-/* Certifications */
-
-export async function saveCertification(_p: State, fd: FormData): Promise<State> {
-  const c = await context(fd);
-  if (!c.profile) return c.fail();
-  const id = opt(fd, "id", 40);
-  const name = str(fd, "name", 160);
-  if (!name) return c.fail();
-  const row = { profile_id: c.profile.id, name, issuer: opt(fd, "issuer", 160), year: int(fd, "year", 1950, 2100) };
-  const { error } = id
-    ? await c.supabase.from("certifications").update(row).eq("id", id)
-    : await c.supabase.from("certifications").insert(row);
-  return error ? c.fail() : c.done();
-}
-
-export async function removeCertification(_p: State, fd: FormData): Promise<State> {
-  const c = await context(fd);
-  const id = str(fd, "id", 40);
-  if (!c.profile || !id) return c.fail();
-  const { error } = await c.supabase.from("certifications").delete().eq("id", id);
   return error ? c.fail() : c.done();
 }
 
