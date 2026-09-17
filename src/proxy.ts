@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { DEFAULT_LANG, LANGS, isLang } from "@/lib/i18n";
+import { DEFAULT_LANG, isLang } from "@/lib/i18n";
 import { refreshSession } from "@/lib/supabase/proxy";
 
 /**
@@ -53,19 +53,15 @@ export async function proxy(request: NextRequest) {
 
   const { response, userId } = await refreshSession(request);
   const guarded = GUARDED.includes(second ?? "");
-  const atLogin = second === "log-ind";
 
+  // Only the signed-out direction lives here. The opposite one (signed in,
+  // skip the login page) is decided by the login page itself against the
+  // auth server: this check is local and trusts a token the server may have
+  // revoked, and bouncing on it looped between the portal and the login page.
   if (guarded && !userId) {
     const url = request.nextUrl.clone();
     url.pathname = `/${first}/log-ind`;
     url.search = `?next=${encodeURIComponent(pathname + request.nextUrl.search)}`;
-    return withCookies(NextResponse.redirect(url), response);
-  }
-  if (atLogin && userId) {
-    const next = request.nextUrl.searchParams.get("next");
-    const url = request.nextUrl.clone();
-    url.pathname = next && LANGS.some((l) => next.startsWith(`/${l}/`)) ? next.split("?")[0] : `/${first}/portal`;
-    url.search = "";
     return withCookies(NextResponse.redirect(url), response);
   }
   return response;

@@ -79,6 +79,10 @@ export async function signOut(fd: FormData) {
   const l = str(fd, "lang", 2);
   const lang: Lang = isLang(l) ? l : "da";
   const supabase = await createClient();
-  await supabase.auth.signOut();
+  // Local: only this browser's session. The default scope revokes every
+  // session of the user, which left other browsers with a token the proxy
+  // still trusted and the auth server no longer did, and that looped between
+  // the portal and the login page.
+  await supabase.auth.signOut({ scope: "local" });
   redirect(href(lang));
 }

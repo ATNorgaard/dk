@@ -11,7 +11,7 @@ How people get into the portal, how roles are granted, and how to test it withou
 - **Same browser.** The session uses the PKCE flow, so the code verifier is a cookie set when the link is requested. Opening the link in the same browser (the normal case: request on the site, click in webmail in the same browser) works; a different device does not. Cross-device would need the non-PKCE `token_hash` + `verifyOtp` flow, deferred until someone needs it.
 - **Sessions** are refreshed by `src/proxy.ts` on every page request (`lib/supabase/proxy.ts`). The proxy also keeps signed-out visitors out of `/[lang]/portal/**` and `/[lang]/admin/**`; that is the optimistic check. Pages verify the user against the auth server and read roles through `lib/auth.ts` (`getViewer`, `requireViewer`, `requireRole`). The database checks roles a third time in row-level security via `has_role(...)`.
 - **First sign-in** fires the `on_auth_user_created` trigger, which attaches the new auth user to the `people` row with the same email, or creates one if nobody invited them. A person with no memberships sees an empty portal and a hint to write to the house.
-- **Sign-out** is a form in the portal header posting to the `signOut` server action.
+- **Sign-out** is a form in the portal header posting to the `signOut` server action, with `scope: "local"`: only that browser's session ends. The default scope revokes every session of the user, and a browser left with a revoked token looped between the portal and the login page (17 September). That is also why the proxy only ever redirects in one direction (signed out → login page): its check is local and would trust a revoked token. The login page decides the other direction itself, against the auth server.
 
 ## Granting roles
 

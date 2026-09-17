@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { href, isLang, safeInternalPath, t } from "@/lib/i18n";
+import { getViewer } from "@/lib/auth";
 import { auth } from "@/content/auth";
 import { site } from "@/content/site";
 import { SiteHeader } from "@/components/site/SiteHeader";
@@ -21,6 +22,9 @@ export default async function LoginPage({ params, searchParams }: PageProps<"/[l
   const sp = await searchParams;
   const next = safeInternalPath(typeof sp.next === "string" ? sp.next : null, href(lang, "/portal"));
   const linkError = sp.error === "link";
+  // Already signed in, verified against the auth server: straight on. A token
+  // the server has revoked fails this check and the form renders instead.
+  if (await getViewer()) redirect(next.split("?")[0]);
   const c = auth.login;
 
   const nav = [
