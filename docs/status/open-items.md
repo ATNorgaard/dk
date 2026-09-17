@@ -11,6 +11,8 @@
 
 ## From phase 2.3
 
+- [ ] Domain copy: the description and typical briefs on every domain page were drafted by Andreas with Claude on 17 September as placeholders. Kim reads them through under Admin → Domæner and edits in place. Note that `pnpm db:push:seed` overwrites all domain copy with `seed.sql`; once Kim has edited, either stop running the seed against the live project or copy his text back into the seed first.
+
 - [x] CV import: the model-based import (Anthropic, then OpenRouter with DeepSeek and Gemini) was replaced on 17 September by a deterministic reader of LinkedIn's own PDF export. `OPENROUTER_API_KEY` is removed from Vercel and no longer needed.
 - [ ] Ask the first specialists to bring an English-language LinkedIn export: the reader recognises English and Danish labels, but only a Danish export has been run through it.
 - [ ] Upload a real portrait through Min side in a browser once (the storage policies are verified through the API; the file input itself was not driven).

@@ -83,3 +83,73 @@
   gap: var(--hds-space-sm);
   margin-top: var(--hds-space-lg);
 }
+
+/* 01 Om domænet: the description on the left, typical briefs on the right. */
+.about {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: var(--hds-space-lg) clamp(2rem, 5vw, 5rem);
+  margin-top: var(--hds-space-xl);
+  padding-top: var(--hds-space-md);
+  border-top: 1px solid var(--hds-border);
+}
+@media (max-width: 900px) {
+  .about { grid-template-columns: 1fr; }
+}
+.prose {
+  display: grid;
+  gap: var(--hds-space-sm);
+  max-width: 58ch;
+}
+.prose p {
+  font-size: var(--hds-text-lg);
+  line-height: 1.6;
+  color: var(--hds-text-body);
+}
+.tasks h3 {
+  margin-bottom: var(--hds-space-xs);
+  font-family: var(--hds-font-mono);
+  font-size: var(--hds-text-2xs);
+  font-weight: 400;
+  letter-spacing: var(--hds-tracking-label);
+  text-transform: uppercase;
+  color: var(--hds-text-muted);
+}
+.tasks ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--hds-border-strong);
+}
+.tasks li {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  gap: var(--hds-space-sm);
+  padding: var(--hds-space-xs) 0;
+  border-bottom: 1px solid var(--hds-border);
+  font-size: var(--hds-text-md);
+  line-height: 1.4;
+  color: var(--hds-text);
+}
+.tasks li span {
+  padding-top: 0.2rem;
+  font-family: var(--hds-font-mono);
+  font-size: var(--hds-text-xs);
+  letter-spacing: 0.14em;
+  color: var(--hds-text-faint);
+}
+
+/* 02 Specialister: wider cells than the generic card grid, since a card
+   carries portrait, one-liner, availability and skills. */
+.people {
+  list-style: none;
+  margin: var(--hds-space-xl) 0 0;
+  padding: 1px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1px;
+}
+.people > li {
+  display: grid;
+  outline: 1px solid var(--hds-border);
+}

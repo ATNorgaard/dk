@@ -23,7 +23,7 @@ History: the first version (17 September, same day) sent the CV through a langua
 ## Public pages
 
 - `/[lang]/specialister/<slug>`: teaser for everyone (name, title, tagline, city, years, availability, skills, portrait); full CV (about, experience, education, certifications, languages, rate, contact) for signed-in clients, board, admin and the owner. Others see the client gate with sign-in and write-to-the-house buttons. The page renders per request (`dynamic = "force-dynamic"`): it reads the session to decide what to show, and a static route that reads cookies fails in production with DYNAMIC_SERVER_USAGE (found 17 September on the first live profile; dev had hidden it). The teaser itself comes from the public view, so an anonymous visit costs one cookie-less query.
-- Domain page: cards for the domain's live specialists in seat order; the "window is open" copy only when there are none.
+- Domain page (`/[lang]/domaener/<slug>`): 01 about the domain (description and typical briefs from the domains table, edited under Admin → Domæner), 02 the live specialists in seat order as `SpecialistCard` (portrait or initials, seat, name, title, one-liner, city, years, availability, first five skills, "Mød …"), or the "window is open" copy and the recruiting buttons when there are none, 03 the landing's three steps with a booking button, 04 neighbours, then the contact form tagged with the domain.
 - The house, level two: the first live specialist of the window (name, title, tagline, city, years, "Meet …" link, "+ n more" when the domain has several). Without one, the recruiting copy as before.
 
 ## How it is built
