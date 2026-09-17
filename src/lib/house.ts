@@ -11,6 +11,9 @@ export type HouseDomain = {
   tagline: I18nText | null;
   blurb: I18nText | null;
   houseDescription: I18nText | null;
+  /** Long copy for the domain page; paragraphs separated by a blank line. */
+  description: I18nText | null;
+  typicalTasks: I18nList;
   skills: I18nList;
   targetSeats: number;
   activeSeats: number;
@@ -31,6 +34,8 @@ type DomainRow = {
   tagline: I18nText | null;
   blurb: I18nText | null;
   house_description: I18nText | null;
+  description: I18nText | null;
+  typical_tasks: I18nList;
   skills: I18nList;
   target_seats: number;
 };
@@ -48,7 +53,7 @@ export async function loadHouse(): Promise<HouseData> {
   const [domains, staffing, rels] = await Promise.all([
     supabase
       .from("domains")
-      .select("id, sort_order, slug, name, tagline, blurb, house_description, skills, target_seats")
+      .select("id, sort_order, slug, name, tagline, blurb, house_description, description, typical_tasks, skills, target_seats")
       .order("sort_order")
       .returns<DomainRow[]>(),
     supabase
@@ -76,6 +81,8 @@ export async function loadHouse(): Promise<HouseData> {
         tagline: d.tagline,
         blurb: d.blurb,
         houseDescription: d.house_description,
+        description: d.description,
+        typicalTasks: d.typical_tasks,
         skills: d.skills,
         targetSeats: d.target_seats,
         activeSeats: s?.active_seats ?? 0,

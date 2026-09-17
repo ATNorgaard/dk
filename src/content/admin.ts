@@ -129,6 +129,8 @@ export const admin = {
       blurb: { da: "Beskrivelse (domænesiden)", en: "Blurb (domain page)" } as I18nText,
       houseDescription: { da: "Tekst i vinduet (huset)", en: "Text in the window (house)" } as I18nText,
       skills: { da: "Kompetencer, én per linje", en: "Skills, one per line" } as I18nText,
+      description: { da: "Beskrivelse (domænesiden, afsnit adskilt af en tom linje)", en: "Description (domain page, paragraphs separated by a blank line)" } as I18nText,
+      typicalTasks: { da: "Typiske opgaver, én per linje", en: "Typical briefs, one per line" } as I18nText,
       targetSeats: { da: "Pladser i alt (mål)", en: "Target seats" } as I18nText,
       override: { da: "Status på huset", en: "Status on the house" } as I18nText,
       overrideAuto: { da: "Automatisk (efter pladser)", en: "Automatic (from seats)" } as I18nText,

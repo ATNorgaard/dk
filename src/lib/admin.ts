@@ -58,6 +58,8 @@ export type DomainRow = {
   tagline: I18nText | null;
   blurb: I18nText | null;
   house_description: I18nText | null;
+  description: I18nText | null;
+  typical_tasks: I18nList;
   skills: I18nList;
   target_seats: number;
   status_override: "healthy" | "needs" | "full" | null;
@@ -179,7 +181,7 @@ export async function listDomainsForAdmin() {
   const supabase = await createClient();
   const { data } = await supabase
     .from("domains")
-    .select("id, sort_order, slug, name, tagline, blurb, house_description, skills, target_seats, status_override, is_published")
+    .select("id, sort_order, slug, name, tagline, blurb, house_description, description, typical_tasks, skills, target_seats, status_override, is_published")
     .order("sort_order")
     .returns<DomainRow[]>();
   return rows<DomainRow>("domains")({ data, error: null });

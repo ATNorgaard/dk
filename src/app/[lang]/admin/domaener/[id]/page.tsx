@@ -66,6 +66,8 @@ export default async function DomainEditPage({ params }: PageProps<"/[lang]/admi
         {pair("tagline", L(c.fields.tagline), "input", d.tagline)}
         {pair("house_description", L(c.fields.houseDescription), "textarea", d.house_description)}
         {pair("blurb", L(c.fields.blurb), "textarea", d.blurb)}
+        {pair("description", L(c.fields.description), "textarea", d.description)}
+        {pair("typical_tasks", L(c.fields.typicalTasks), "textarea", { da: (d.typical_tasks?.da ?? []).join("\n"), en: (d.typical_tasks?.en ?? []).join("\n") })}
         {pair("skills", L(c.fields.skills), "textarea", { da: (d.skills?.da ?? []).join("\n"), en: (d.skills?.en ?? []).join("\n") })}
         <div className={a.grid2}>
           <label className={a.field}>

@@ -4,12 +4,12 @@ import { notFound } from "next/navigation";
 import { href, isLang, t } from "@/lib/i18n";
 import { loadDomainBySlug, loadHouse, pad2 } from "@/lib/house";
 import { loadTeasers } from "@/lib/specialists";
-import { specialists } from "@/content/specialists";
 import { site } from "@/content/site";
 import { landing } from "@/content/landing";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
-import { Button, Card, CardGrid, ContactBlock, Section, SectionHeading } from "@/components/ui/primitives";
+import { Button, CapabilityList, Card, CardGrid, ContactBlock, Section, SectionHeading } from "@/components/ui/primitives";
+import { SpecialistCard } from "@/components/specialists/SpecialistCard";
 import { ContactForm } from "@/components/forms/ContactForm";
 import { TrackView } from "@/components/analytics/TrackView";
 import s from "./page.module.css";
@@ -32,6 +32,12 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/domaener/[
   };
 }
 
+/**
+ * One domain: what it does (description and typical briefs, edited under
+ * Admin → Domæner), who sits there (everything the public teaser holds),
+ * how an engagement starts (the landing's three steps), the neighbouring
+ * domains, and the contact form tagged with the domain.
+ */
 export default async function DomainPage({ params }: PageProps<"/[lang]/domaener/[slug]">) {
   const { lang, slug } = await params;
   if (!isLang(lang)) notFound();
@@ -41,6 +47,11 @@ export default async function DomainPage({ params }: PageProps<"/[lang]/domaener
   const people = (await loadTeasers()).get(d.id) ?? [];
   const da = lang === "da";
   const total = d.activeSeats + d.openSeats;
+  const paragraphs = t(d.description, lang, "").split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
+  const tasks = t(d.typicalTasks, lang, []);
+  const recruiting = d.activeSeats === 0 || people.length === 0;
+  let n = 0;
+  const num = () => pad2(++n);
 
   const nav = [
     { href: href(lang), label: site.nav.forClients },
@@ -84,7 +95,33 @@ export default async function DomainPage({ params }: PageProps<"/[lang]/domaener
           </dl>
         </section>
 
-        <Section id="specialister" tone="paper" number="01" label={{ da: "Specialister", en: "Specialists" }} lang={lang} headingId="spec-title">
+        {paragraphs.length || tasks.length ? (
+          <Section id="om" tone="paper" number={num()} label={{ da: "Om domænet", en: "About the domain" }} lang={lang} headingId="om-title">
+            <SectionHeading id="om-title" lang={lang} title={{ da: "Det, domænet {em}laver{/em}.", en: "What the domain {em}does{/em}." }} />
+            <div className={s.about}>
+              <div className={s.prose}>
+                {paragraphs.map((p, i) => (
+                  <p key={i}>{p}</p>
+                ))}
+              </div>
+              {tasks.length ? (
+                <div className={s.tasks}>
+                  <h3>{da ? "Typiske opgaver" : "Typical briefs"}</h3>
+                  <ol>
+                    {tasks.map((task, i) => (
+                      <li key={task}>
+                        <span>{pad2(i + 1)}</span>
+                        {task}
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              ) : null}
+            </div>
+          </Section>
+        ) : null}
+
+        <Section id="specialister" tone="paper" number={num()} label={{ da: "Specialister", en: "Specialists" }} lang={lang} headingId="spec-title">
           <SectionHeading
             id="spec-title"
             lang={lang}
@@ -93,24 +130,23 @@ export default async function DomainPage({ params }: PageProps<"/[lang]/domaener
                 ? { da: "Vinduet er {em}ledigt{/em}.", en: "The window is {em}open{/em}." }
                 : { da: "Dem, der sidder {em}her{/em}.", en: "The people {em}here{/em}." }
             }
-            intro={people.length === 0 ? landing.hero.recruitingText : undefined}
+            intro={
+              people.length === 0
+                ? landing.hero.recruitingText
+                : {
+                    da: "Selvstændige specialister med egen praksis. Åbn en profil for at se erfaring, uddannelse og takst, og book tyve minutter direkte.",
+                    en: "Independent specialists with a practice of their own. Open a profile for experience, education and rate, and book twenty minutes directly.",
+                  }
+            }
           />
           {people.length ? (
-            <CardGrid>
+            <ul className={s.people}>
               {people.map((te, idx) => (
-                <Card
-                  key={te.id}
-                  index={idx}
-                  href={href(lang, `/specialister/${te.slug}`)}
-                  tag={`${t(specialists.teaser.seat, lang, "")} ${pad2(te.seat_position)}`}
-                  title={te.display_name}
-                  text={[t(te.title, lang, ""), t(te.tagline, lang, "")].filter(Boolean).join(" · ")}
-                  meta={[te.city, te.years_in_craft !== null ? t(specialists.teaser.years, lang, "").replace("{n}", String(te.years_in_craft)) : null].filter(Boolean).join(" · ")}
-                />
+                <SpecialistCard key={te.id} te={te} lang={lang} index={idx} />
               ))}
-            </CardGrid>
+            </ul>
           ) : null}
-          {d.activeSeats === 0 || people.length === 0 ? (
+          {recruiting ? (
             <div className={s.recruit}>
               <Button href="#kontakt">{t(landing.hero.contactUs, lang, "")}</Button>
               <Button href={href(lang, "/freelancere#ansoeg")} variant="outline" trailing="→">
@@ -120,8 +156,21 @@ export default async function DomainPage({ params }: PageProps<"/[lang]/domaener
           ) : null}
         </Section>
 
+        <Section id="saadan" tone="ink-panel" number={num()} label={{ da: "Sådan foregår det", en: "How it works" }} lang={lang} headingId="how-title">
+          <SectionHeading id="how-title" lang={lang} title={landing.how.title} intro={landing.how.intro} />
+          <CapabilityList items={landing.how.steps} lang={lang} />
+          {!recruiting ? (
+            <div className={s.recruit}>
+              <Button href="#kontakt">{t(site.header.bookMeeting, lang, "")}</Button>
+              <Button href={href(lang, "/freelancere#ansoeg")} variant="outline" trailing="→">
+                {t(landing.hero.applyHere, lang, "")}
+              </Button>
+            </div>
+          ) : null}
+        </Section>
+
         {neighbours.length ? (
-          <Section id="naboer" tone="ink-panel" number="02" label={{ da: "Naboer", en: "Neighbours" }} lang={lang} headingId="naboer-title">
+          <Section id="naboer" tone="paper" number={num()} label={{ da: "Naboer", en: "Neighbours" }} lang={lang} headingId="naboer-title">
             <SectionHeading
               id="naboer-title"
               lang={lang}
@@ -132,15 +181,15 @@ export default async function DomainPage({ params }: PageProps<"/[lang]/domaener
               }}
             />
             <CardGrid>
-              {neighbours.map((n, idx) => (
+              {neighbours.map((nb, idx) => (
                 <Card
-                  key={n.id}
+                  key={nb.id}
                   index={idx}
-                  href={href(lang, `/domaener/${n.slug}`)}
-                  tag={`${da ? "Domæne" : "Domain"} ${pad2(n.sortOrder)}`}
-                  title={t(n.name, lang, n.id)}
-                  text={t(n.blurb, lang, "")}
-                  meta={t(site.status[n.status], lang, "")}
+                  href={href(lang, `/domaener/${nb.slug}`)}
+                  tag={`${da ? "Domæne" : "Domain"} ${pad2(nb.sortOrder)}`}
+                  title={t(nb.name, lang, nb.id)}
+                  text={t(nb.blurb, lang, "")}
+                  meta={t(site.status[nb.status], lang, "")}
                 />
               ))}
             </CardGrid>

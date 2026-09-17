@@ -335,6 +335,8 @@ export async function saveDomain(_prev: AdminState, fd: FormData): Promise<Admin
       tagline: i18n(fd, "tagline", 200),
       blurb: i18n(fd, "blurb", 2000),
       house_description: i18n(fd, "house_description", 1000),
+      description: i18n(fd, "description", 6000),
+      typical_tasks: { da: lines(fd, "typical_tasks_da").slice(0, 12), en: lines(fd, "typical_tasks_en").slice(0, 12) },
       skills: { da: lines(fd, "skills_da"), en: lines(fd, "skills_en") },
       target_seats: target,
       status_override: ["healthy", "needs", "full"].includes(override) ? override : null,
