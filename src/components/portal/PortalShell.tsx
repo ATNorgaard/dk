@@ -6,6 +6,7 @@ import { hasRole, type Viewer } from "@/lib/auth";
 import { signOut } from "@/app/actions/auth";
 import { site } from "@/content/site";
 import { auth } from "@/content/auth";
+import { specialists } from "@/content/specialists";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import h from "@/components/site/site.module.css";
 import p from "./portal.module.css";
@@ -27,6 +28,7 @@ export function PortalShell({
 }) {
   const other = otherLang(lang);
   const items = [{ href: href(lang, "/portal"), label: auth.portal.nav }];
+  if (hasRole(viewer, "specialist")) items.push({ href: href(lang, "/portal/min-side"), label: specialists.minSide.nav });
   if (hasRole(viewer, "board", "admin")) items.push({ href: href(lang, "/admin"), label: auth.admin.nav });
 
   return (

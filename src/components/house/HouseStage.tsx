@@ -94,7 +94,18 @@ function buildOverlay(el: HouseElement, overlay: SVGSVGElement, lamps: HTMLDivEl
   lamps.replaceChildren(...lampEls);
 }
 
-export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
+/** What level two shows for a domain that has a live specialist. Serializable: comes from the server page. */
+export type WindowTeaser = {
+  slug: string;
+  name: string;
+  title: string | null;
+  tagline: string | null;
+  city: string | null;
+  years: number | null;
+  more: number;
+};
+
+export function HouseStage({ house, lang, teasers = {} }: { house: HouseData; lang: Lang; teasers?: Record<string, WindowTeaser> }) {
   const D = house.domains;
   const copy = landing.hero;
   const [level, setLevel] = useState<Level>(0);
@@ -464,23 +475,49 @@ export function HouseStage({ house, lang }: { house: HouseData; lang: Lang }) {
               <span className="hds-eyebrow">
                 {t(active.name, lang, active.id)} · {c(copy.yourSpecialist)}
               </span>
-              {/* No specialists are admitted yet: the honest state is "the window is open". */}
-              <h2 className={s.detailTitle}>{c(copy.recruitingTitle)}</h2>
-              <p className={s.desc}>{c(copy.recruitingText)}</p>
-              <dl className={s.rows}>
-                <dt>{lang === "da" ? "Pladser" : "Seats"}</dt>
-                <dd className="hds-tabular">{fill(c(copy.seatsLine), { active: active.activeSeats, total })}</dd>
-                <dt>{lang === "da" ? "Status" : "Status"}</dt>
-                <dd>{t(site.status[active.status], lang, "")}</dd>
-              </dl>
-              <div className={s.ctaRow}>
-                <a href="#kontakt" className={s.buttonLight}>
-                  {c(copy.contactUs)} <span aria-hidden="true">↗</span>
-                </a>
-                <Link href={href(lang, "/freelancere#ansoeg")} className={s.linkQuiet}>
-                  {c(copy.applyHere)} →
-                </Link>
-              </div>
+              {teasers[active.id] ? (
+                <>
+                  <h2 className={s.detailTitle}>{teasers[active.id].name}</h2>
+                  {teasers[active.id].title ? <p className={s.desc}><b>{teasers[active.id].title}</b></p> : null}
+                  {teasers[active.id].tagline ? <p className={s.desc}>{teasers[active.id].tagline}</p> : null}
+                  <dl className={s.rows}>
+                    {teasers[active.id].city ? (<><dt>{lang === "da" ? "By" : "City"}</dt><dd>{teasers[active.id].city}</dd></>) : null}
+                    {teasers[active.id].years !== null ? (<><dt>{lang === "da" ? "Erfaring" : "Experience"}</dt><dd className="hds-tabular">{teasers[active.id].years} {lang === "da" ? "år" : "years"}</dd></>) : null}
+                    <dt>{lang === "da" ? "Pladser" : "Seats"}</dt>
+                    <dd className="hds-tabular">{fill(c(copy.seatsLine), { active: active.activeSeats, total })}</dd>
+                  </dl>
+                  <div className={s.ctaRow}>
+                    <Link href={href(lang, `/specialister/${teasers[active.id].slug}`)} className={s.buttonLight}>
+                      {lang === "da" ? `Mød ${teasers[active.id].name.split(" ")[0]}` : `Meet ${teasers[active.id].name.split(" ")[0]}`} <span aria-hidden="true">→</span>
+                    </Link>
+                    {teasers[active.id].more > 0 ? (
+                      <Link href={href(lang, `/domaener/${active.slug}#specialister`)} className={s.linkQuiet}>
+                        {lang === "da" ? `+ ${teasers[active.id].more} til i domænet` : `+ ${teasers[active.id].more} more in the domain`} →
+                      </Link>
+                    ) : null}
+                  </div>
+                </>
+              ) : (
+                <>
+                  {/* No live specialist in this window: the honest state is "the window is open". */}
+                  <h2 className={s.detailTitle}>{c(copy.recruitingTitle)}</h2>
+                  <p className={s.desc}>{c(copy.recruitingText)}</p>
+                  <dl className={s.rows}>
+                    <dt>{lang === "da" ? "Pladser" : "Seats"}</dt>
+                    <dd className="hds-tabular">{fill(c(copy.seatsLine), { active: active.activeSeats, total })}</dd>
+                    <dt>{lang === "da" ? "Status" : "Status"}</dt>
+                    <dd>{t(site.status[active.status], lang, "")}</dd>
+                  </dl>
+                  <div className={s.ctaRow}>
+                    <a href="#kontakt" className={s.buttonLight}>
+                      {c(copy.contactUs)} <span aria-hidden="true">↗</span>
+                    </a>
+                    <Link href={href(lang, "/freelancere#ansoeg")} className={s.linkQuiet}>
+                      {c(copy.applyHere)} →
+                    </Link>
+                  </div>
+                </>
+              )}
               <Link href={href(lang, `/domaener/${active.slug}`)} className={s.linkQuiet}>
                 {c(copy.openDomainPage)} →
               </Link>

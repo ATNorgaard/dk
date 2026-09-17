@@ -16,6 +16,7 @@
     "roles": "node --env-file=.env.local scripts/roles.mjs"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.126.0",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.116.0",
     "@vercel/analytics": "2.0.1",
@@ -23,7 +24,8 @@
     "geist": "^1.7.2",
     "next": "16.3.5",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@types/node": "^20",
