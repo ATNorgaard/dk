@@ -86,7 +86,7 @@ export const specialists = {
       education: { da: "Uddannelse", en: "Education" } as I18nText,
       certifications: { da: "Certificeringer", en: "Certifications" } as I18nText,
       publish: { da: "Udgivelse", en: "Publishing" } as I18nText,
-      import: { da: "Importér dit CV", en: "Import your CV" } as I18nText,
+      import: { da: "Hent fra LinkedIn", en: "Load from LinkedIn" } as I18nText,
     },
     fields: {
       title: { da: "Titel", en: "Title" } as I18nText,
@@ -130,24 +130,28 @@ export const specialists = {
     uploading: { da: "Uploader…", en: "Uploading…" } as I18nText,
     portraitHint: { da: "JPG, PNG eller WebP, højst 5 MB. Kvadratisk virker bedst.", en: "JPG, PNG or WebP, up to 5 MB. Square works best." } as I18nText,
     portraitFailed: { da: "Upload mislykkedes. Prøv et mindre billede.", en: "Upload failed. Try a smaller image." } as I18nText,
-    importDisclaimer: {
-      da: "Forslaget skrives af en sprogmodel ud fra dit CV. Læs det igennem, og ret det, der ikke passer, før du bruger det. Du kan altid rette felterne bagefter.",
-      en: "The proposal is written by a language model from your CV. Read it through and correct what does not fit before you use it. You can always edit the fields afterwards.",
-    } as I18nText,
     importIntro: {
-      da: "Upload dit CV som PDF eller indsæt teksten fra din LinkedIn-profil. Huset foreslår felterne; du retter og godkender, før noget gemmes.",
-      en: "Upload your CV as a PDF or paste the text from your LinkedIn profile. The house proposes the fields; you correct and approve before anything is saved.",
+      da: "Gem din LinkedIn-profil som PDF (på din profil: Mere → Gem som PDF), og upload filen her. Navn, overskrift, by, resumé, kompetencer, sprog, erfaring, uddannelse, certificeringer og LinkedIn-adresse læses direkte fra filen. Ledighed og takst, hjemmeside og portræt udfylder du selv.",
+      en: "Save your LinkedIn profile as a PDF (on your profile: More → Save to PDF) and upload the file here. Name, headline, city, summary, skills, languages, experience, education, certifications and LinkedIn address are read straight from the file. Availability and rate, website and portrait you fill in yourself.",
     } as I18nText,
-    importPaste: { da: "Eller indsæt tekst", en: "Or paste text" } as I18nText,
-    importRun: { da: "Foreslå felter", en: "Propose fields" } as I18nText,
+    importHelp: { da: "Sådan gemmer du din profil som PDF", en: "How to save your profile as a PDF" } as I18nText,
+    importDisclaimer: {
+      da: "Kun det, der står i PDF'en, kommer med, og kun i tomme felter. Stillinger, uddannelser og certificeringer tilføjes som rækker. Gennemgå felterne, og gem, når du er tilfreds.",
+      en: "Only what is in the PDF comes in, and only into empty fields. Positions, education and certifications are added as rows. Review the fields and save when you are happy.",
+    } as I18nText,
+    importFile: { da: "LinkedIn-PDF", en: "LinkedIn PDF" } as I18nText,
+    importRun: { da: "Indlæs", en: "Load" } as I18nText,
     importRunning: { da: "Læser…", en: "Reading…" } as I18nText,
-    importApply: { da: "Brug forslaget", en: "Use the proposal" } as I18nText,
-    importApplied: { da: "Forslaget er lagt ind. Gennemgå og gem felterne nedenfor.", en: "The proposal is in. Review and save the fields below." } as I18nText,
-    importUnavailable: {
-      da: "CV-import er ikke slået til på serveren endnu (OPENROUTER_API_KEY mangler).",
-      en: "CV import is not enabled on the server yet (OPENROUTER_API_KEY is missing).",
+    importPickFile: { da: "Vælg PDF-filen først.", en: "Pick the PDF file first." } as I18nText,
+    importDone: {
+      da: "Indlæst: {exp} stillinger, {edu} uddannelser og {cert} certificeringer tilføjet; tomme felter udfyldt. Gennemgå og gem.",
+      en: "Loaded: {exp} positions, {edu} education entries and {cert} certifications added; empty fields filled. Review and save.",
     } as I18nText,
-    importFailed: { da: "Kunne ikke læse CV'et. Prøv med teksten i stedet.", en: "Could not read the CV. Try the text instead." } as I18nText,
+    importNotLinkedIn: {
+      da: "Filen ser ikke ud til at være en PDF gemt fra LinkedIn. Følg vejledningen ovenfor, og prøv igen.",
+      en: "The file does not look like a PDF saved from LinkedIn. Follow the guide above and try again.",
+    } as I18nText,
+    importFailed: { da: "Kunne ikke læse PDF'en.", en: "Could not read the PDF." } as I18nText,
   },
   invite: {
     subject: { da: "Din plads i huset", en: "Your seat in the house" } as I18nText,

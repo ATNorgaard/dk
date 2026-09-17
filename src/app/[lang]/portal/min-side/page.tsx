@@ -12,7 +12,6 @@ import { RichTitle } from "@/components/ui/RichTitle";
 import { ActionForm } from "@/components/admin/ActionForm";
 import { PortraitUpload } from "@/components/profile/PortraitUpload";
 import { ProfileEditor } from "@/components/profile/ProfileEditor";
-import { CvImport } from "@/components/profile/CvImport";
 import { BookingInbox } from "@/components/booking/BookingInbox";
 import { listMyBookings } from "@/lib/bookings";
 import p from "@/components/portal/portal.module.css";
@@ -59,11 +58,6 @@ export default async function MinSidePage({ params }: PageProps<"/[lang]/portal/
         </p>
 
         <BookingInbox lang={lang} path={path} items={myBookings} />
-
-        <section className={p.section}>
-          <h2>{L(c.sections.import)}</h2>
-          <CvImport lang={lang} path={path} />
-        </section>
 
         <ProfileEditor lang={lang} path={path} profile={pr} experience={full.experience} education={full.education} certifications={full.certifications} />
 
