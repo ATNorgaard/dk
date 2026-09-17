@@ -1,18 +1,26 @@
 import { NextResponse, type NextRequest } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
-import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { z } from "zod";
 import { getViewer, hasRole } from "@/lib/auth";
 
 /**
  * CV import for Min side. The signed-in specialist posts a PDF (multipart
- * "file") or pasted text ("text"), and Claude returns a proposal in the
+ * "file") or pasted text ("text"); the model returns a proposal in the
  * profile's shape, in both languages. Nothing is saved here: the browser
  * shows the proposal and the specialist approves it with applyImport.
- * Needs ANTHROPIC_API_KEY on the server; without it the route says so.
+ *
+ * Talks to OpenRouter (OpenAI-style chat completions) with plain fetch, so
+ * the model behind it is one env var: OPENROUTER_MODEL, default DeepSeek
+ * V4.1 Flash. PDFs are turned into text by OpenRouter's file parser before
+ * the model sees them (OPENROUTER_PDF_ENGINE, default "pdf-text", the free
+ * one; "mistral-ocr" for scanned PDFs; "native" for models that read PDFs
+ * themselves). Needs OPENROUTER_API_KEY on the server; without it the
+ * route says so.
  */
 export const runtime = "nodejs";
 export const maxDuration = 120;
+
+const DEFAULT_MODEL = "deepseek/deepseek-v4.1-flash";
+const DEFAULT_PDF_ENGINE = "pdf-text";
 
 const I18n = z.object({ da: z.string(), en: z.string() });
 
@@ -23,7 +31,7 @@ const Proposal = z.object({
   years_in_craft: z.number().int().min(0).max(60).describe("Years of professional experience in the craft, estimated from the CV"),
   summary: I18n.describe("About text, 3 to 6 sentences, third person, factual, no superlatives"),
   skills: z.object({ da: z.array(z.string()), en: z.array(z.string()) }).describe("6 to 15 skills, short noun phrases, same items in both languages"),
-  languages: z.array(z.string()).describe("Languages they work in as ISO 639-1 codes, e.g. da, en, de"),
+  languages: z.array(z.string()).describe("Languages they work in as two-letter ISO 639-1 codes only: 'da' not 'dansk', 'en' not 'English', 'de' not 'tysk'"),
   experience: z
     .array(
       z.object({
@@ -51,52 +59,98 @@ const Proposal = z.object({
 const SYSTEM = `You turn a specialist's CV into the fields of a profile in a Danish consultancy collective (TrustUsConsult).
 Write every text field in both Danish (da) and English (en); translate faithfully, do not invent facts.
 Keep the person's own claims; do not add achievements that are not in the source. Empty string when the source says nothing.
-Dates: ISO YYYY-MM-DD. Skills: short noun phrases, the same list in both languages.`;
+Dates: ISO YYYY-MM-DD. Skills: short noun phrases, the same list in both languages.
+Answer with the JSON object only.`;
+
+type Part = { type: "text"; text: string } | { type: "file"; file: { filename: string; file_data: string } };
+
+/** Models tend to answer "dansk" where the profile stores "da". */
+const LANGUAGE_CODES: Record<string, string> = {
+  dansk: "da", danish: "da", engelsk: "en", english: "en", tysk: "de", german: "de", deutsch: "de",
+  svensk: "sv", swedish: "sv", norsk: "no", norwegian: "no", fransk: "fr", french: "fr", spansk: "es", spanish: "es",
+  italiensk: "it", italian: "it", hollandsk: "nl", dutch: "nl", polsk: "pl", polish: "pl", finsk: "fi", finnish: "fi",
+};
+function languageCode(value: string): string {
+  const v = value.trim().toLowerCase();
+  if (/^[a-z]{2}$/.test(v)) return v;
+  return LANGUAGE_CODES[v] ?? v.slice(0, 2);
+}
 
 export async function POST(request: NextRequest) {
   const viewer = await getViewer();
   if (!viewer || !hasRole(viewer, "specialist", "board", "admin")) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return NextResponse.json({ error: "not_configured" }, { status: 503 });
-  }
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  if (!apiKey) return NextResponse.json({ error: "not_configured" }, { status: 503 });
 
   const form = await request.formData();
   const file = form.get("file");
   const text = typeof form.get("text") === "string" ? (form.get("text") as string).trim().slice(0, 60_000) : "";
 
-  const content: Anthropic.ContentBlockParam[] = [];
+  const parts: Part[] = [];
+  let hasPdf = false;
   if (file instanceof File && file.size > 0) {
     if (file.type !== "application/pdf") return NextResponse.json({ error: "pdf_only" }, { status: 400 });
     if (file.size > 10 * 1024 * 1024) return NextResponse.json({ error: "too_large" }, { status: 413 });
     const data = Buffer.from(await file.arrayBuffer()).toString("base64");
-    content.push({ type: "document", source: { type: "base64", media_type: "application/pdf", data } });
+    parts.push({ type: "file", file: { filename: "cv.pdf", file_data: `data:application/pdf;base64,${data}` } });
+    hasPdf = true;
   }
-  if (text) content.push({ type: "text", text: `CV or LinkedIn export:\n\n${text}` });
-  if (content.length === 0) return NextResponse.json({ error: "empty" }, { status: 400 });
-  content.push({ type: "text", text: "Fill the profile fields from this CV." });
+  if (text) parts.push({ type: "text", text: `CV or LinkedIn export:\n\n${text}` });
+  if (parts.length === 0) return NextResponse.json({ error: "empty" }, { status: 400 });
+  parts.push({ type: "text", text: "Fill the profile fields from this CV." });
 
-  const client = new Anthropic();
+  const body = {
+    model: process.env.OPENROUTER_MODEL || DEFAULT_MODEL,
+    messages: [
+      { role: "system", content: SYSTEM },
+      { role: "user", content: parts },
+    ],
+    response_format: {
+      type: "json_schema",
+      json_schema: { name: "profile_proposal", strict: true, schema: z.toJSONSchema(Proposal) },
+    },
+    // OpenRouter extracts the PDF's text for models without file input.
+    ...(hasPdf ? { plugins: [{ id: "file-parser", pdf: { engine: process.env.OPENROUTER_PDF_ENGINE || DEFAULT_PDF_ENGINE } }] } : {}),
+    // Extraction needs no deliberation. With reasoning on, DeepSeek spent the
+    // whole output budget thinking and returned empty content or timed out.
+    reasoning: { enabled: false },
+    max_tokens: 8000,
+  };
+
   try {
-    const response = await client.messages.parse({
-      model: "claude-opus-5",
-      max_tokens: 16000,
-      system: SYSTEM,
-      messages: [{ role: "user", content }],
-      output_config: { format: zodOutputFormat(Proposal) },
+    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://www.trustusconsult.dk",
+        "X-Title": "TrustUsConsult CV import",
+      },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(110_000),
     });
-    if (response.stop_reason === "refusal" || !response.parsed_output) {
-      return NextResponse.json({ error: "no_proposal" }, { status: 502 });
-    }
-    return NextResponse.json({ proposal: response.parsed_output });
-  } catch (e) {
-    if (e instanceof Anthropic.RateLimitError) return NextResponse.json({ error: "rate_limited" }, { status: 429 });
-    if (e instanceof Anthropic.APIError) {
-      console.error("cv-import api error", e.status, e.message);
+    if (res.status === 429) return NextResponse.json({ error: "rate_limited" }, { status: 429 });
+    if (!res.ok) {
+      console.error("cv-import: openrouter", res.status, (await res.text()).slice(0, 300));
       return NextResponse.json({ error: "api_error" }, { status: 502 });
     }
-    console.error("cv-import failed", e);
+    const data = (await res.json()) as { choices?: { finish_reason?: string; message?: { content?: string | null } }[]; usage?: unknown };
+    const content = data.choices?.[0]?.message?.content;
+    if (!content) {
+      console.error("cv-import: empty content", data.choices?.[0]?.finish_reason, JSON.stringify(data.usage ?? {}));
+      return NextResponse.json({ error: "no_proposal" }, { status: 502 });
+    }
+    const parsed = Proposal.safeParse(JSON.parse(content));
+    if (!parsed.success) {
+      console.error("cv-import: proposal did not match the schema", parsed.error.issues.slice(0, 3));
+      return NextResponse.json({ error: "no_proposal" }, { status: 502 });
+    }
+    const proposal = { ...parsed.data, languages: [...new Set(parsed.data.languages.map(languageCode))] };
+    return NextResponse.json({ proposal });
+  } catch (e) {
+    console.error("cv-import failed", e instanceof Error ? e.message : e);
     return NextResponse.json({ error: "failed" }, { status: 500 });
   }
 }

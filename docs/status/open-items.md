@@ -11,7 +11,7 @@
 
 ## From phase 2.3
 
-- [ ] `ANTHROPIC_API_KEY` into `.env.local` and Vercel (Production, Preview) so CV import works. Until then Min side says the import is not enabled.
+- [ ] `OPENROUTER_API_KEY` into `.env.local` and Vercel (Production, Preview) so CV import works (decided 17 September: OpenRouter instead of a direct Anthropic key). Until then Min side says the import is not enabled.
 - [ ] Upload a real portrait through Min side in a browser once (the storage policies are verified through the API; the file input itself was not driven).
 - [ ] Retention: declined applications after six months, declined and stale access requests after ninety days, departed specialists' full profiles after notice plus grace. A pg_cron job, later.
 
