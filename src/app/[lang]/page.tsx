@@ -5,7 +5,8 @@ import { landing } from "@/content/landing";
 import { site } from "@/content/site";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
-import { HouseStage } from "@/components/house/HouseStage";
+import { HouseStage, type WindowTeaser } from "@/components/house/HouseStage";
+import { loadTeasers } from "@/lib/specialists";
 import { ContactForm } from "@/components/forms/ContactForm";
 import { TrackView } from "@/components/analytics/TrackView";
 import {
@@ -25,8 +26,22 @@ export const revalidate = 60;
 export default async function LandingPage({ params }: PageProps<"/[lang]">) {
   const { lang } = await params;
   if (!isLang(lang)) notFound();
-  const house = await loadHouse();
+  const [house, teaserMap] = await Promise.all([loadHouse(), loadTeasers()]);
   const recruiting = house.domains.filter((d) => d.status === "needs").length;
+  // First live specialist per domain for the window; the rest are on the domain page.
+  const teasers: Record<string, WindowTeaser> = {};
+  for (const [domainId, list] of teaserMap) {
+    const first = list[0];
+    teasers[domainId] = {
+      slug: first.slug,
+      name: first.display_name,
+      title: t(first.title, lang, "") || null,
+      tagline: t(first.tagline, lang, "") || null,
+      city: first.city,
+      years: first.years_in_craft,
+      more: list.length - 1,
+    };
+  }
   const L = landing;
 
   const nav = [
@@ -41,7 +56,7 @@ export default async function LandingPage({ params }: PageProps<"/[lang]">) {
     <>
       <SiteHeader lang={lang} pathname={href(lang)} items={nav} cta={{ href: "#kontakt", label: site.header.bookMeeting }} />
       <main id="main">
-        <HouseStage house={house} lang={lang} />
+        <HouseStage house={house} lang={lang} teasers={teasers} />
 
         <MotionBand items={house.domains.map((d) => t(d.name, lang, d.id))} />
 

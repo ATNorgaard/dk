@@ -92,6 +92,30 @@ export function contactReceived(lang: Lang, to: string, name: string): Mail {
       );
 }
 
+/** To an admitted specialist: welcome, a seat is reserved, sign in and fill your profile. */
+export function specialistInvited(lang: Lang, to: string, name: string, domain: string, loginUrl: string): Mail {
+  const da = lang === "da";
+  const paragraphs = (da
+    ? [
+        `Du er optaget i TrustUsConsult i domænet ${domain}, og der er reserveret en plads til dig.`,
+        `Log ind på ${loginUrl} med denne e-mailadresse; du får et link tilsendt, ingen adgangskode. Under Min side udfylder du din profil, eller importerer den fra dit CV.`,
+        "Profilen bliver synlig på sitet, når du udgiver den og bestyrelsen har aktiveret din plads.",
+      ]
+    : [
+        `You have been admitted to TrustUsConsult in the ${domain} domain, and a seat is reserved for you.`,
+        `Sign in at ${loginUrl} with this email address; you get a link, no password. Under My page you fill in your profile, or import it from your CV.`,
+        "The profile goes live when you publish it and the board has activated your seat.",
+      ]);
+  return make(
+    to,
+    da ? "Din plads i huset" : "Your seat in the house",
+    da ? `Velkommen, ${name}.` : `Welcome, ${name}.`,
+    paragraphs,
+    footer[lang],
+    site.email.admission,
+  );
+}
+
 /** To the house: a new application landed. Danish only; internal. */
 export function newApplicationNotice(
   to: string,

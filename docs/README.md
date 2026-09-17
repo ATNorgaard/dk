@@ -12,6 +12,7 @@ Start here. `CLAUDE.md` at the repo root holds the rules agents load every sessi
   - [admin-seats.md](runbooks/admin-seats.md) managing seats per domain as an admin.
   - [auth.md](runbooks/auth.md) how sign-in works, granting roles, auth settings, testing without an inbox.
   - [admin.md](runbooks/admin.md) the admin pages: what each does, how it is built, recipes.
+  - [specialists.md](runbooks/specialists.md) inviting a specialist, Min side, CV import, what makes a profile live.
   - [email.md](runbooks/email.md) the email layer (Resend today), one-time setup, switching provider.
 - **decisions/** why something is the way it is. One short dated file per decision; never edited, only superseded.
 - **status/** what is left. The only files with checkboxes.

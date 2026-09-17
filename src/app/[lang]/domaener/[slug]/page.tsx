@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { href, isLang, t } from "@/lib/i18n";
 import { loadDomainBySlug, loadHouse, pad2 } from "@/lib/house";
+import { loadTeasers } from "@/lib/specialists";
+import { specialists } from "@/content/specialists";
 import { site } from "@/content/site";
 import { landing } from "@/content/landing";
 import { SiteHeader } from "@/components/site/SiteHeader";
@@ -36,6 +38,7 @@ export default async function DomainPage({ params }: PageProps<"/[lang]/domaener
   const data = await loadDomainBySlug(slug);
   if (!data) notFound();
   const { domain: d, neighbours } = data;
+  const people = (await loadTeasers()).get(d.id) ?? [];
   const da = lang === "da";
   const total = d.activeSeats + d.openSeats;
 
@@ -86,13 +89,28 @@ export default async function DomainPage({ params }: PageProps<"/[lang]/domaener
             id="spec-title"
             lang={lang}
             title={
-              d.activeSeats === 0
+              people.length === 0
                 ? { da: "Vinduet er {em}ledigt{/em}.", en: "The window is {em}open{/em}." }
                 : { da: "Dem, der sidder {em}her{/em}.", en: "The people {em}here{/em}." }
             }
-            intro={d.activeSeats === 0 ? landing.hero.recruitingText : undefined}
+            intro={people.length === 0 ? landing.hero.recruitingText : undefined}
           />
-          {d.activeSeats === 0 ? (
+          {people.length ? (
+            <CardGrid>
+              {people.map((te, idx) => (
+                <Card
+                  key={te.id}
+                  index={idx}
+                  href={href(lang, `/specialister/${te.slug}`)}
+                  tag={`${t(specialists.teaser.seat, lang, "")} ${pad2(te.seat_position)}`}
+                  title={te.display_name}
+                  text={[t(te.title, lang, ""), t(te.tagline, lang, "")].filter(Boolean).join(" · ")}
+                  meta={[te.city, te.years_in_craft !== null ? t(specialists.teaser.years, lang, "").replace("{n}", String(te.years_in_craft)) : null].filter(Boolean).join(" · ")}
+                />
+              ))}
+            </CardGrid>
+          ) : null}
+          {d.activeSeats === 0 || people.length === 0 ? (
             <div className={s.recruit}>
               <Button href="#kontakt">{t(landing.hero.contactUs, lang, "")}</Button>
               <Button href={href(lang, "/freelancere#ansoeg")} variant="outline" trailing="→">

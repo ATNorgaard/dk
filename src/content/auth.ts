@@ -46,7 +46,6 @@ export const auth = {
     denied: { da: "Du har ikke adgang til den side.", en: "You do not have access to that page." } as I18nText,
     comingTitle: { da: "Hvad der kommer her", en: "What lands here" } as I18nText,
     coming: [
-      { da: "Min side med profil-editor og CV-import (2.3)", en: "My page with the profile editor and CV import (2.3)" },
       { da: "Fulde CV'er for kunder (2.4)", en: "Full CVs for clients (2.4)" },
       { da: "Mødeforespørgsler og svar (2.5)", en: "Booking requests and replies (2.5)" },
     ] as I18nText[],

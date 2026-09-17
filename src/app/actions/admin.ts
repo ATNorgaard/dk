@@ -4,8 +4,13 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { requireRole, type Role } from "@/lib/auth";
 import { href, isLang, type Lang } from "@/lib/i18n";
+import { headers } from "next/headers";
 import { admin } from "@/content/admin";
+import { specialists } from "@/content/specialists";
 import { APPLICATION_STATUSES, SEAT_STATUSES, type ApplicationStatus, type SeatStatus } from "@/lib/admin";
+import { slugify } from "@/lib/specialists";
+import { sendEmail } from "@/lib/email";
+import { specialistInvited } from "@/lib/email/templates";
 
 /**
  * Writes behind the admin pages. Every action re-checks the role (the
@@ -94,6 +99,113 @@ export async function addApplicationNote(_prev: AdminState, fd: FormData): Promi
   if (error) return c.fail();
   revalidatePath(c.path);
   return c.ok();
+}
+
+/**
+ * Accepted applicant → specialist: person and account, specialist role in
+ * the domain, the first open seat reserved for them, an empty profile, and
+ * the welcome mail. Idempotent where it can be: an existing person, role or
+ * profile is reused; a seat is only reserved if they hold none in the domain.
+ */
+export async function inviteSpecialist(_prev: AdminState, fd: FormData): Promise<AdminState> {
+  const c = await context(fd);
+  const id = str(fd, "id", 40);
+  if (!id) return c.fail();
+  const supabase = await createClient();
+  type App = { id: string; full_name: string; email: string; lang: string; domain_id: string | null; status: string };
+  const { data: apps } = await supabase.from("applications").select("id, full_name, email, lang, domain_id, status").eq("id", id).limit(1).returns<App[]>();
+  const app = apps?.[0];
+  if (!app) return c.fail();
+  if (!app.domain_id) return c.fail(specialists.admin.needsDomain[c.lang]);
+  const email = app.email.toLowerCase();
+  const lang = app.lang === "en" ? "en" : "da";
+
+  // Person
+  type P = { id: string; display_name: string; lang: string; user_id: string | null };
+  const { data: found } = await supabase.from("people").select("id, display_name, lang, user_id").eq("email", email).limit(1).returns<P[]>();
+  let person = found?.[0] ?? null;
+  if (!person) {
+    const { data, error } = await supabase
+      .from("people")
+      .insert({ email, display_name: app.full_name, lang })
+      .select("id, display_name, lang, user_id")
+      .returns<P[]>();
+    if (error || !data?.[0]) {
+      console.error("invite: person", error?.message);
+      return c.fail();
+    }
+    person = data[0];
+  }
+
+  // Account (no mail is sent by this; the trigger links a new auth user to the person by email)
+  try {
+    const userId = await ensureAuthUser(email, { display_name: person.display_name, lang: person.lang });
+    if (!person.user_id) await supabase.from("people").update({ user_id: userId }).eq("id", person.id).is("user_id", null);
+  } catch (e) {
+    console.error("invite: auth user", e);
+    return c.fail();
+  }
+
+  // Role
+  type M = { id: string };
+  const { data: mem } = await supabase.from("memberships").select("id").eq("person_id", person.id).eq("role", "specialist").eq("domain_id", app.domain_id).limit(1).returns<M[]>();
+  const memErr = mem?.[0]
+    ? (await supabase.from("memberships").update({ status: "active" }).eq("id", mem[0].id)).error
+    : (await supabase.from("memberships").insert({ person_id: person.id, role: "specialist", domain_id: app.domain_id, status: "active", granted_by: c.viewer.person?.id ?? null })).error;
+  if (memErr) {
+    console.error("invite: membership", memErr.message);
+    return c.fail();
+  }
+
+  // Seat: keep theirs if they have one in the domain, else reserve the first open one
+  type S = { id: string; position: number; status: string };
+  const { data: own } = await supabase.from("seats").select("id, position, status").eq("domain_id", app.domain_id).eq("holder_person_id", person.id).limit(1).returns<S[]>();
+  let seat = own?.[0] ?? null;
+  if (!seat) {
+    const { data: open } = await supabase.from("seats").select("id, position, status").eq("domain_id", app.domain_id).eq("status", "open").order("position").limit(1).returns<S[]>();
+    if (!open?.[0]) return c.fail(specialists.admin.noSeat[c.lang]);
+    const { error } = await supabase.from("seats").update({ status: "reserved", holder_person_id: person.id }).eq("id", open[0].id);
+    if (error) {
+      console.error("invite: seat", error.message);
+      return c.fail();
+    }
+    seat = open[0];
+  }
+
+  // Profile (empty; the specialist fills it in)
+  const { data: prof } = await supabase.from("specialist_profiles").select("id").eq("person_id", person.id).limit(1).returns<M[]>();
+  if (!prof?.[0]) {
+    const base = slugify(person.display_name);
+    let slug = base;
+    for (let n = 2; n < 20; n++) {
+      const { data: taken } = await supabase.from("specialist_profiles").select("id").eq("slug", slug).limit(1).returns<M[]>();
+      if (!taken?.[0]) break;
+      slug = `${base}-${n}`;
+    }
+    const { error } = await supabase.from("specialist_profiles").insert({ person_id: person.id, domain_id: app.domain_id, slug });
+    if (error) {
+      console.error("invite: profile", error.message);
+      return c.fail();
+    }
+  }
+
+  // Decision on the application
+  await supabase.from("applications").update({ status: "accepted", decided_at: new Date().toISOString() }).eq("id", id);
+
+  // Welcome mail
+  const { data: dom } = await supabase.from("domains").select("name").eq("id", app.domain_id).limit(1).returns<{ name: { da: string; en: string } }[]>();
+  const domainName = dom?.[0]?.name?.[lang] ?? app.domain_id;
+  const h = await headers();
+  const host = h.get("x-forwarded-host")?.split(",")[0]?.trim() ?? h.get("host") ?? "www.trustusconsult.dk";
+  const proto = host.startsWith("localhost") ? "http" : "https";
+  await sendEmail(specialistInvited(lang, email, person.display_name, domainName, `${proto}://${host}/${lang}/log-ind`));
+
+  revalidatePath(c.path);
+  revalidatePath(href(c.lang, "/admin/ansoegninger"));
+  revalidatePath(href(c.lang, "/admin/pladser"));
+  revalidatePath(href(c.lang, "/admin/personer"));
+  revalidatePublic();
+  return { status: "ok", message: specialists.admin.invited[c.lang].replace("{position}", String(seat.position).padStart(2, "0")) };
 }
 
 /* Enquiries */

@@ -9,6 +9,12 @@
 - [ ] Node: local is 20, Vercel builds on 24; supabase-js warns on 20 and fails without a native WebSocket in plain scripts (the seats script avoids it by using fetch). Upgrade local Node to 22+.
 - [ ] Secret keys on laptops: since 2.2 the admin pages replace the seats and roles scripts for daily use. Once Kim is comfortable with the pages, revoke the per-developer `sb_secret_...` keys and keep one for recovery. The scripts remain as fallbacks.
 
+## From phase 2.3
+
+- [ ] `ANTHROPIC_API_KEY` into `.env.local` and Vercel (Production, Preview) so CV import works. Until then Min side says the import is not enabled.
+- [ ] Upload a real portrait through Min side in a browser once (the storage policies are verified through the API; the file input itself was not driven).
+- [ ] Retention: declined applications after six months, departed specialists' full profiles after notice plus grace. A pg_cron job, later.
+
 ## From phase 2.1
 
 - [ ] Run the Supabase security advisors on `people`, `memberships`, `organisations` and the four security-definer role functions (dashboard → Advisors; the MCP in Claude sessions points at a personal project).

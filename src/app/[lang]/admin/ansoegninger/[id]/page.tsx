@@ -5,7 +5,8 @@ import { href, isLang, t } from "@/lib/i18n";
 import { requireRole } from "@/lib/auth";
 import { APPLICATION_STATUSES, getApplication, listDomainsForAdmin } from "@/lib/admin";
 import { admin } from "@/content/admin";
-import { addApplicationNote, setApplicationStatus } from "@/app/actions/admin";
+import { addApplicationNote, inviteSpecialist, setApplicationStatus } from "@/app/actions/admin";
+import { specialists } from "@/content/specialists";
 import { AdminFrame, domainName, fmtDate } from "@/components/admin/AdminFrame";
 import { ActionForm } from "@/components/admin/ActionForm";
 import a from "@/components/admin/admin.module.css";
@@ -69,7 +70,14 @@ export default async function ApplicationPage({ params }: PageProps<"/[lang]/adm
             </select>
           </label>
         </ActionForm>
-        {r.status === "accepted" ? <p className={a.hint}>{L(c.acceptedHint)}</p> : null}
+      </section>
+
+      <section className={p.section}>
+        <h2>{L(specialists.admin.invite)}</h2>
+        <p className={a.hint}>{L(specialists.admin.inviteHint)}</p>
+        <ActionForm action={inviteSpecialist} lang={lang} path={path} submit={L(specialists.admin.invite)} pending={L(admin.common.saving)} confirm={`${L(specialists.admin.invite)}: ${r.full_name}?`} inline>
+          <input type="hidden" name="id" value={r.id} />
+        </ActionForm>
       </section>
 
       <section className={p.section}>

@@ -27,11 +27,8 @@ Pages under `/[lang]/admin`: overview, applications queue with notes and decisio
 - Roles editor replaces `pnpm roles` the same way: grant and revoke memberships, create the auth account without sending mail, and show who has signed in. The admin page already lists people and roles; the tiles on it are the slice's checklist.
 - Once board/admin policies and `audit_log` exist, revoke the per-developer secret keys used by the script and note it in the runbook.
 
-### 2.3 Specialists
-- Migration: `specialist_profiles` (person, domain, teaser fields public; full fields private), `experience`, `education`, `certifications`, `profile_skills`, `profile_links`, `availability`; storage buckets `portraits` (public), `cvs` (private).
-- Invitation flow: accepted application → `seats.reserved` → invite email (or manual link until email exists) → specialist signs in → profile editor on `/[lang]/portal/min-side`.
-- CV import: Edge Function or route handler calling the Claude API (`claude-sonnet-5` is enough) to turn a PDF/LinkedIn export into the profile schema for the specialist to approve.
-- Public: teaser on domain pages and inside the house (level 2 replaces the "window is open" state when a seat is active); `/[lang]/specialister/[slug]`.
+### 2.3 Specialists — landed 17 September
+Migration `20260917130000_specialists.sql`: `specialist_profiles`, `experience`, `education`, `certifications`, the `specialist_teasers` view (live = published + active seat), buckets `portraits` and `cvs` with owner-folder policies, board policies for inviting. Skills and languages are columns on the profile (jsonb, text[]) rather than the `profile_skills`/`profile_links`/`availability` tables the plan listed: same data, fewer joins, and it matches how domains store skills. Invite from the application page (person, account, role, first open seat reserved, empty profile, welcome mail). Min side editor with portrait upload and CV import (`/api/cv-import`, Claude with structured output; needs `ANTHROPIC_API_KEY`). Public: `/[lang]/specialister/[slug]` (teaser for everyone, full CV for clients, board and the owner), cards on the domain page, and the house window at level two shows the first live specialist. See [runbooks/specialists.md](../runbooks/specialists.md). Left: `ANTHROPIC_API_KEY` in Vercel and `.env.local`; a real portrait upload through the browser (the storage policies are verified through the API); the six-month retention job.
 
 ### 2.4 Client access and the CV gate
 - `access_requests` table + form on the profile page; board approves → magic link; full profile visible to role `client`.
