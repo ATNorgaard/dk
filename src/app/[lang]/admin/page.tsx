@@ -24,6 +24,7 @@ export default async function AdminOverview({ params }: PageProps<"/[lang]/admin
     { n: counts.newApplications, label: c.newApplications, to: "/admin/ansoegninger?status=received" },
     { n: counts.openContacts, label: c.openContacts, to: "/admin/henvendelser" },
     { n: counts.openAccess, label: c.openAccess, to: "/admin/adgang" },
+    { n: counts.openBookings, label: c.openBookings, to: "/admin/bookinger" },
     { n: recruiting, label: c.recruiting, to: "/admin/pladser" },
     { n: counts.people, label: c.people, to: "/admin/personer" },
   ];

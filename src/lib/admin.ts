@@ -246,11 +246,12 @@ export async function listAuditLog(limit = 200) {
 
 export async function overviewCounts() {
   const supabase = await createClient();
-  const [apps, contacts, access, people] = await Promise.all([
+  const [apps, contacts, access, people, bookingsQ] = await Promise.all([
     supabase.from("applications").select("id", { count: "exact", head: true }).eq("status", "received"),
     supabase.from("contact_messages").select("id", { count: "exact", head: true }).is("handled_at", null),
     supabase.from("access_requests").select("id", { count: "exact", head: true }).eq("status", "received"),
     supabase.from("people").select("id", { count: "exact", head: true }),
+    supabase.from("booking_requests").select("id", { count: "exact", head: true }).in("status", ["requested", "proposed"]),
   ]);
-  return { newApplications: apps.count ?? 0, openContacts: contacts.count ?? 0, openAccess: access.count ?? 0, people: people.count ?? 0 };
+  return { newApplications: apps.count ?? 0, openContacts: contacts.count ?? 0, openAccess: access.count ?? 0, people: people.count ?? 0, openBookings: bookingsQ.count ?? 0 };
 }
