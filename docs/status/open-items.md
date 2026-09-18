@@ -19,7 +19,7 @@
 - [x] CV import: the model-based import (Anthropic, then OpenRouter with DeepSeek and Gemini) was replaced on 17 September by a deterministic reader of LinkedIn's own PDF export. `OPENROUTER_API_KEY` is removed from Vercel and no longer needed.
 - [ ] Ask the first specialists to bring an English-language LinkedIn export: the reader recognises English and Danish labels, but only a Danish export has been run through it.
 - [ ] Upload a real portrait through Min side in a browser once (the storage policies are verified through the API; the file input itself was not driven).
-- [ ] Retention: declined applications after six months, declined and stale access requests after ninety days, departed specialists' full profiles after notice plus grace. A pg_cron job, later.
+- [x] Retention runs daily since 19 September (`/api/cron/retention`, see [runbooks/infrastructure.md](../runbooks/infrastructure.md)): enquiries 12 months, declined applications 6 months, access requests 90 days, meeting requests 12 months, departed profiles 30 days after revocation, client accounts 12 months after last sign-in.
 
 ## From phase 2.1
 
