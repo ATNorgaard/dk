@@ -2,7 +2,7 @@
 
 ## From phase 1 (not blocked on Kim)
 
-- [ ] Privacy and terms pages at `/[lang]/privatliv` and `/[lang]/vilkaar` — the forms link to them. Draft Danish text marked "til gennemsyn af juridisk domæne".
+- [ ] Privacy and terms pages exist since 18 September (`/privatliv`, `/vilkaar`) as drafts with a visible notice. Left: the legal domain reads them, Kim fills the `[ ]` points (address, CVR, contracting party, invoicing terms), then the notice comes off in `src/content/legal.ts`.
 - [ ] Canonical names for domains 04 (`Investering & Projekt` vs `Investment & Finance`) and 10 (`Disruption & Innovation` vs `Innovation & New Ventures`) once Kim decides; one-line change in `seed.sql`, re-run `pnpm db:push:seed`.
 - [ ] Keyboard focus ring on the lamp overlay was implemented (`data-focus` mirror in HouseStage) but could not be verified in a hidden pane; tab through windows in a real browser.
 - [ ] `daily_domain_metrics` and `domain_staffing` are security-definer views (fine: counts only) — confirm the Supabase security advisor is happy once MCP points at the right project.

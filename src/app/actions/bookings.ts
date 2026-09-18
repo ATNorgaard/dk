@@ -9,6 +9,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { getViewer, requireViewer } from "@/lib/auth";
 import { href, isLang, type Lang } from "@/lib/i18n";
 import { sendEmail } from "@/lib/email";
+import { recordEvent } from "@/lib/events";
+import { allowed } from "@/lib/rate-limit";
 import { buildIcs } from "@/lib/email/ics";
 import { bookingAccepted, bookingCancelled, bookingDeclined, bookingProposed, bookingReceived, bookingRequested } from "@/lib/email/templates";
 import { bookings as copy } from "@/content/bookings";
@@ -63,7 +65,7 @@ export async function submitBooking(_prev: FormState, fd: FormData): Promise<For
     .filter((t): t is string => !!t && new Date(t).getTime() > now);
 
   const fields: Record<string, string> = {};
-  const c = lang === "da" ? { required: "Udfyld feltet.", email: "Skriv en gyldig e-mailadresse.", consent: "Du skal acceptere, at vi behandler dine oplysninger.", short: "Skriv lidt mere.", failed: "Vi kunne ikke sende forespørgslen. Prøv igen." } : { required: "This field is required.", email: "Enter a valid email address.", consent: "You need to accept that we process your details.", short: "Write a little more.", failed: "We could not send the request. Try again." };
+  const c = lang === "da" ? { required: "Udfyld feltet.", email: "Skriv en gyldig e-mailadresse.", consent: "Du skal acceptere, at vi behandler dine oplysninger.", short: "Skriv lidt mere.", failed: "Vi kunne ikke sende forespørgslen. Prøv igen.", tooMany: "For mange forsøg på kort tid. Vent lidt, og prøv igen." } : { required: "This field is required.", email: "Enter a valid email address.", consent: "You need to accept that we process your details.", short: "Write a little more.", failed: "We could not send the request. Try again.", tooMany: "Too many attempts in a short time. Wait a little and try again." };
   if (!profile_id) return { status: "error", message: c.failed };
   if (full_name.length < 2) fields.full_name = c.required;
   if (!EMAIL.test(email)) fields.email = c.email;
@@ -71,6 +73,7 @@ export async function submitBooking(_prev: FormState, fd: FormData): Promise<For
   if (!consent) fields.consent = c.consent;
   if (!times.length) fields.time1 = copy.form.errors.time[lang];
   if (Object.keys(fields).length) return { status: "error", message: "", fields };
+  if (!(await allowed("booking", email))) return { status: "error", message: c.tooMany };
 
   const viewer = await getViewer();
   const supabase = createPublicClient();
@@ -89,14 +92,15 @@ export async function submitBooking(_prev: FormState, fd: FormData): Promise<For
 
   // Specialist's address and name through the service client (the public role cannot read people).
   const admin = createAdminClient();
-  type P = { slug: string; people: { display_name: string; email: string; lang: string } };
-  const { data: prof } = await admin.from("specialist_profiles").select("slug, people!person_id(display_name, email, lang)").eq("id", profile_id).limit(1).returns<P[]>();
+  type P = { slug: string; domain_id: string; people: { display_name: string; email: string; lang: string } };
+  const { data: prof } = await admin.from("specialist_profiles").select("slug, domain_id, people!person_id(display_name, email, lang)").eq("id", profile_id).limit(1).returns<P[]>();
   const sp = prof?.[0];
   const base = await origin();
   const pageUrl = `${base}/${lang}/booking/${req.id}?t=${req.client_token}`;
   if (sp) {
     const sLang: Lang = sp.people.lang === "en" ? "en" : "da";
     await Promise.all([
+      recordEvent({ type: "booking_created", path: `/${lang}/specialister/${sp.slug}`, lang, domain_id: sp.domain_id }),
       sendEmail(bookingRequested(sLang, sp.people.email, { clientName: full_name, company, brief, minutes: duration, times, minSideUrl: `${base}/${sLang}/portal/min-side#moeder` })),
       sendEmail(bookingReceived(lang, email, full_name, sp.people.display_name, pageUrl)),
     ]);
@@ -112,10 +116,10 @@ async function specialistContext(fd: FormData) {
   const viewer = await requireViewer(lang, path);
   const supabase = await createClient();
   const id = str(fd, "id", 40);
-  type B = { id: string; lang: string; full_name: string; email: string; duration_minutes: number; status: string; first_reply_at: string | null; client_token: string; profile: { people: { display_name: string; email: string } } };
+  type B = { id: string; lang: string; full_name: string; email: string; duration_minutes: number; status: string; first_reply_at: string | null; client_token: string; profile: { domain_id: string; people: { display_name: string; email: string } } };
   const { data } = await supabase
     .from("booking_requests")
-    .select("id, lang, full_name, email, duration_minutes, status, first_reply_at, client_token, profile:specialist_profiles!profile_id(people!person_id(display_name, email))")
+    .select("id, lang, full_name, email, duration_minutes, status, first_reply_at, client_token, profile:specialist_profiles!profile_id(domain_id, people!person_id(display_name, email))")
     .eq("id", id)
     .limit(1)
     .returns<B[]>();
@@ -145,11 +149,21 @@ async function specialistContext(fd: FormData) {
   return { lang, path, viewer, supabase, booking, ok, fail, stale };
 }
 
-async function stampFirstReply(supabase: Awaited<ReturnType<typeof createClient>>, booking: { id: string; first_reply_at: string | null }, patch: Record<string, unknown>) {
-  return supabase
+async function stampFirstReply(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  booking: { id: string; lang: string; first_reply_at: string | null; profile: { domain_id: string } },
+  patch: Record<string, unknown>,
+) {
+  const first = !booking.first_reply_at;
+  const result = await supabase
     .from("booking_requests")
-    .update({ ...patch, ...(booking.first_reply_at ? {} : { first_reply_at: new Date().toISOString() }) })
+    .update({ ...patch, ...(first ? { first_reply_at: new Date().toISOString() } : {}) })
     .eq("id", booking.id);
+  // The response-time KPI: one event per request, on the specialist's first reply.
+  if (first && !result.error) {
+    await recordEvent({ type: "booking_first_reply", path: "/portal/min-side", lang: booking.lang === "en" ? "en" : "da", domain_id: booking.profile.domain_id });
+  }
+  return result;
 }
 
 async function sendAgreed(b: { id: string; lang: string; full_name: string; email: string; duration_minutes: number; client_token: string; profile: { people: { display_name: string; email: string } } }, startsAt: string, base: string) {

@@ -38,3 +38,6 @@ Migration `20260917180000_bookings.sql`: `booking_requests`, `proposed_times`, `
 
 ### 2.6 Email everywhere — done with 2.5
 `src/lib/email/` (provider interface, Resend over HTTP with attachments, log fallback), bilingual templates for every flow: intake, invitation, access, bookings; Supabase Auth on Resend's SMTP. Left: the weekly summary to Kim (phase 3) and the Resend hand-over to Kim's ownership ([runbooks/email.md](../runbooks/email.md)).
+
+### Launch preparation — 18 September
+One PR with the build work from the go-live checklist: privacy and terms pages as reviewed drafts, rate limits on the four public forms, the daily nudge for unanswered meeting requests, analytics events for request created and first reply, error logging with a deliberate test error, sitemap, robots and redirects from the prototype's file-name URLs, and Min side closed to non-specialists. See [runbooks/infrastructure.md](../runbooks/infrastructure.md). Left before launch: checks only (advisors, point-in-time recovery, keyboard walkthrough, proofreading), Kim's decisions, and removing the test specialist.

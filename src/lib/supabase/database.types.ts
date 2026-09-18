@@ -880,6 +880,27 @@ export type Database = {
           },
         ]
       }
+      rate_events: {
+        Row: {
+          at: string
+          id: number
+          key: string
+          scope: string
+        }
+        Insert: {
+          at?: string
+          id?: number
+          key: string
+          scope: string
+        }
+        Update: {
+          at?: string
+          id?: number
+          key?: string
+          scope?: string
+        }
+        Relationships: []
+      }
       seats: {
         Row: {
           buy_in_paid_at: string | null
@@ -1139,6 +1160,15 @@ export type Database = {
       }
       owns_profile: { Args: { target: string }; Returns: boolean }
       profile_is_live: { Args: { target: string }; Returns: boolean }
+      rate_limit_hit: {
+        Args: {
+          p_key: string
+          p_max: number
+          p_scope: string
+          p_window_seconds: number
+        }
+        Returns: boolean
+      }
     }
     Enums: {
       access_status: "received" | "approved" | "declined"
