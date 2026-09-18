@@ -101,7 +101,7 @@ export async function submitBooking(_prev: FormState, fd: FormData): Promise<For
     const sLang: Lang = sp.people.lang === "en" ? "en" : "da";
     await Promise.all([
       recordEvent({ type: "booking_created", path: `/${lang}/specialister/${sp.slug}`, lang, domain_id: sp.domain_id }),
-      sendEmail(bookingRequested(sLang, sp.people.email, { clientName: full_name, company, brief, minutes: duration, times, minSideUrl: `${base}/${sLang}/portal/min-side#moeder` })),
+      sendEmail(bookingRequested(sLang, sp.people.email, { clientName: full_name, company, brief, minutes: duration, times, minSideUrl: `${base}/${sLang}/portal/moeder` })),
       sendEmail(bookingReceived(lang, email, full_name, sp.people.display_name, pageUrl)),
     ]);
   }

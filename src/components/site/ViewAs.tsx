@@ -14,7 +14,7 @@ type View = "" | "board" | "specialist" | "client" | "visitor";
  * Mounted from the language layout and hydrated from /api/view-as so the
  * static pages stay static; the server applies the choice in getViewer.
  */
-export function ViewAs({ lang }: { lang: Lang }) {
+export function ViewAs({ lang, inline = false }: { lang: Lang; inline?: boolean }) {
   const router = useRouter();
   const [state, setState] = useState<{ admin: boolean; view: View } | null>(null);
   const [busy, setBusy] = useState(false);
@@ -49,7 +49,7 @@ export function ViewAs({ lang }: { lang: Lang }) {
   }
 
   return (
-    <label className={s.pill} data-active={state.view ? "" : undefined}>
+    <label className={`${s.pill} ${inline ? s.inline : ""}`} data-active={state.view ? "" : undefined}>
       <span>{t(c.label, lang, "")}</span>
       <select value={state.view} disabled={busy} onChange={(e) => choose(e.target.value as View)} aria-label={t(c.label, lang, "")}>
         <option value="">{t(c.options.admin, lang, "")}</option>

@@ -58,3 +58,15 @@
     left: 12px;
   }
 }
+
+/* In the portal sidebar the pill sits in the flow; the fixed one from the
+   layout is hidden while a portal shell is on the page. */
+.inline,
+.inline.pill {
+  position: static;
+  height: 28px;
+  padding-left: 8px;
+  border-color: rgba(242, 237, 229, 0.28);
+  background: transparent;
+}
+:global([data-portal]) ~ .pill:not(.inline) { display: none; }

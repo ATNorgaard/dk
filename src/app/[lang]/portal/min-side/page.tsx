@@ -8,12 +8,12 @@ import { loadHouse } from "@/lib/house";
 import { specialists } from "@/content/specialists";
 import { setPublished } from "@/app/actions/profile";
 import { PortalShell } from "@/components/portal/PortalShell";
-import { RichTitle } from "@/components/ui/RichTitle";
 import { ActionForm } from "@/components/admin/ActionForm";
 import { PortraitUpload } from "@/components/profile/PortraitUpload";
 import { ProfileEditor } from "@/components/profile/ProfileEditor";
-import { BookingInbox } from "@/components/booking/BookingInbox";
-import { listMyBookings } from "@/lib/bookings";
+import { PageHeader } from "@/components/portal/PageHeader";
+import { StatusChip } from "@/components/portal/StatusChip";
+import { auth } from "@/content/auth";
 import p from "@/components/portal/portal.module.css";
 import a from "@/components/admin/admin.module.css";
 
@@ -32,33 +32,35 @@ export default async function MinSidePage({ params }: PageProps<"/[lang]/portal/
   if (!full) {
     return (
       <PortalShell lang={lang} pathname={path} viewer={viewer}>
-        <div className={p.wide}>
-          <span className="hds-eyebrow">{L(c.eyebrow)}</span>
-          <h1 className={p.title}><RichTitle text={L(c.title)} /></h1>
-          <p className={p.intro}>{L(c.noProfile)}</p>
+        <div className={p.dash}>
+          <PageHeader eyebrow={L(c.eyebrow)} title={L(c.title)} intro={L(c.noProfile)} />
         </div>
       </PortalShell>
     );
   }
 
   const { profile: pr } = full;
-  const [live, house, myBookings] = await Promise.all([isLive(pr.id), loadHouse(), listMyBookings(pr.id)]);
+  const [live, house] = await Promise.all([isLive(pr.id), loadHouse()]);
   const domain = house.domains.find((d) => d.id === pr.domain_id);
   const pct = completeness(full);
   const statusKey = live ? "live" : pr.is_published ? "publishedNoSeat" : "draft";
 
   return (
     <PortalShell lang={lang} pathname={path} viewer={viewer}>
-      <div className={p.wide}>
-        <span className="hds-eyebrow">{L(c.eyebrow)} · {domain ? t(domain.name, lang, domain.id) : pr.domain_id}</span>
-        <h1 className={p.title}><RichTitle text={L(c.title)} /></h1>
-        <p className={p.intro}>{L(c.intro)}</p>
-        <p className={p.notice} role="status">
-          {L(c.status[statusKey])} {L(c.completeness).replace("{pct}", String(pct))}
-          {live ? <> · <Link href={href(lang, `/specialister/${pr.slug}`)}>{L(c.viewPublic)} →</Link></> : null}
-        </p>
-
-        <BookingInbox lang={lang} path={path} items={myBookings} />
+      <div className={p.dash}>
+        <PageHeader
+          eyebrow={`${L(c.eyebrow)} · ${domain ? t(domain.name, lang, domain.id) : pr.domain_id}`}
+          title={L(c.title)}
+          intro={L(c.intro)}
+          chips={
+            <>
+              <StatusChip status={statusKey} label={L(auth.portal.dashboard.statusShort[statusKey])} />
+              <span className={p.chip} data-tone="neutral">{L(c.completeness).replace("{pct}", String(pct))}</span>
+            </>
+          }
+          actions={live ? <Link href={href(lang, `/specialister/${pr.slug}`)} className={p.quiet}>{L(c.viewPublic)} ↗</Link> : null}
+        />
+        <p className={a.hint}>{L(c.status[statusKey])}</p>
 
         <ProfileEditor lang={lang} path={path} profile={pr} experience={full.experience} education={full.education} certifications={full.certifications} />
 

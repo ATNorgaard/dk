@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
         company: r.company,
         minutes: r.duration_minutes,
         hoursWaiting,
-        minSideUrl: `${base}/${lang}/portal/min-side#moeder`,
+        minSideUrl: `${base}/${lang}/portal/moeder`,
       }),
     );
     if (ok) {
