@@ -79,10 +79,17 @@ grant execute on function private.booking_is_in_my_domain(uuid) to anon, authent
 
 revoke execute on function public.audit_row() from public, anon, authenticated;
 revoke execute on function public.handle_new_auth_user() from public, anon, authenticated;
-revoke execute on function public.rls_auto_enable() from public, anon, authenticated;
 grant execute on function public.audit_row() to postgres, service_role;
 grant execute on function public.handle_new_auth_user() to postgres, service_role, supabase_auth_admin;
-grant execute on function public.rls_auto_enable() to postgres;
+-- rls_auto_enable is a platform-managed event trigger function that exists
+-- on the main project but not necessarily on a fresh preview branch.
+do $$
+begin
+  if exists (select 1 from pg_proc where proname = 'rls_auto_enable' and pronamespace = 'public'::regnamespace) then
+    revoke execute on function public.rls_auto_enable() from public, anon, authenticated;
+    grant execute on function public.rls_auto_enable() to postgres;
+  end if;
+end $$;
 
 -- 3. Fixed search_path on the two remaining trigger functions ----------------
 
