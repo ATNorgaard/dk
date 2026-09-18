@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { href, isLang, t } from "@/lib/i18n";
-import { requireViewer } from "@/lib/auth";
+import { requireRole } from "@/lib/auth";
 import { completeness, isLive, loadFullProfile, portraitUrl } from "@/lib/specialists";
 import { loadHouse } from "@/lib/house";
 import { specialists } from "@/content/specialists";
@@ -23,7 +23,8 @@ export default async function MinSidePage({ params }: PageProps<"/[lang]/portal/
   const { lang } = await params;
   if (!isLang(lang)) notFound();
   const path = href(lang, "/portal/min-side");
-  const viewer = await requireViewer(lang, path);
+  // Specialists only: board and clients have no page here, even by URL.
+  const viewer = await requireRole(lang, path, "specialist");
   const c = specialists.minSide;
   const L = (v: { da: string; en: string }) => t(v, lang, "");
   const full = viewer.person ? await loadFullProfile({ personId: viewer.person.id }) : null;

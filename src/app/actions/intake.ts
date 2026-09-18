@@ -3,6 +3,7 @@
 import { createPublicClient } from "@/lib/supabase/public";
 import { isLang, type Lang } from "@/lib/i18n";
 import { recordEvent } from "@/lib/events";
+import { allowed } from "@/lib/rate-limit";
 import { headers } from "next/headers";
 import { notify, sendEmail } from "@/lib/email";
 import {
@@ -29,6 +30,7 @@ const copy = {
     domain: "Vælg et domæne, eller skriv dit fag.",
     failed: "Vi kunne ikke sende din henvendelse. Prøv igen, eller skriv direkte til os.",
     tooShort: "Skriv lidt mere.",
+    tooMany: "For mange forsøg på kort tid. Vent lidt, og prøv igen, eller skriv direkte til os.",
   },
   en: {
     required: "This field is required.",
@@ -37,6 +39,7 @@ const copy = {
     domain: "Pick a domain or name your craft.",
     failed: "We could not send your message. Try again, or email us directly.",
     tooShort: "Write a little more.",
+    tooMany: "Too many attempts in a short time. Wait a little and try again, or email us directly.",
   },
 };
 
@@ -74,6 +77,8 @@ export async function submitApplication(_prev: FormState, fd: FormData): Promise
   if (!domain_id && !craft) fields.domain_id = c.domain;
   if (!consent) fields.consent = c.consent;
   if (Object.keys(fields).length) return { status: "error", message: "", fields };
+
+  if (!(await allowed("application", email))) return { status: "error", message: c.tooMany };
 
   const supabase = createPublicClient();
   const { error } = await supabase.from("applications").insert({
@@ -126,6 +131,8 @@ export async function submitAccessRequest(_prev: FormState, fd: FormData): Promi
   if (!consent) fields.consent = c.consent;
   if (Object.keys(fields).length) return { status: "error", message: "", fields };
 
+  if (!(await allowed("access_request", email))) return { status: "error", message: c.tooMany };
+
   const company = str(fd, "company", 160) || null;
   const source_slug = str(fd, "source_slug", 80) || null;
   const supabase = createPublicClient();
@@ -144,6 +151,7 @@ export async function submitAccessRequest(_prev: FormState, fd: FormData): Promi
   const host = h.get("x-forwarded-host")?.split(",")[0]?.trim() ?? h.get("host") ?? "www.trustusconsult.dk";
   const adminUrl = `${host.startsWith("localhost") ? "http" : "https"}://${host}/da/admin/adgang`;
   await Promise.all([
+    recordEvent({ type: "access_request", path: source_slug ? `/${lang}/specialister/${source_slug}` : `/${lang}`, lang }),
     sendEmail(accessRequestReceived(lang, email, full_name)),
     sendEmail(newAccessRequestNotice(notify.contact, { name: full_name, email, company, message, sourceSlug: source_slug, adminUrl })),
   ]);
@@ -167,6 +175,8 @@ export async function submitContact(_prev: FormState, fd: FormData): Promise<For
   if (message.length < 5) fields.message = c.tooShort;
   if (!consent) fields.consent = c.consent;
   if (Object.keys(fields).length) return { status: "error", message: "", fields };
+
+  if (!(await allowed("contact", email))) return { status: "error", message: c.tooMany };
 
   const supabase = createPublicClient();
   const { error } = await supabase.from("contact_messages").insert({

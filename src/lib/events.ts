@@ -8,7 +8,10 @@ export type EventType =
   | "house_window"
   | "house_inside"
   | "application"
-  | "contact";
+  | "contact"
+  | "access_request"
+  | "booking_created"
+  | "booking_first_reply";
 
 export type EventInput = {
   type: EventType;

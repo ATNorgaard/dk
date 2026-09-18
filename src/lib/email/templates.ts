@@ -345,6 +345,27 @@ export function bookingCancelled(lang: Lang, to: string, clientName: string): Ma
   );
 }
 
+/** To the specialist: a request has waited a day without a reply. Sent by the daily job. */
+export function bookingNudge(lang: Lang, to: string, b: { specialistName: string; clientName: string; company: string | null; minutes: number; hoursWaiting: number; minSideUrl: string }): Mail {
+  const da = lang === "da";
+  const who = b.company ? `${b.clientName} (${b.company})` : b.clientName;
+  return make(
+    to,
+    da ? `${b.clientName} venter på svar` : `${b.clientName} is waiting for a reply`,
+    da ? `Hej ${b.specialistName.split(" ")[0]}.` : `Hello ${b.specialistName.split(" ")[0]}.`,
+    [
+      da
+        ? `${who} bad om ${b.minutes} minutter for ${b.hoursWaiting} timer siden og har ikke hørt fra dig endnu.`
+        : `${who} asked for ${b.minutes} minutes ${b.hoursWaiting} hours ago and has not heard from you yet.`,
+      da
+        ? "Tiden fra forespørgsel til første svar er husets vigtigste tal. Accepter en af tiderne, foreslå en anden, eller afslå, så kunden kan komme videre."
+        : "The time from request to first reply is the house's most important number. Accept one of the times, propose another, or decline so the client can move on.",
+      b.minSideUrl,
+    ],
+    footer[lang],
+  );
+}
+
 /** To the house: a new application landed. Danish only; internal. */
 export function newApplicationNotice(
   to: string,

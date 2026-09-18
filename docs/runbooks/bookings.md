@@ -34,3 +34,7 @@ Times are entered in Copenhagen time and stored as instants; the mails and pages
 - Real availability: calendar connections and free/busy slots instead of proposed times (phase 4).
 - A daily nudge for unanswered requests, so the response-time number stays honest (go-live plan risk list).
 - The "domain suggests someone else" path when a specialist declines.
+
+## Daily nudge for unanswered requests
+
+Vercel Cron calls `/api/cron/nudge` every morning at 07:00 UTC (`vercel.json`) with `CRON_SECRET` as bearer token. Every request that is still `requested`, has no `first_reply_at`, is older than 20 hours and has not been nudged in the last 20 hours gets one mail to the specialist (`bookingNudge`, in their language, with the hours waited and a link to Min side) and a `nudged` event with actor `system`. Nothing happens to the request itself; the next morning nudges again if it is still unanswered. Run it by hand with `curl -H "Authorization: Bearer $CRON_SECRET" https://www.trustusconsult.dk/api/cron/nudge`; the answer says how many were checked and sent. Added 18 September 2026.

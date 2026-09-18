@@ -1,0 +1,48 @@
+.page {
+  padding: clamp(8rem, 18vh, 12rem) var(--hds-gutter) var(--hds-space-3xl);
+  background: var(--hds-bg);
+}
+.article {
+  max-width: 68ch;
+  margin: 0 auto;
+  display: grid;
+  gap: var(--hds-space-md);
+}
+.title {
+  font-size: var(--hds-text-4xl);
+  line-height: 1.02;
+  letter-spacing: var(--hds-tracking-display);
+}
+.notice {
+  padding: var(--hds-space-xs) var(--hds-space-sm);
+  border-left: 3px solid var(--hds-warning);
+  background: var(--hds-sunken);
+  font-size: var(--hds-text-sm);
+  color: var(--hds-text);
+}
+.intro {
+  font-size: var(--hds-text-lg);
+  line-height: 1.55;
+  color: var(--hds-text-body);
+}
+.section {
+  display: grid;
+  gap: var(--hds-space-xs);
+  padding-top: var(--hds-space-sm);
+  border-top: 1px solid var(--hds-border);
+}
+.section h2 {
+  font-size: var(--hds-text-xl);
+  letter-spacing: -0.02em;
+}
+.section p,
+.section li {
+  color: var(--hds-text-body);
+  line-height: 1.6;
+}
+.section ul {
+  margin: 0;
+  padding-left: 1.2em;
+  display: grid;
+  gap: 6px;
+}
