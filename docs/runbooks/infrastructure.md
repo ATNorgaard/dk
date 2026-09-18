@@ -25,3 +25,19 @@
 - **Sitemap and robots.** `/sitemap.xml` lists the fixed pages, all domains and the live specialists in both languages with hreflang alternates; `/robots.txt` disallows portal, admin, booking pages, log-in, auth and the API.
 - **Redirects.** `next.config.ts`: the prototype's file-name URLs (`index.html`, `landing.html`, `freelancere.html`, `freelancers.html`, `portal.html`) redirect permanently to the matching pages; any other `.html` goes to the front page.
 - **Legal pages.** `/[lang]/privatliv` and `/[lang]/vilkaar` from `src/content/legal.ts`, rendered by `LegalPage`. Both carry a draft notice until the legal domain has reviewed them; the open points for Kim are marked `[ ]` in the text (address and CVR, contracting party, invoicing and payment terms).
+
+## Retention (19 September 2026)
+
+Vercel Cron calls `/api/cron/retention` daily at 04:00 UTC with `CRON_SECRET`; `?dry=1` reports the counts without deleting. Rules and periods are in `src/lib/retention.ts` and match the privacy notice (`src/content/legal.ts`); change both together.
+
+| What | When | How |
+|---|---|---|
+| Contact-form enquiries | 12 months after they were sent | row deleted |
+| Declined applications | 6 months after the decision | row and notes deleted |
+| Access requests | declined: 90 days after the decision; never answered: 90 days after arrival | row deleted |
+| Meeting requests | 12 months after the agreed time, or the last proposed one | request, times and events deleted |
+| Departed specialists | 30 days after the specialist membership was revoked, unless re-admitted | profile with its CV rows, portrait and CV files deleted; the person and auth account too when no other membership keeps them |
+| Client accounts | 12 months after the last sign-in (creation, if never signed in), only when the person holds no other role | person, memberships and auth account deleted |
+| Rate-limit rows | 2 days | rows deleted |
+
+Run by hand: `curl -H "Authorization: Bearer $CRON_SECRET" "https://www.trustusconsult.dk/api/cron/retention?dry=1"`. The response and a JSON log line carry candidates and deletions per rule. Departures: when the board revokes a specialist's membership under Personer, the 30-day clock starts; to keep a departed specialist's profile longer, leave the membership active and set the seat to `notice`.
