@@ -83,7 +83,14 @@ A status chip, a toast for saves, a confirm dialog (replacing `window.confirm`),
 
 P1 and P2 give the board a workplace before launch week; P3 is what the founding specialists meet when they import their profiles; P4 can follow launch.
 
-## 6. Decisions needed before P1
+## 6. Decisions, taken 19 September
+
+- **Sidebar.** Andreas: sidebar.
+- **Footer.** The public footer stays under the portal pages.
+- **Board front page.** Both: the queues with counts and age on top, and the people waiting behind them (the oldest items by name) right under.
+- **Languages on Min side.** Danish first; English on a tab per field.
+
+The questions as they were asked:
 
 - Sidebar or top navigation. The plan assumes a sidebar; it fits ten admin destinations and role badges better than a row of links.
 - Whether the portal keeps the public footer. The plan assumes a one-line legal strip.
