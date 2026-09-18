@@ -68,11 +68,6 @@ export const auth = {
       site: { da: "Huset", en: "The house" } as I18nText,
       siteText: { da: "Forsiden, som kunderne ser den.", en: "The landing, as clients see it." } as I18nText,
     },
-    comingTitle: { da: "Hvad der kommer her", en: "What lands here" } as I18nText,
-    coming: [
-      { da: "Fulde CV'er for kunder (2.4)", en: "Full CVs for clients (2.4)" },
-      { da: "Mødeforespørgsler og svar (2.5)", en: "Booking requests and replies (2.5)" },
-    ] as I18nText[],
     signOut: { da: "Log ud", en: "Sign out" } as I18nText,
     toSite: { da: "Til forsiden", en: "To the site" } as I18nText,
   },
@@ -94,18 +89,6 @@ export const auth = {
     },
     linked: { da: "Konto oprettet", en: "Account created" } as I18nText,
     notLinked: { da: "Ingen konto endnu", en: "No account yet" } as I18nText,
-    grantHint: {
-      da: "Roller gives indtil videre med scriptet pnpm roles (se docs/runbooks/auth.md). Editoren kommer i 2.2.",
-      en: "Roles are granted with the pnpm roles script for now (see docs/runbooks/auth.md). The editor lands in 2.2.",
-    } as I18nText,
-    comingTitle: { da: "Kommer i 2.2", en: "Coming in 2.2" } as I18nText,
-    coming: [
-      { da: "Ansøgninger: kø, noter, afgørelse", en: "Applications: queue, notes, decision" },
-      { da: "Henvendelser fra kunder", en: "Client enquiries" },
-      { da: "Domænetekster på dansk og engelsk", en: "Domain copy in Danish and English" },
-      { da: "Pladser: åbn, reservér, aktivér, luk", en: "Seats: open, reserve, activate, close" },
-      { da: "Tal fra huset", en: "Numbers from the house" },
-    ] as I18nText[],
   },
   roles: {
     visitor: { da: "Besøgende", en: "Visitor" },

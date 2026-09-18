@@ -52,7 +52,6 @@ export const specialists = {
       en: "The board looks at it within one working day. If you get access, a mail with a link follows.",
     } as I18nText,
     book: { da: "Book et møde", en: "Book a meeting" } as I18nText,
-    bookSoon: { da: "Mødebooking kommer (2.5). Skriv til huset indtil da.", en: "Booking is coming (2.5). Write to the house until then." } as I18nText,
   },
   minSide: {
     nav: { da: "Min side", en: "My page" } as I18nText,

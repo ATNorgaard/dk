@@ -79,15 +79,6 @@ export default async function PortalPage({ params, searchParams }: PageProps<"/[
             </ul>
           </section>
         ) : null}
-
-        <section className={p.section}>
-          <h2>{t(c.comingTitle, lang, "")}</h2>
-          <ul className={p.list}>
-            {c.coming.map((line) => (
-              <li key={line.en}>{t(line, lang, "")}</li>
-            ))}
-          </ul>
-        </section>
       </div>
     </PortalShell>
   );
