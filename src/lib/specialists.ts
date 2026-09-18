@@ -151,23 +151,32 @@ export async function isLive(profileId: string) {
 }
 
 /** Rough completeness for the "85 %" bar: which of the fields that matter are filled. */
-export function completeness(p: FullProfile) {
-  const checks = [
-    !!p.profile.title?.da,
-    !!p.profile.tagline?.da,
-    !!p.profile.city,
-    p.profile.years_in_craft !== null,
-    !!p.profile.summary?.da && p.profile.summary.da.length > 80,
-    (p.profile.skills?.da?.length ?? 0) >= 3,
-    p.profile.languages.length > 0,
-    !!p.profile.rate_text,
-    p.profile.weekly_hours !== null || !!p.profile.available_from,
-    !!p.profile.linkedin_url || !!p.profile.website_url,
-    !!p.profile.portrait_path,
-    p.experience.length >= 2,
-    p.education.length >= 1,
+export type ChecklistKey =
+  | "title" | "tagline" | "city" | "years" | "summary" | "skills" | "languages"
+  | "rate" | "availability" | "links" | "portrait" | "experience" | "education";
+
+/** What a complete profile has, item by item, so a dashboard can say what is missing. */
+export function completenessChecklist(p: FullProfile): { key: ChecklistKey; done: boolean }[] {
+  return [
+    { key: "title", done: !!p.profile.title?.da },
+    { key: "tagline", done: !!p.profile.tagline?.da },
+    { key: "city", done: !!p.profile.city },
+    { key: "years", done: p.profile.years_in_craft !== null },
+    { key: "summary", done: !!p.profile.summary?.da && p.profile.summary.da.length > 80 },
+    { key: "skills", done: (p.profile.skills?.da?.length ?? 0) >= 3 },
+    { key: "languages", done: p.profile.languages.length > 0 },
+    { key: "rate", done: !!p.profile.rate_text },
+    { key: "availability", done: p.profile.weekly_hours !== null || !!p.profile.available_from },
+    { key: "links", done: !!p.profile.linkedin_url || !!p.profile.website_url },
+    { key: "portrait", done: !!p.profile.portrait_path },
+    { key: "experience", done: p.experience.length >= 2 },
+    { key: "education", done: p.education.length >= 1 },
   ];
-  return Math.round((checks.filter(Boolean).length / checks.length) * 100);
+}
+
+export function completeness(p: FullProfile) {
+  const checks = completenessChecklist(p);
+  return Math.round((checks.filter((c) => c.done).length / checks.length) * 100);
 }
 
 /** "Available now", "Available from 1 Oct" or "Fully booked until …", from the two dates. */

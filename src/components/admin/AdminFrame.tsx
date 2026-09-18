@@ -3,17 +3,18 @@ import { t, type I18nText, type Lang } from "@/lib/i18n";
 import type { Viewer } from "@/lib/auth";
 import type { DomainRow } from "@/lib/admin";
 import { PortalShell } from "@/components/portal/PortalShell";
-import { RichTitle } from "@/components/ui/RichTitle";
-import { AdminNav } from "./AdminNav";
+import { PageHeader } from "@/components/portal/PageHeader";
+import { auth } from "@/content/auth";
 import p from "@/components/portal/portal.module.css";
 
-/** Chrome shared by every admin page: portal shell, admin nav, heading. */
+/** Chrome shared by every admin page: the portal shell (its sidebar carries the admin destinations) and the page header. */
 export function AdminFrame({
   lang,
   path,
   viewer,
   title,
   intro,
+  actions,
   children,
 }: {
   lang: Lang;
@@ -21,16 +22,13 @@ export function AdminFrame({
   viewer: Viewer;
   title: I18nText;
   intro?: I18nText;
+  actions?: ReactNode;
   children: ReactNode;
 }) {
   return (
     <PortalShell lang={lang} pathname={path} viewer={viewer}>
-      <div className={p.wide}>
-        <AdminNav lang={lang} pathname={path} />
-        <h1 className={p.title}>
-          <RichTitle text={t(title, lang, "")} />
-        </h1>
-        {intro ? <p className={p.intro}>{t(intro, lang, "")}</p> : null}
+      <div className={p.dash}>
+        <PageHeader eyebrow={t(auth.admin.nav, lang, "")} title={t(title, lang, "")} intro={intro ? t(intro, lang, "") : undefined} actions={actions} />
         {children}
       </div>
     </PortalShell>
