@@ -63,6 +63,7 @@ export const freelancere = {
     title: { da: "{n} domæner {em}mangler{/em} folk lige nu.", en: "{n} domains are {em}short{/em} right now." },
     intro: { da: "Efterspørgslen ligger foran bemandingen her. Ansøger du til et af dem, ryger du forrest i køen.", en: "Demand runs ahead of staffing in these. Apply to one of them and you go to the front of the queue." },
     seatLine: { da: "{n} ledige pladser", en: "{n} open seats" },
+    seatLineOne: { da: "1 ledig plads", en: "1 open seat" },
   },
   contact: {
     eyebrow: { da: "Domænet svarer selv — inden for fem hverdage", en: "The domain answers itself — within five working days" },

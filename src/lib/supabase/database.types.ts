@@ -1140,26 +1140,6 @@ export type Database = {
       }
     }
     Functions: {
-      booking_is_in_my_domain: { Args: { target: string }; Returns: boolean }
-      booking_is_mine: { Args: { target: string }; Returns: boolean }
-      current_person_id: { Args: never; Returns: string }
-      current_roles: {
-        Args: never
-        Returns: Database["public"]["Enums"]["member_role"][]
-      }
-      has_domain_role: {
-        Args: {
-          roles: Database["public"]["Enums"]["member_role"][]
-          target_domain: string
-        }
-        Returns: boolean
-      }
-      has_role: {
-        Args: { roles: Database["public"]["Enums"]["member_role"][] }
-        Returns: boolean
-      }
-      owns_profile: { Args: { target: string }; Returns: boolean }
-      profile_is_live: { Args: { target: string }; Returns: boolean }
       rate_limit_hit: {
         Args: {
           p_key: string

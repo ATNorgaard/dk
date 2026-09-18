@@ -102,7 +102,7 @@ export default async function FreelancerePage({ params }: PageProps<"/[lang]/fre
                 tag={`${lang === "da" ? "Domæne" : "Domain"} ${String(d.sortOrder).padStart(2, "0")}`}
                 title={t(d.name, lang, d.id)}
                 text={t(d.blurb, lang, "")}
-                meta={fill(t(F.open.seatLine, lang, ""), { n: d.openSeats })}
+                meta={d.openSeats === 1 ? t(F.open.seatLineOne, lang, "") : fill(t(F.open.seatLine, lang, ""), { n: d.openSeats })}
               />
             ))}
           </CardGrid>
